@@ -11,6 +11,7 @@ import AdminLogin from "./pages/AdminLogin";
 import Dashboard from "./pages/Dashboard";
 import AdmissionForm from "./pages/AdmissionForm";
 import NotFound from "./pages/NotFound";
+import StudentDetails from "./pages/StudentDetails";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/admission" element={<AdmissionForm />} />
+              <Route path="/student/:id" element={<StudentDetails />} />
             </Route>
             
             {/* 404 route */}

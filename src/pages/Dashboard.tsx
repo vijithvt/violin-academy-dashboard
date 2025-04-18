@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { collection, getDocs } from "firebase/firestore";
@@ -131,7 +130,11 @@ const Dashboard = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {students.map((student) => (
-                <div key={student.id} className="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow duration-300">
+                <div
+                  key={student.id}
+                  className="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow duration-300 cursor-pointer"
+                  onClick={() => navigate(`/student/${student.id}`)}
+                >
                   <div className="h-48 bg-gray-200 relative overflow-hidden">
                     {student.photoURL ? (
                       <img 
