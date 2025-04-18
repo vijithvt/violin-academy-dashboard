@@ -10,7 +10,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyBJRChCFL8TVxBHVrc7uBLKp-I6nGruvX0",
   authDomain: "violin-class.firebaseapp.com",
   projectId: "violin-class",
-  storageBucket: "violin-class.firebasestorage.app",
+  storageBucket: "violin-class.appspot.com", // Fixed storage bucket format
   messagingSenderId: "546473550186",
   appId: "1:546473550186:web:fc691a6d22dc3b09cc8513"
 };
@@ -19,6 +19,15 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(app);
+
+// Initialize Storage with error handling for free plan limitations
+let storage;
+try {
+  storage = getStorage(app);
+} catch (error) {
+  console.error("Firebase Storage initialization error:", error);
+  // Create a mock storage object that will gracefully fail
+  storage = {} as any;
+}
 
 export { auth, db, storage };

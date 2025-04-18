@@ -6,6 +6,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { collection, addDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { toast } from "@/components/ui/sonner";
 
 import { db, storage } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
@@ -54,6 +55,7 @@ const AdmissionForm = () => {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoError, setPhotoError] = useState<string | null>(null);
+  const [storageDisabled, setStorageDisabled] = useState(false);
   const navigate = useNavigate();
 
   // Form initialization
@@ -108,10 +110,16 @@ const AdmissionForm = () => {
       
       // Upload photo if available
       let photoURL = "";
-      if (photo) {
-        const storageRef = ref(storage, `student-photos/${Date.now()}_${photo.name}`);
-        const uploadResult = await uploadBytes(storageRef, photo);
-        photoURL = await getDownloadURL(uploadResult.ref);
+      if (photo && !storageDisabled) {
+        try {
+          const storageRef = ref(storage, `student-photos/${Date.now()}_${photo.name}`);
+          const uploadResult = await uploadBytes(storageRef, photo);
+          photoURL = await getDownloadURL(uploadResult.ref);
+        } catch (error) {
+          console.error("Storage error:", error);
+          setStorageDisabled(true);
+          toast.error("Photo upload failed. Student will be registered without photo.");
+        }
       }
 
       // Add student to Firestore
@@ -121,11 +129,12 @@ const AdmissionForm = () => {
         createdAt: new Date().toISOString(),
       });
 
+      toast.success("Student registered successfully!");
       // Navigate back to dashboard
       navigate("/dashboard");
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("An error occurred while submitting the form. Please try again.");
+      toast.error("An error occurred while submitting the form. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -150,6 +159,11 @@ const AdmissionForm = () => {
             <CardTitle className="text-2xl font-bold text-center text-indigo-900">Student Admission Form</CardTitle>
             <CardDescription className="text-center">
               Fill out the form to register a new student
+              {storageDisabled && (
+                <p className="mt-2 text-orange-500 font-medium">
+                  Note: Photo upload is currently unavailable. Students can be registered without photos.
+                </p>
+              )}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -157,7 +171,7 @@ const AdmissionForm = () => {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 {/* Photo upload section */}
                 <div className="space-y-2">
-                  <FormLabel>Student Photo</FormLabel>
+                  <FormLabel>Student Photo {!storageDisabled && "(Optional)"}</FormLabel>
                   <div className="flex flex-col items-center sm:flex-row sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
                     <div className="h-40 w-40 rounded-lg border-2 border-dashed border-indigo-300 flex items-center justify-center bg-indigo-50 overflow-hidden">
                       {photoPreview ? (
@@ -174,19 +188,29 @@ const AdmissionForm = () => {
                     </div>
 
                     <div className="space-y-2 flex-1">
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={handlePhotoChange}
-                        className="cursor-pointer"
-                        id="photo-upload"
-                      />
-                      {photoError && (
-                        <p className="text-sm text-red-500">{photoError}</p>
+                      {!storageDisabled && (
+                        <>
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={handlePhotoChange}
+                            className="cursor-pointer"
+                            id="photo-upload"
+                            disabled={storageDisabled}
+                          />
+                          {photoError && (
+                            <p className="text-sm text-red-500">{photoError}</p>
+                          )}
+                          <p className="text-xs text-gray-500">
+                            Upload a clear photo of the student. Max size: 5MB. Recommended format: JPG, PNG
+                          </p>
+                        </>
                       )}
-                      <p className="text-xs text-gray-500">
-                        Upload a clear photo of the student. Max size: 5MB. Recommended format: JPG, PNG
-                      </p>
+                      {storageDisabled && (
+                        <p className="text-sm text-orange-500">
+                          Photo upload is currently disabled due to storage limitations.
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
