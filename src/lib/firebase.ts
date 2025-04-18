@@ -19,15 +19,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-
-// Initialize Storage with error handling for free plan limitations
-let storage;
-try {
-  storage = getStorage(app);
-} catch (error) {
-  console.error("Firebase Storage initialization error:", error);
-  // Create a mock storage object that will gracefully fail
-  storage = {} as any;
-}
+const storage = getStorage(app);
 
 export { auth, db, storage };
+
