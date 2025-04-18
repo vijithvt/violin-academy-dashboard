@@ -6,14 +6,13 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 // Your web app's Firebase configuration
-// Replace these with your actual Firebase config
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBJRChCFL8TVxBHVrc7uBLKp-I6nGruvX0",
+  authDomain: "violin-class.firebaseapp.com",
+  projectId: "violin-class",
+  storageBucket: "violin-class.firebasestorage.app",
+  messagingSenderId: "546473550186",
+  appId: "1:546473550186:web:fc691a6d22dc3b09cc8513"
 };
 
 // Initialize Firebase services
