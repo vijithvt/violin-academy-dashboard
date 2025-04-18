@@ -1,73 +1,69 @@
-# Welcome to your Lovable project
 
-## Project info
+# Violin Class Management Dashboard
 
-**URL**: https://lovable.dev/projects/860d59a2-1d79-4168-b3f9-fa4f2be37cce
+A comprehensive web application for managing violin students at a music academy.
 
-## How can I edit this code?
+## Features
 
-There are several ways of editing your application.
+- 🔐 **Admin Authentication**: Secure login system using Firebase Authentication
+- 📝 **Student Admission Form**: Collect and store detailed student information
+- 🖼️ **Photo Upload**: Upload and store student photos in Firebase Storage
+- 📊 **Dashboard**: View all students with details and information
+- 🔒 **Protected Routes**: Secure admin-only access to sensitive areas
 
-**Use Lovable**
+## Technologies Used
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/860d59a2-1d79-4168-b3f9-fa4f2be37cce) and start prompting.
+- React with TypeScript
+- Tailwind CSS for styling
+- Firebase (Authentication, Firestore, Storage)
+- React Router for navigation
+- React Hook Form with Zod for form validation
+- Shadcn UI components
 
-Changes made via Lovable will be committed automatically to this repo.
+## Setup Instructions
 
-**Use your preferred IDE**
+### 1. Firebase Setup
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+1. Create a new Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
+2. Enable Authentication with Email/Password method
+3. Create a Firestore database
+4. Enable Firebase Storage
+5. Get your Firebase configuration and replace the placeholder in `src/lib/firebase.ts`:
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```typescript
+// Replace with your actual Firebase config
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
 ```
 
-**Edit a file directly in GitHub**
+### 2. Create an Admin User
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. Use Firebase Authentication to create an admin user with email and password
+2. Use these credentials to log in to the dashboard
 
-**Use GitHub Codespaces**
+### 3. Usage
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- `/admin-login` - Login page for administrators
+- `/dashboard` - View all students and access admin functions
+- `/admission` - Register new students with the admission form
 
-## What technologies are used for this project?
+## Future Enhancements
 
-This project is built with:
+- Student Progress Tracking
+- Attendance Logging
+- Fee Management with reminders
+- Student login to view their progress
+- Export data to CSV
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Project Structure
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/860d59a2-1d79-4168-b3f9-fa4f2be37cce) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- `/components` - Reusable UI components
+- `/context` - Authentication context for state management
+- `/lib` - Firebase configuration and utilities
+- `/pages` - Main application pages
