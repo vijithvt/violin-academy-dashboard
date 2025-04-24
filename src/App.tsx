@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import AdmissionForm from "./pages/AdmissionForm";
 import NotFound from "./pages/NotFound";
 import StudentDetails from "./pages/StudentDetails";
+import EditStudent from "./pages/EditStudent";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +36,7 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/admission" element={<AdmissionForm />} />
               <Route path="/student/:id" element={<StudentDetails />} />
+              <Route path="/edit-student/:id" element={<EditStudent />} />
             </Route>
             
             {/* 404 route */}
