@@ -14,6 +14,7 @@ import AdmissionForm from "./pages/AdmissionForm";
 import NotFound from "./pages/NotFound";
 import StudentDetails from "./pages/StudentDetails";
 import EditStudent from "./pages/EditStudent";
+import Home from "./pages/Home";
 
 const queryClient = new QueryClient();
 
@@ -25,8 +26,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            {/* Redirect root to admin login */}
-            <Route path="/" element={<Navigate to="/admin-login" replace />} />
+            {/* Home page is now the root route */}
+            <Route path="/" element={<Home />} />
             
             {/* Public routes */}
             <Route path="/admin-login" element={<AdminLogin />} />
