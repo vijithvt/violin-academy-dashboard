@@ -36,7 +36,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const Home = () => {
-  const [showVideo, setShowVideo] = useState(false);
   const [showViolinModal, setShowViolinModal] = useState(false);
 
   const courseCards = [
@@ -67,13 +66,6 @@ const Home = () => {
       icon: <Calendar className="w-12 h-12 text-amber-600" />,
       fee: "Included with classes",
       time: "Monthly submissions"
-    },
-    {
-      title: "Fusion/Recording Track",
-      description: "Advanced lessons for performance and recording",
-      icon: <Music className="w-12 h-12 text-amber-600" />,
-      fee: "Custom pricing",
-      time: "For advanced students"
     }
   ];
 
@@ -222,7 +214,6 @@ const Home = () => {
             <a href="#home" className="text-gray-800 hover:text-maroon-700 font-medium">Home</a>
             <a href="#about" className="text-gray-800 hover:text-maroon-700 font-medium">About</a>
             <a href="#courses" className="text-gray-800 hover:text-maroon-700 font-medium">Courses</a>
-            <a href="#fees" className="text-gray-800 hover:text-maroon-700 font-medium">Fees</a>
             <a href="#join" className="text-gray-800 hover:text-maroon-700 font-medium">Join</a>
             <Link to="/admin-login">
               <Button variant="ghost" size="sm" className="flex items-center gap-1">
@@ -257,31 +248,7 @@ const Home = () => {
                   Join Now <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
               </a>
-              <Button 
-                variant="outline" 
-                className="bg-transparent border-white text-white hover:bg-white/10"
-                onClick={() => setShowVideo(!showVideo)}
-              >
-                <Youtube className="h-4 w-4 mr-2" /> Watch Intro Video
-              </Button>
             </div>
-            
-            {/* Video Modal Placeholder */}
-            {showVideo && (
-              <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-lg w-full max-w-3xl overflow-hidden relative">
-                  <button 
-                    onClick={() => setShowVideo(false)}
-                    className="absolute top-2 right-2 bg-black bg-opacity-50 text-white rounded-full p-1"
-                  >
-                    ✕
-                  </button>
-                  <div className="aspect-w-16 aspect-h-9 bg-gray-100 flex items-center justify-center">
-                    <p className="text-gray-500">Video Coming Soon</p>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </section>
@@ -328,12 +295,14 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Courses Offered */}
+      {/* Courses Offered with Fee Details (Merged) */}
       <section id="courses" className="py-16 bg-amber-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-serif font-bold text-maroon-900 mb-10 text-center">
-            Courses Offered
+            Courses & Fee Details
           </h2>
+          
+          {/* Course Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {courseCards.slice(0, 3).map((course, index) => (
               <div 
@@ -353,35 +322,25 @@ const Home = () => {
             ))}
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 max-w-4xl mx-auto">
-            {courseCards.slice(3).map((course, index) => (
-              <div 
-                key={index} 
-                className="bg-white border border-amber-100 rounded-xl shadow-md hover:shadow-lg transition-all p-6 text-center"
-              >
-                <div className="flex justify-center mb-4">
-                  {course.icon}
-                </div>
-                <h3 className="text-xl font-bold text-maroon-800 mb-2">{course.title}</h3>
-                <p className="text-gray-600 mb-4">{course.description}</p>
-                <div className="text-amber-700 font-medium">{course.fee}</div>
-                <div className="text-gray-500 text-sm mt-1 flex items-center justify-center">
-                  <Clock className="h-4 w-4 mr-1" /> {course.time}
-                </div>
+          {/* Fourth Course Card centered */}
+          <div className="mt-8 max-w-sm mx-auto">
+            <div
+              className="bg-white border border-amber-100 rounded-xl shadow-md hover:shadow-lg transition-all p-6 text-center"
+            >
+              <div className="flex justify-center mb-4">
+                {courseCards[3].icon}
               </div>
-            ))}
+              <h3 className="text-xl font-bold text-maroon-800 mb-2">{courseCards[3].title}</h3>
+              <p className="text-gray-600 mb-4">{courseCards[3].description}</p>
+              <div className="text-amber-700 font-medium">{courseCards[3].fee}</div>
+              <div className="text-gray-500 text-sm mt-1 flex items-center justify-center">
+                <Clock className="h-4 w-4 mr-1" /> {courseCards[3].time}
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
-
-      {/* Class Fee Details */}
-      <section id="fees" className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-serif font-bold text-maroon-900 mb-10 text-center">
-            Class Fee Details
-          </h2>
           
-          <div className="bg-amber-50 rounded-xl shadow-md overflow-hidden max-w-3xl mx-auto">
+          {/* Fee Details Box */}
+          <div className="mt-12 bg-amber-50 rounded-xl shadow-md overflow-hidden max-w-3xl mx-auto">
             <div className="border-b border-amber-200 bg-maroon-800 text-white py-4 text-center">
               <h3 className="text-xl font-semibold">Pricing Information</h3>
             </div>
@@ -416,7 +375,7 @@ const Home = () => {
                   <Award className="h-5 w-5" />
                 </div>
                 <p className="text-gray-700 text-sm">
-                  Includes welcome kit worth ₹500 (rosin, music notebook, tuning card, tote bag, etc.)
+                  Includes welcome kit
                 </p>
               </div>
             </div>
@@ -448,7 +407,7 @@ const Home = () => {
                 <img 
                   src="/lovable-uploads/344318eb-d2db-4042-bc9a-5dfaa5558c2e.png" 
                   alt="Stuff You Need" 
-                  className="w-full h-auto object-contain"
+                  className="w-full h-auto object-contain max-h-[400px]"
                 />
               </div>
             </div>
@@ -475,7 +434,7 @@ const Home = () => {
                 <img 
                   src="/lovable-uploads/48f9d0f7-776f-493e-995f-6855aa1e6a6e.png" 
                   alt="Violin Diagram" 
-                  className="w-full h-auto"
+                  className="w-full h-auto max-h-[300px] object-contain"
                   onClick={() => setShowViolinModal(true)}
                 />
                 <div className="p-3 text-center text-sm text-gray-500">
@@ -512,8 +471,8 @@ const Home = () => {
                 </div>
                 <div className="md:w-1/2">
                   <img 
-                    src="/lovable-uploads/0fe0e6d5-2dae-427c-a526-bdfa0ebd1cf1.png" 
-                    alt="How to Hold the Violin" 
+                    src="/lovable-uploads/f25fd73e-008b-4fbd-aada-2a545f1a97db.png" 
+                    alt="How to Hold the Bow" 
                     className="rounded-lg shadow-md w-full h-auto"
                   />
                 </div>
@@ -529,8 +488,8 @@ const Home = () => {
                 </div>
                 <div className="md:w-1/2">
                   <img 
-                    src="/lovable-uploads/f25fd73e-008b-4fbd-aada-2a545f1a97db.png" 
-                    alt="How to Hold the Bow" 
+                    src="/lovable-uploads/0fe0e6d5-2dae-427c-a526-bdfa0ebd1cf1.png" 
+                    alt="How to Hold the Violin" 
                     className="rounded-lg shadow-md w-full h-auto"
                   />
                 </div>
