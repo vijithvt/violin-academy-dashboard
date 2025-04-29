@@ -63,7 +63,7 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// New custom colors for the violin academy
+				// Enhanced color palette for the violin academy
 				maroon: {
 					50: '#fdf2f2',
 					100: '#f9e0e0',
@@ -76,6 +76,42 @@ export default {
 					800: '#811e1e',
 					900: '#6c1c1c',
 				},
+				saffron: {
+					50: '#fff9eb',
+					100: '#ffefc7',
+					200: '#ffe08a',
+					300: '#ffc84d',
+					400: '#ffad1f',
+					500: '#ff9006',
+					600: '#e67000',
+					700: '#bf4e02',
+					800: '#9a3c08',
+					900: '#7e320c',
+				},
+				ivory: {
+					50: '#fffef8',
+					100: '#fffceb',
+					200: '#fff8d6',
+					300: '#fff0b0',
+					400: '#ffe27e',
+					500: '#ffc94a',
+					600: '#e6a520',
+					700: '#b37618',
+					800: '#8c5817',
+					900: '#724518',
+				},
+				gold: {
+					50: '#fbf8eb',
+					100: '#f7edc7',
+					200: '#f0da8a',
+					300: '#e8c44d',
+					400: '#e1af23',
+					500: '#cb960f',
+					600: '#a67509',
+					700: '#7a550b',
+					800: '#664710',
+					900: '#553a12',
+				}
 			},
 			fontFamily: {
 				serif: ['DM Serif Display', 'Georgia', 'serif'],

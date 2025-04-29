@@ -26,12 +26,18 @@ import {
   Home as HomeIcon,
   Clock,
   CreditCard,
+  Star,
+  FileText,
+  Info,
+  HelpCircle,
+  AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const Home = () => {
   const [showVideo, setShowVideo] = useState(false);
+  const [showViolinModal, setShowViolinModal] = useState(false);
 
   const courseCards = [
     {
@@ -104,6 +110,103 @@ const Home = () => {
     "Tambura / Tambura App",
     "Mirror, Notebook, Recorder"
   ];
+
+  const studentGuidelines = [
+    {
+      title: "Be Punctual",
+      description: "Join classes on time and be prepared"
+    },
+    {
+      title: "Maintain Discipline",
+      description: "Respect teacher and peers during sessions"
+    },
+    {
+      title: "Practice Regularly",
+      description: "Follow daily routine as prescribed"
+    },
+    {
+      title: "Stay Organized",
+      description: "Manage materials and notes systematically"
+    },
+    {
+      title: "Participate Actively",
+      description: "Submit recordings, join activities"
+    },
+    {
+      title: "Use Dashboard",
+      description: "Track attendance and monitor progress"
+    },
+    {
+      title: "Honest Submissions",
+      description: "Send genuine practice recordings"
+    },
+    {
+      title: "Communicate Well",
+      description: "Inform prior if absent (min. 6 hours notice)"
+    }
+  ];
+
+  const faqs = [
+    {
+      question: "Class Schedule & Attendance",
+      answer: "Missed classes are not rescheduled unless valid prior notice is given (min. 6 hours). Instructor-cancelled classes will be rescheduled."
+    },
+    {
+      question: "Fee Structure & Payments",
+      answer: "Monthly fees are due on/before 1st of each month. Non-refundable except for serious cases (e.g. illness). Payments via UPI, Google Pay, or Bank Transfer. Late payment → single reminder only."
+    },
+    {
+      question: "Practice & Progress",
+      answer: "Regular practice and assignment completion are mandatory for effective learning and progress."
+    },
+    {
+      question: "Materials & Recordings",
+      answer: "PDFs, audio, videos are provided for personal use only. Redistribution is strictly prohibited."
+    },
+    {
+      question: "Online Class Policy",
+      answer: "Keep video ON unless instructed otherwise. Good internet connection and proper camera setup are required."
+    },
+    {
+      question: "Performance & Participation",
+      answer: "Participation in events is merit-based. Some classes may be recorded for quality review purposes."
+    },
+    {
+      question: "Rewards & Certifications",
+      answer: "Points are awarded for attendance, practice, and consistency. Quarterly rewards and milestone certificates will be provided to deserving students."
+    },
+    {
+      question: "Referral Policy",
+      answer: "Refer 1 student (who completes 1 month) → ₹500 reward will be given as a token of appreciation."
+    },
+    {
+      question: "Discontinuation Policy",
+      answer: "1-week notice required before discontinuing classes. Excessive absenteeism or misconduct may result in termination of enrollment."
+    }
+  ];
+
+  const tuningInfo = {
+    settings: [
+      { string: "E", freq: "A4 (440 Hz)" },
+      { string: "A", freq: "D4 (293 Hz)" },
+      { string: "D", freq: "A3 (220 Hz)" },
+      { string: "G", freq: "D3 (146 Hz)" }
+    ],
+    apps: [
+      {
+        name: "Soundcorset",
+        platform: "Android/iOS",
+        link: "https://play.google.com/store/apps/details?id=com.soundcorset.client.android&hl=en_IN&gl=US",
+        image: "/lovable-uploads/f9ac38e5-1bd9-4dbe-ac19-73b8866cc805.png"
+      },
+      {
+        name: "DA Tuner",
+        platform: "Android",
+        link: "https://play.google.com/store/search?q=da%20tuner&c=apps&hl=en_IN&gl=US",
+        image: "/lovable-uploads/f762e275-6a46-45d4-98e1-75635c3d1091.png"
+      }
+    ]
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
@@ -197,15 +300,15 @@ const Home = () => {
                 About Vijith V T
               </h2>
               <p className="text-gray-700 mb-4">
-                Vijith V T is a professional Carnatic violinist from Trivandrum with over 15 years of experience. 
-                Trained under stalwarts including Vid. S. R. Mahadeva Sarma and a recipient of the Best 
-                Classical Violin Teacher Award by Music Intuit Academy, he combines traditional music training 
-                with modern teaching methods.
+                Vijith V T is a passionate Carnatic violinist from Trivandrum with over 10 years of teaching and performance experience. 
+                Trained under Shri Rajagopal Rajappa (Tharangani School of Music) and Vid. S. R. Mahadeva Sarma (A-Top Artist, AIR).
+                Holds a Diploma in Violin, MCA, and M.Sc. in Artificial Intelligence.
+                Has taught students across India, the USA, and Thailand.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                 <div className="flex items-start">
                   <Award className="h-5 w-5 text-amber-500 mr-2 mt-1" />
-                  <span className="text-gray-700">50+ concerts performed</span>
+                  <span className="text-gray-700">Best Classical Violin Teacher – Music Intuit Academy, Bangalore</span>
                 </div>
                 <div className="flex items-start">
                   <Globe className="h-5 w-5 text-amber-500 mr-2 mt-1" />
@@ -303,7 +406,7 @@ const Home = () => {
                   </tr>
                   <tr>
                     <td className="py-3 font-medium">Admission Fee</td>
-                    <td className="py-3 text-right">₹100 (one-time)</td>
+                    <td className="py-3 text-right">₹500 (one-time)</td>
                   </tr>
                 </tbody>
               </table>
@@ -342,21 +445,141 @@ const Home = () => {
             
             <div className="md:w-1/2 order-1 md:order-2">
               <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                {/* Placeholder for actual image - we'll use a gradient for now */}
-                <div className="bg-gradient-to-r from-amber-100 to-maroon-100 h-64 flex items-center justify-center">
-                  <Music className="w-16 h-16 text-maroon-300" />
-                </div>
-                <div className="p-4 text-center text-gray-600">
-                  Essential equipment for your violin journey
-                </div>
+                <img 
+                  src="/lovable-uploads/344318eb-d2db-4042-bc9a-5dfaa5558c2e.png" 
+                  alt="Stuff You Need" 
+                  className="w-full h-auto object-contain"
+                />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Learning Process */}
+      {/* Know Your Instrument Section */}
       <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-serif font-bold text-maroon-900 mb-10 text-center">
+            Know Your Instrument
+          </h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div>
+              <h3 className="text-xl font-semibold text-maroon-800 mb-4">About the Violin</h3>
+              <p className="text-gray-700 mb-6">
+                The violin is a bowed string instrument from Italy, with four strings (G, D, A, E). 
+                It's traditionally made of maple and spruce. Indian violinists typically play seated on the floor.
+              </p>
+              
+              <div className="bg-amber-50 rounded-xl overflow-hidden mb-8">
+                <img 
+                  src="/lovable-uploads/48f9d0f7-776f-493e-995f-6855aa1e6a6e.png" 
+                  alt="Violin Diagram" 
+                  className="w-full h-auto"
+                  onClick={() => setShowViolinModal(true)}
+                />
+                <div className="p-3 text-center text-sm text-gray-500">
+                  Click image to enlarge
+                </div>
+              </div>
+
+              <h3 className="text-xl font-semibold text-maroon-800 mb-4">How to Tune the Violin</h3>
+              <p className="text-gray-700 mb-4">
+                Use pegs for major adjustments, fine tuners for minor tuning. Beginners should use tuning apps or seek help.
+              </p>
+              
+              <div className="bg-maroon-50 rounded-lg p-5 mb-6">
+                <h4 className="text-lg font-medium text-maroon-800 mb-3">Tuning Settings:</h4>
+                <ul className="space-y-2">
+                  {tuningInfo.settings.map((item, index) => (
+                    <li key={index} className="flex items-center">
+                      <span className="font-medium w-10">{item.string} →</span>
+                      <span className="text-gray-700">{item.freq}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="text-xl font-semibold text-maroon-800 mb-4">How to Hold the Violin</h3>
+              <div className="flex flex-col md:flex-row gap-6 mb-8">
+                <div className="md:w-1/2">
+                  <p className="text-gray-700 mb-4">
+                    Sit cross-legged on a mat, rest scroll on right foot, keep spine straight.
+                    Upper part rests above left collarbone for bow and finger movement.
+                  </p>
+                </div>
+                <div className="md:w-1/2">
+                  <img 
+                    src="/lovable-uploads/0fe0e6d5-2dae-427c-a526-bdfa0ebd1cf1.png" 
+                    alt="How to Hold the Violin" 
+                    className="rounded-lg shadow-md w-full h-auto"
+                  />
+                </div>
+              </div>
+              
+              <h3 className="text-xl font-semibold text-maroon-800 mb-4">How to Hold the Bow</h3>
+              <div className="flex flex-col md:flex-row gap-6 mb-8">
+                <div className="md:w-1/2">
+                  <p className="text-gray-700 mb-4">
+                    Maintain a firm but relaxed grip; avoid tight or loose hold. 
+                    Fingers should be slightly bent as if holding a flower.
+                  </p>
+                </div>
+                <div className="md:w-1/2">
+                  <img 
+                    src="/lovable-uploads/f25fd73e-008b-4fbd-aada-2a545f1a97db.png" 
+                    alt="How to Hold the Bow" 
+                    className="rounded-lg shadow-md w-full h-auto"
+                  />
+                </div>
+              </div>
+              
+              <h3 className="text-xl font-semibold text-maroon-800 mb-4">Recommended Tuning Apps</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {tuningInfo.apps.map((app, index) => (
+                  <a 
+                    href={app.link} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    key={index}
+                    className="block bg-white rounded-xl border border-amber-100 shadow-sm hover:shadow-md transition-all overflow-hidden"
+                  >
+                    <img src={app.image} alt={app.name} className="w-full h-auto" />
+                    <div className="p-3 text-center">
+                      <h4 className="font-medium text-maroon-800">{app.name}</h4>
+                      <p className="text-sm text-gray-500">{app.platform}</p>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          {/* Large Violin Image Modal */}
+          {showViolinModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-lg w-full max-w-4xl overflow-hidden relative">
+                <button 
+                  onClick={() => setShowViolinModal(false)}
+                  className="absolute top-2 right-2 bg-black bg-opacity-50 text-white rounded-full p-1"
+                >
+                  ✕
+                </button>
+                <img 
+                  src="/lovable-uploads/48f9d0f7-776f-493e-995f-6855aa1e6a6e.png" 
+                  alt="Violin Diagram" 
+                  className="w-full h-auto"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Learning Process */}
+      <section className="py-16 bg-amber-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-serif font-bold text-maroon-900 mb-10 text-center">
             Learning Process
@@ -385,7 +608,7 @@ const Home = () => {
       </section>
       
       {/* Student Recognition */}
-      <section className="py-16 bg-amber-50">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-serif font-bold text-maroon-900 mb-10 text-center">
             Student Recognition
@@ -413,8 +636,55 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Student Guidelines */}
+      <section className="py-16 bg-amber-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-serif font-bold text-maroon-900 mb-10 text-center">
+            Student Guidelines
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+            {studentGuidelines.map((guideline, index) => (
+              <div key={index} className="bg-white rounded-xl shadow-sm border border-amber-100 p-5 hover:shadow-md transition-all">
+                <div className="flex flex-col items-center">
+                  <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center mb-3">
+                    <span className="text-amber-700 font-medium">{index + 1}</span>
+                  </div>
+                  <h3 className="text-lg font-semibold text-maroon-800 mb-2">{guideline.title}</h3>
+                  <p className="text-center text-gray-600 text-sm">{guideline.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-serif font-bold text-maroon-900 mb-10 text-center">
+            Frequently Asked Questions
+          </h2>
+          
+          <div className="max-w-3xl mx-auto">
+            <Accordion type="single" collapsible className="bg-amber-50 rounded-xl shadow-md">
+              {faqs.map((faq, index) => (
+                <AccordionItem key={index} value={`item-${index}`} className="border-b border-amber-200 last:border-0">
+                  <AccordionTrigger className="px-6 py-4 hover:bg-amber-100/50 text-left font-medium text-maroon-800">
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-4 text-gray-700">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        </div>
+      </section>
+
       {/* Join Now / Contact */}
-      <section id="join" className="py-16 bg-white">
+      <section id="join" className="py-16 bg-amber-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-serif font-bold text-maroon-900 mb-10 text-center">
             Join Now
@@ -422,7 +692,7 @@ const Home = () => {
           
           <div className="flex flex-col md:flex-row gap-10">
             <div className="md:w-1/2">
-              <div className="bg-amber-50 rounded-xl shadow-md p-8 h-full">
+              <div className="bg-white rounded-xl shadow-md p-8 h-full">
                 <h3 className="text-xl font-bold text-maroon-800 mb-6">Get Started Today</h3>
                 <p className="text-gray-700 mb-6">
                   Ready to begin your musical journey with Vijith Violinist? Fill out our admission form or contact us directly through WhatsApp for faster response.
@@ -455,7 +725,7 @@ const Home = () => {
             </div>
             
             <div className="md:w-1/2">
-              <div className="bg-amber-50 rounded-xl shadow-md p-8">
+              <div className="bg-white rounded-xl shadow-md p-8">
                 <h3 className="text-xl font-bold text-maroon-800 mb-6">Contact Information</h3>
                 <ul className="space-y-6">
                   <li className="flex items-start">
@@ -487,7 +757,7 @@ const Home = () => {
       </section>
 
       {/* Payment Info */}
-      <section className="py-16 bg-amber-50">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-serif font-bold text-maroon-900 mb-10 text-center">
             Payment Information
@@ -495,7 +765,7 @@ const Home = () => {
           
           <div className="flex flex-col md:flex-row items-center justify-center gap-10">
             <div className="md:w-1/3">
-              <div className="bg-white rounded-xl shadow-md p-8 text-center">
+              <div className="bg-amber-50 rounded-xl shadow-md p-8 text-center">
                 <img 
                   src="/lovable-uploads/d794e0b0-1ad6-4554-9bc1-ee438054131d.png" 
                   alt="Payment QR Code" 
@@ -507,7 +777,7 @@ const Home = () => {
             </div>
             
             <div className="md:w-1/3">
-              <div className="bg-white rounded-xl shadow-md p-8">
+              <div className="bg-amber-50 rounded-xl shadow-md p-8">
                 <h3 className="text-xl font-bold text-maroon-800 mb-4">Bank Details</h3>
                 <ul className="space-y-3">
                   <li className="flex">
@@ -546,13 +816,13 @@ const Home = () => {
             </div>
             
             <div className="flex space-x-6">
-              <a href="#" className="text-white hover:text-amber-300 transition-colors">
+              <a href="https://youtube.com/@vijithviolinist" target="_blank" rel="noopener noreferrer" className="text-white hover:text-amber-300 transition-colors">
                 <Youtube className="h-6 w-6" />
               </a>
-              <a href="#" className="text-white hover:text-amber-300 transition-colors">
+              <a href="https://instagram.com/violinwithvijith" target="_blank" rel="noopener noreferrer" className="text-white hover:text-amber-300 transition-colors">
                 <Instagram className="h-6 w-6" />
               </a>
-              <a href="#" className="text-white hover:text-amber-300 transition-colors">
+              <a href="https://facebook.com/vijithviolinist" target="_blank" rel="noopener noreferrer" className="text-white hover:text-amber-300 transition-colors">
                 <Facebook className="h-6 w-6" />
               </a>
             </div>
@@ -574,4 +844,3 @@ const Home = () => {
 };
 
 export default Home;
-
