@@ -146,7 +146,7 @@ const Home = () => {
               Learn Carnatic Violin with Passion and Precision
             </h1>
             <p className="text-xl md:text-2xl mb-8 font-light">
-              Online & offline violin classes by award-winning violinist Vijith V T
+              Online & offline violin classes by violinist Vijith V T
             </p>
             <div className="flex flex-wrap gap-4">
               <a href="#join">
@@ -189,7 +189,7 @@ const Home = () => {
           <div className="flex flex-col md:flex-row gap-10 items-center">
             <div className="md:w-1/3">
               <div className="rounded-full overflow-hidden border-4 border-amber-100 shadow-lg w-64 h-64 mx-auto">
-                <img src="/lovable-uploads/d794e0b0-1ad6-4554-9bc1-ee438054131d.png" alt="Vijith VT" className="w-full h-full object-cover" />
+                <img src="/lovable-uploads/392d5b68-5127-4b00-a0ab-8cee901d24b0.png" alt="Vijith VT" className="w-full h-full object-cover" />
               </div>
             </div>
             <div className="md:w-2/3">
@@ -574,3 +574,4 @@ const Home = () => {
 };
 
 export default Home;
+
