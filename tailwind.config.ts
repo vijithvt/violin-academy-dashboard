@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,24 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// New custom colors for the violin academy
+				maroon: {
+					50: '#fdf2f2',
+					100: '#f9e0e0',
+					200: '#f7c1c1',
+					300: '#ef9393',
+					400: '#e25c5c',
+					500: '#d23535',
+					600: '#c02828',
+					700: '#9c1f1f',
+					800: '#811e1e',
+					900: '#6c1c1c',
+				},
+			},
+			fontFamily: {
+				serif: ['DM Serif Display', 'Georgia', 'serif'],
+				sans: ['Poppins', 'Inter', 'sans-serif'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
