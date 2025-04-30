@@ -1,5 +1,5 @@
 
-import { Award, Globe, Music, Book } from "lucide-react";
+import { Award, Globe, Music } from "lucide-react";
 
 const AboutSection = () => {
   return (
@@ -16,22 +16,27 @@ const AboutSection = () => {
               About Vijith V T
             </h2>
             <p className="text-gray-700 mb-4">
-              I began learning Carnatic violin under my first Guru, Shri Divakaran, followed by training at Tharangani School of Music under Shri Rajagopal Rajappa. Later, I studied advanced lessons with Vid. S. R. Mahadeva Sarma, whose playing incorporates styles from both the Parur M. S. Gopalakrishnan and Lalgudi Bani traditions.
+              I began learning Carnatic violin under Shri Divakaran, followed by training at Tharangani School of Music under Shri Rajagopal Rajappa. Later, I studied advanced lessons with Vid. S. R. Mahadeva Sarma, whose playing incorporates styles from both the Parur M. S. Gopalakrishnan and Lalgudi Bani traditions.
             </p>
             
-            <h3 className="text-xl font-serif font-bold text-maroon-800 mt-6 mb-3">As a Performer & Teacher:</h3>
-            <ul className="list-disc pl-5 space-y-2 text-gray-700 mb-4">
-              <li>Participated in around 50 stage performances, presenting Carnatic classical concerts and fusion violin programs.</li>
-              <li>Hold a Certificate in Carnatic Classical Violin from Tharangani School of Music.</li>
-              <li>Teaching students from India, USA, Thailand, and Bangalore since 2018.</li>
-              <li>Currently teaching at multiple academies including Jovens Academy (USA) and MusicIntuit Academy (Bangalore).</li>
-            </ul>
-            
-            <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3">Awards & Recognition:</h3>
-            <ul className="list-disc pl-5 space-y-2 text-gray-700">
-              <li>Best Classical Violin Teacher Award from MusicIntuit Academy, Bangalore.</li>
-              <li>Students have secured first prizes in District and School Kalolsavams.</li>
-            </ul>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div>
+                <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3">Performer & Teacher</h3>
+                <ul className="list-disc pl-5 space-y-2 text-gray-700">
+                  <li>Certificate in Carnatic Classical Violin</li>
+                  <li>Teaching since 2018 across multiple countries</li>
+                  <li>50+ stage performances</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3">Awards & Recognition</h3>
+                <ul className="list-disc pl-5 space-y-2 text-gray-700">
+                  <li>Best Classical Violin Teacher Award</li>
+                  <li>Students with first prizes in competitions</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>

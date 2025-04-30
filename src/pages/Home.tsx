@@ -5,7 +5,6 @@ import AboutSection from "@/components/home/AboutSection";
 import CoursesSection from "@/components/home/CoursesSection";
 import RequirementsSection from "@/components/home/RequirementsSection";
 import InstrumentSection from "@/components/home/InstrumentSection";
-import LearningProcessSection from "@/components/home/LearningProcessSection";
 import RecognitionSection from "@/components/home/RecognitionSection";
 import GuidelinesSection from "@/components/home/GuidelinesSection";
 import FAQSection from "@/components/home/FAQSection";
@@ -23,7 +22,6 @@ const Home = () => {
       <CoursesSection />
       <RequirementsSection />
       <InstrumentSection />
-      <LearningProcessSection />
       <RecognitionSection />
       <GuidelinesSection />
       <FAQSection />

@@ -1,7 +1,8 @@
 
-import { Clock } from "lucide-react";
+import { Clock, Award, Calendar, Globe, HomeIcon, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CourseAccordion from "./CourseAccordion";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 type CourseCardProps = {
   title: string;
@@ -9,21 +10,37 @@ type CourseCardProps = {
   icon: React.ReactNode;
   fee: string;
   time: string;
+  highlights?: string[];
 };
 
-const CourseCard = ({ title, description, icon, fee, time }: CourseCardProps) => {
+const CourseCard = ({ title, description, icon, fee, time, highlights }: CourseCardProps) => {
   return (
-    <div className="bg-white border border-amber-100 rounded-xl shadow-md hover:shadow-lg transition-all p-6 text-center">
-      <div className="flex justify-center mb-4">
-        {icon}
-      </div>
-      <h3 className="text-xl font-bold text-maroon-800 mb-2">{title}</h3>
-      <p className="text-gray-600 mb-4">{description}</p>
-      <div className="text-amber-700 font-medium">{fee}</div>
-      <div className="text-gray-500 text-sm mt-1 flex items-center justify-center">
-        <Clock className="h-4 w-4 mr-1" /> {time}
-      </div>
-    </div>
+    <Card className="bg-white border border-amber-100 rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden">
+      <CardHeader className="pb-2 text-center">
+        <div className="flex justify-center mb-4">
+          {icon}
+        </div>
+        <CardTitle className="text-xl text-maroon-800">{title}</CardTitle>
+      </CardHeader>
+      <CardContent className="text-center pb-3">
+        <p className="text-gray-600 mb-4">{description}</p>
+        <div className="text-amber-700 font-medium">{fee}</div>
+        <div className="text-gray-500 text-sm mt-1 flex items-center justify-center">
+          <Clock className="h-4 w-4 mr-1" /> {time}
+        </div>
+        {highlights && highlights.length > 0 && (
+          <div className="mt-3 border-t pt-3 border-dashed border-amber-200">
+            <ul className="text-left text-xs space-y-1">
+              {highlights.map((item, i) => (
+                <li key={i} className="flex items-center">
+                  <span className="text-green-500 mr-1">✓</span> {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
@@ -34,7 +51,13 @@ const CoursesSection = () => {
       description: "Personalized instruction tailored to your learning pace",
       icon: <Globe className="w-12 h-12 text-amber-600" />,
       fee: "₹2000 per month",
-      time: "4 classes per month"
+      time: "4 classes per month",
+      highlights: [
+        "Per class fee: ₹300",
+        "Yearly payment: 16% discount",
+        "Admission fee: ₹500 (one-time)",
+        "Includes welcome kit"
+      ]
     },
     {
       title: "Online Group Class",
@@ -49,13 +72,6 @@ const CoursesSection = () => {
       icon: <HomeIcon className="w-12 h-12 text-amber-600" />,
       fee: "₹2000 + travel per month",
       time: "4 classes per month"
-    },
-    {
-      title: "Monthly Video Feedback",
-      description: "Submit recordings and receive detailed assessment",
-      icon: <Calendar className="w-12 h-12 text-amber-600" />,
-      fee: "Included with classes",
-      time: "Monthly submissions"
     }
   ];
 
@@ -70,60 +86,56 @@ const CoursesSection = () => {
         </p>
         
         {/* Course Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {courseCards.slice(0, 3).map((course, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          {courseCards.map((course, index) => (
             <CourseCard key={index} {...course} />
           ))}
         </div>
         
-        {/* Fourth Course Card centered */}
-        <div className="mt-8 max-w-sm mx-auto">
-          <CourseCard {...courseCards[3]} />
-        </div>
-        
-        {/* Fee Information */}
-        <div className="mt-12 bg-white rounded-xl shadow-md p-6 max-w-3xl mx-auto">
-          <h3 className="text-xl font-semibold text-maroon-800 mb-4 text-center">Fee Information</h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-4 bg-amber-50 rounded-lg text-center">
-              <p className="text-gray-700 mb-1">Per Class Fee</p>
-              <p className="text-lg font-semibold text-amber-700">₹300</p>
-            </div>
-            
-            <div className="p-4 bg-amber-50 rounded-lg text-center">
-              <p className="text-gray-700 mb-1">Yearly Payment Discount</p>
-              <p className="text-lg font-semibold text-green-600">16% off</p>
-            </div>
-            
-            <div className="p-4 bg-amber-50 rounded-lg text-center">
-              <p className="text-gray-700 mb-1">Admission Fee</p>
-              <p className="text-lg font-semibold text-amber-700">₹500 (one-time)</p>
-            </div>
-          </div>
-          
-          <div className="mt-6 bg-amber-100 rounded-lg p-4 flex items-start">
-            <div className="text-amber-600 mr-2 mt-1">
-              <Award className="h-5 w-5" />
-            </div>
-            <p className="text-gray-700">
-              Includes welcome kit
-            </p>
-          </div>
-        </div>
-        
-        {/* Course Levels */}
-        <div className="mt-12">
+        {/* Course Syllabus */}
+        <div>
           <h3 className="text-2xl font-serif font-bold text-maroon-900 mb-6 text-center">
-            Course Levels
+            Course Syllabus
           </h3>
           <CourseAccordion />
+        </div>
+        
+        {/* Joining Process */}
+        <div className="mt-12 max-w-3xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+          <div className="bg-maroon-800 text-white p-4 text-center">
+            <h3 className="text-xl font-medium">How to Join Our Classes</h3>
+          </div>
+          <div className="p-6">
+            <ol className="space-y-4 list-decimal pl-5">
+              <li>
+                <strong className="text-maroon-800">Application:</strong> Fill out the admission form or contact us via WhatsApp
+              </li>
+              <li>
+                <strong className="text-maroon-800">Initial Discussion:</strong> Schedule a call to discuss your goals and schedule
+              </li>
+              <li>
+                <strong className="text-maroon-800">Admission Fee:</strong> Pay the one-time ₹500 admission fee and receive your welcome kit
+              </li>
+              <li>
+                <strong className="text-maroon-800">Class Setup:</strong> Get your equipment ready following our guidelines
+              </li>
+              <li>
+                <strong className="text-maroon-800">Begin Learning:</strong> Start your violin journey with regular classes and monthly submissions
+              </li>
+            </ol>
+          </div>
+          <div className="bg-amber-50 p-4 border-t border-amber-100">
+            <div className="flex items-start">
+              <Award className="h-5 w-5 text-amber-600 mr-2 mt-1" />
+              <p className="text-gray-700 text-sm">
+                <strong>Welcome Kit includes:</strong> Practice notebook, finger placement guide, course materials, and a certificate of enrollment
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   );
 };
-
-import { Award, Calendar, Globe, HomeIcon, Users } from "lucide-react";
 
 export default CoursesSection;
