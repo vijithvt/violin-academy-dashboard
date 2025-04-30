@@ -32,8 +32,8 @@ const CoursesSection = () => {
       title: "1-to-1 Online Violin Class",
       description: "Personalized instruction tailored to your learning pace",
       icon: <Globe className="w-12 h-12 text-amber-600" />,
-      fee: "₹250-₹300 per session",
-      time: "Schedule at your convenience"
+      fee: "₹2000 per month",
+      time: "4 classes per month"
     },
     {
       title: "Online Group Class",
@@ -77,25 +77,17 @@ const CoursesSection = () => {
           <CourseCard {...courseCards[3]} />
         </div>
         
-        {/* Fee Details Box */}
+        {/* Fee Details Box - Simplified */}
         <div className="mt-12 bg-amber-50 rounded-xl shadow-md overflow-hidden max-w-3xl mx-auto">
           <div className="border-b border-amber-200 bg-maroon-800 text-white py-4 text-center">
-            <h3 className="text-xl font-semibold">Pricing Information</h3>
+            <h3 className="text-xl font-semibold">Fee Information</h3>
           </div>
           <div className="p-6">
             <table className="w-full">
               <tbody>
                 <tr className="border-b border-amber-200">
-                  <td className="py-3 font-medium">India Students</td>
-                  <td className="py-3 text-right">₹250–₹300 per session</td>
-                </tr>
-                <tr className="border-b border-amber-200">
-                  <td className="py-3 font-medium">International Students</td>
-                  <td className="py-3 text-right">Fee based on schedule</td>
-                </tr>
-                <tr className="border-b border-amber-200">
-                  <td className="py-3 font-medium">Payment Options</td>
-                  <td className="py-3 text-right">Monthly, quarterly, yearly</td>
+                  <td className="py-3 font-medium">Per Class Fee</td>
+                  <td className="py-3 text-right">₹300</td>
                 </tr>
                 <tr className="border-b border-amber-200">
                   <td className="py-3 font-medium">Yearly Payment Discount</td>

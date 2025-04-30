@@ -95,8 +95,8 @@ const InstrumentSection = () => {
               </div>
               <div className="md:w-1/2">
                 <img 
-                  src="/lovable-uploads/f25fd73e-008b-4fbd-aada-2a545f1a97db.png" 
-                  alt="How to Hold the Bow" 
+                  src="/lovable-uploads/f762e275-6a46-45d4-98e1-75635c3d1091.png" 
+                  alt="How to Hold the Violin" 
                   className="rounded-lg shadow-md w-full h-auto"
                 />
               </div>
@@ -113,7 +113,7 @@ const InstrumentSection = () => {
               <div className="md:w-1/2">
                 <img 
                   src="/lovable-uploads/0fe0e6d5-2dae-427c-a526-bdfa0ebd1cf1.png" 
-                  alt="How to Hold the Violin" 
+                  alt="How to Hold the Bow" 
                   className="rounded-lg shadow-md w-full h-auto"
                 />
               </div>

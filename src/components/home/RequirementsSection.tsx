@@ -16,8 +16,8 @@ const RequirementsSection = () => {
           What You Need to Start
         </h2>
         
-        <div className="flex flex-col md:flex-row items-center gap-10">
-          <div className="md:w-1/2 order-2 md:order-1">
+        <div className="flex flex-col md:flex-row items-center justify-center">
+          <div className="md:w-1/2">
             <ul className="space-y-4">
               {requirements.map((item, index) => (
                 <li key={index} className="flex items-start">
@@ -26,16 +26,6 @@ const RequirementsSection = () => {
                 </li>
               ))}
             </ul>
-          </div>
-          
-          <div className="md:w-1/2 order-1 md:order-2">
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-              <img 
-                src="/lovable-uploads/344318eb-d2db-4042-bc9a-5dfaa5558c2e.png" 
-                alt="Stuff You Need" 
-                className="w-full h-auto object-contain max-h-[400px]"
-              />
-            </div>
           </div>
         </div>
       </div>
