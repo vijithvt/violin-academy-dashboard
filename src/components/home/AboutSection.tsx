@@ -16,29 +16,22 @@ const AboutSection = () => {
               About Vijith V T
             </h2>
             <p className="text-gray-700 mb-4">
-              Vijith V T is a passionate Carnatic violinist from Trivandrum with over 10 years of teaching and performance experience. 
-              Trained under Shri Rajagopal Rajappa (Tharangani School of Music) and Vid. S. R. Mahadeva Sarma (A-Top Artist, AIR).
-              Holds a Diploma in Violin, MCA, and M.Sc. in Artificial Intelligence.
-              Has taught students across India, the USA, and Thailand.
+              I began learning Carnatic violin under my first Guru, Shri Divakaran. Then, I joined Tharangani School of Music — founded by Padma Bhushan Dr. K. J. Yesudas—where I trained under Shri Rajagopal Rajappa. His guidance had a lasting impact on my growth. Though I've had the privilege to learn from several Gurus, it was Rajagopal Sir who truly pushed me forward and encouraged me to begin teaching violin, starting at Tharangani itself. I later continued to learn advanced lessons from Vid. S. R. Mahadeva Sarma, whose playing incorporates the rich nuances of both the Parur M. S. Gopalakrishnan (MSG) style and the Lalgudi Bani tradition. His training further refined my playing style and deepened my understanding of the Carnatic tradition.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-              <div className="flex items-start">
-                <Award className="h-5 w-5 text-amber-500 mr-2 mt-1" />
-                <span className="text-gray-700">Best Classical Violin Teacher – Music Intuit Academy, Bangalore</span>
-              </div>
-              <div className="flex items-start">
-                <Globe className="h-5 w-5 text-amber-500 mr-2 mt-1" />
-                <span className="text-gray-700">Teaching students from India, USA, Thailand</span>
-              </div>
-              <div className="flex items-start">
-                <Music className="h-5 w-5 text-amber-500 mr-2 mt-1" />
-                <span className="text-gray-700">Classes at Jovens Academy, Laya Tarang, Bharathakala Society</span>
-              </div>
-              <div className="flex items-start">
-                <Book className="h-5 w-5 text-amber-500 mr-2 mt-1" />
-                <span className="text-gray-700">Qualifications: Diploma in Violin, MCA, M.Sc. in AI</span>
-              </div>
-            </div>
+            
+            <h3 className="text-xl font-serif font-bold text-maroon-800 mt-6 mb-3">As a Performer & Teacher:</h3>
+            <ul className="list-disc pl-5 space-y-2 text-gray-700 mb-4">
+              <li>Participated in around 50 stage performances, presenting Carnatic classical concerts and fusion violin programs.</li>
+              <li>Hold a Certificate in Carnatic Classical Violin (4-year course) from Tharangani School of Music (founded by Padma Bhushan Dr. K. J. Yesudas).</li>
+              <li>Since 2018, I have been teaching students from India, USA, Thailand, and Bangalore, catering to learners of all age groups.</li>
+              <li>Currently teaching at Jovens Academy (USA), MusicIntuit Academy (Bangalore), Laya Tarang Academy (Trivandrum), Bharathakala Society (Peyad), and more.</li>
+            </ul>
+            
+            <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3">Awards & Recognition:</h3>
+            <ul className="list-disc pl-5 space-y-2 text-gray-700">
+              <li>Honored with the Best Classical Violin Teacher Award from MusicIntuit Academy, Bangalore.</li>
+              <li>Students have secured first prizes in District and School Kalolsavams.</li>
+            </ul>
           </div>
         </div>
       </div>

@@ -31,7 +31,7 @@ const ContactSection = () => {
                 </a>
                 
                 <a 
-                  href="https://wa.me/8301815324" 
+                  href="http://wa.me/918301815324" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="block"

@@ -9,10 +9,10 @@ const HeroSection = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-3xl">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6">
-            Learn Carnatic Violin with Passion and Precision
+            Learn Carnatic Classical Violin
           </h1>
           <p className="text-xl md:text-2xl mb-8 font-light">
-            Online & offline violin classes by violinist Vijith V T
+            From beginner to Advanced level – Online & Offline
           </p>
           <div className="flex flex-wrap gap-4">
             <a href="#join">

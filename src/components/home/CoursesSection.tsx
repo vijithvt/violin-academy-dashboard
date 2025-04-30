@@ -1,6 +1,7 @@
 
-import { Clock } from "lucide-react";
+import { Clock, Award } from "lucide-react";
 import { cn } from "@/lib/utils";
+import CourseAccordion from "./CourseAccordion";
 
 type CourseCardProps = {
   title: string;
@@ -61,9 +62,12 @@ const CoursesSection = () => {
   return (
     <section id="courses" className="py-16 bg-amber-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-serif font-bold text-maroon-900 mb-10 text-center">
+        <h2 className="text-3xl font-serif font-bold text-maroon-900 mb-4 text-center">
           Courses & Fee Details
         </h2>
+        <p className="text-center text-gray-600 mb-10 max-w-3xl mx-auto">
+          Our courses are designed to encourage lifelong learners of all age groups, develop a strong foundation in Carnatic violin techniques, and foster improvisation and performance skills.
+        </p>
         
         {/* Course Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -77,38 +81,43 @@ const CoursesSection = () => {
           <CourseCard {...courseCards[3]} />
         </div>
         
-        {/* Fee Details Box - Simplified */}
-        <div className="mt-12 bg-amber-50 rounded-xl shadow-md overflow-hidden max-w-3xl mx-auto">
-          <div className="border-b border-amber-200 bg-maroon-800 text-white py-4 text-center">
-            <h3 className="text-xl font-semibold">Fee Information</h3>
-          </div>
-          <div className="p-6">
-            <table className="w-full">
-              <tbody>
-                <tr className="border-b border-amber-200">
-                  <td className="py-3 font-medium">Per Class Fee</td>
-                  <td className="py-3 text-right">₹300</td>
-                </tr>
-                <tr className="border-b border-amber-200">
-                  <td className="py-3 font-medium">Yearly Payment Discount</td>
-                  <td className="py-3 text-right text-green-600 font-medium">16% off</td>
-                </tr>
-                <tr>
-                  <td className="py-3 font-medium">Admission Fee</td>
-                  <td className="py-3 text-right">₹500 (one-time)</td>
-                </tr>
-              </tbody>
-            </table>
+        {/* Fee Information */}
+        <div className="mt-12 bg-white rounded-xl shadow-md p-6 max-w-3xl mx-auto">
+          <h3 className="text-xl font-semibold text-maroon-800 mb-4 text-center">Fee Information</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-4 bg-amber-50 rounded-lg text-center">
+              <p className="text-gray-700 mb-1">Per Class Fee</p>
+              <p className="text-lg font-semibold text-amber-700">₹300</p>
+            </div>
             
-            <div className="mt-6 bg-amber-100 rounded-lg p-4 flex items-start">
-              <div className="text-amber-600 mr-2 mt-1">
-                <Award className="h-5 w-5" />
-              </div>
-              <p className="text-gray-700 text-sm">
-                Includes welcome kit
-              </p>
+            <div className="p-4 bg-amber-50 rounded-lg text-center">
+              <p className="text-gray-700 mb-1">Yearly Payment Discount</p>
+              <p className="text-lg font-semibold text-green-600">16% off</p>
+            </div>
+            
+            <div className="p-4 bg-amber-50 rounded-lg text-center">
+              <p className="text-gray-700 mb-1">Admission Fee</p>
+              <p className="text-lg font-semibold text-amber-700">₹500 (one-time)</p>
             </div>
           </div>
+          
+          <div className="mt-6 bg-amber-100 rounded-lg p-4 flex items-start">
+            <div className="text-amber-600 mr-2 mt-1">
+              <Award className="h-5 w-5" />
+            </div>
+            <p className="text-gray-700">
+              Includes welcome kit
+            </p>
+          </div>
+        </div>
+        
+        {/* Course Levels */}
+        <div className="mt-12">
+          <h3 className="text-2xl font-serif font-bold text-maroon-900 mb-6 text-center">
+            Course Levels
+          </h3>
+          <CourseAccordion />
         </div>
       </div>
     </section>
