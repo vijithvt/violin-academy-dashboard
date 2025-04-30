@@ -1,8 +1,35 @@
 
-import { MessageCircle, Phone, Mail } from "lucide-react";
+import { MessageCircle, Phone, Mail, Award, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { useState } from "react";
 
 const ContactSection = () => {
+  const [isJoiningOpen, setIsJoiningOpen] = useState(true);
+
+  const joiningSteps = [
+    {
+      title: "Fill the admission form",
+      description: "Complete our online admission form with your details"
+    },
+    {
+      title: "Pay admission fee",
+      description: "One-time fee of ₹500 which includes welcome kit"
+    },
+    {
+      title: "Schedule your first class",
+      description: "Choose your preferred time slot and mode of learning"
+    },
+    {
+      title: "Begin your musical journey",
+      description: "Start learning with our structured curriculum"
+    }
+  ];
+
   return (
     <section id="join" className="py-16 bg-amber-50">
       <div className="container mx-auto px-4">
@@ -14,9 +41,46 @@ const ContactSection = () => {
           <div className="md:w-1/2">
             <div className="bg-white rounded-xl shadow-md p-8 h-full">
               <h3 className="text-xl font-bold text-maroon-800 mb-6">Get Started Today</h3>
-              <p className="text-gray-700 mb-6">
-                Ready to begin your musical journey with Vijith Violinist? Fill out our admission form or contact us directly through WhatsApp for faster response.
-              </p>
+              
+              {/* Joining Process */}
+              <Collapsible 
+                open={isJoiningOpen}
+                onOpenChange={setIsJoiningOpen}
+                className="mb-6"
+              >
+                <CollapsibleTrigger className="flex items-center w-full text-left font-medium text-maroon-800 mb-4">
+                  <span>How to Join</span>
+                  <ChevronRight className={`ml-auto h-5 w-5 transition-transform ${isJoiningOpen ? 'rotate-90' : ''}`} />
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="pl-4 border-l-2 border-amber-200 mb-6">
+                    {joiningSteps.map((step, index) => (
+                      <div key={index} className="mb-4">
+                        <div className="flex items-start">
+                          <div className="bg-amber-100 text-maroon-700 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 mr-2">
+                            {index + 1}
+                          </div>
+                          <div>
+                            <h4 className="font-medium text-maroon-800">{step.title}</h4>
+                            <p className="text-sm text-gray-600">{step.description}</p>
+                          </div>
+                        </div>
+                        {index < joiningSteps.length - 1 && (
+                          <div className="border-l-2 border-dashed border-amber-200 h-4 ml-3"></div>
+                        )}
+                      </div>
+                    ))}
+                    <div className="mt-4 flex items-start">
+                      <div className="text-amber-600 mr-2">
+                        <Award className="h-5 w-5" />
+                      </div>
+                      <p className="text-sm text-gray-700">
+                        Welcome kit includes course materials, practice sheets, and a personalized learning plan.
+                      </p>
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
               
               <div className="space-y-4">
                 <a 

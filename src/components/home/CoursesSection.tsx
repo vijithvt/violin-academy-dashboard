@@ -1,5 +1,5 @@
 
-import { Clock, Award } from "lucide-react";
+import { Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CourseAccordion from "./CourseAccordion";
 

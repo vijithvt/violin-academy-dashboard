@@ -61,7 +61,7 @@ const InstrumentSection = () => {
                 </div>
                 <div className="md:w-1/2 order-1 md:order-2">
                   <img 
-                    src="/lovable-uploads/0fe0e6d5-2dae-427c-a526-bdfa0ebd1cf1.png" 
+                    src="/lovable-uploads/ddbf5914-5683-4ad3-a520-ce04446ee41a.png" 
                     alt="How to Hold the Violin" 
                     className="rounded-lg shadow-md w-full h-auto"
                   />
@@ -105,7 +105,7 @@ const InstrumentSection = () => {
               </div>
               <div className="md:w-1/2">
                 <img 
-                  src="/lovable-uploads/ddbf5914-5683-4ad3-a520-ce04446ee41a.png" 
+                  src="/lovable-uploads/0fe0e6d5-2dae-427c-a526-bdfa0ebd1cf1.png" 
                   alt="DA Tuner" 
                   className="rounded-lg shadow-md w-full md:w-4/5 mx-auto h-auto"
                 />

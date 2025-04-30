@@ -16,20 +16,20 @@ const AboutSection = () => {
               About Vijith V T
             </h2>
             <p className="text-gray-700 mb-4">
-              I began learning Carnatic violin under my first Guru, Shri Divakaran. Then, I joined Tharangani School of Music — founded by Padma Bhushan Dr. K. J. Yesudas—where I trained under Shri Rajagopal Rajappa. His guidance had a lasting impact on my growth. Though I've had the privilege to learn from several Gurus, it was Rajagopal Sir who truly pushed me forward and encouraged me to begin teaching violin, starting at Tharangani itself. I later continued to learn advanced lessons from Vid. S. R. Mahadeva Sarma, whose playing incorporates the rich nuances of both the Parur M. S. Gopalakrishnan (MSG) style and the Lalgudi Bani tradition. His training further refined my playing style and deepened my understanding of the Carnatic tradition.
+              I began learning Carnatic violin under my first Guru, Shri Divakaran, followed by training at Tharangani School of Music under Shri Rajagopal Rajappa. Later, I studied advanced lessons with Vid. S. R. Mahadeva Sarma, whose playing incorporates styles from both the Parur M. S. Gopalakrishnan and Lalgudi Bani traditions.
             </p>
             
             <h3 className="text-xl font-serif font-bold text-maroon-800 mt-6 mb-3">As a Performer & Teacher:</h3>
             <ul className="list-disc pl-5 space-y-2 text-gray-700 mb-4">
               <li>Participated in around 50 stage performances, presenting Carnatic classical concerts and fusion violin programs.</li>
-              <li>Hold a Certificate in Carnatic Classical Violin (4-year course) from Tharangani School of Music (founded by Padma Bhushan Dr. K. J. Yesudas).</li>
-              <li>Since 2018, I have been teaching students from India, USA, Thailand, and Bangalore, catering to learners of all age groups.</li>
-              <li>Currently teaching at Jovens Academy (USA), MusicIntuit Academy (Bangalore), Laya Tarang Academy (Trivandrum), Bharathakala Society (Peyad), and more.</li>
+              <li>Hold a Certificate in Carnatic Classical Violin from Tharangani School of Music.</li>
+              <li>Teaching students from India, USA, Thailand, and Bangalore since 2018.</li>
+              <li>Currently teaching at multiple academies including Jovens Academy (USA) and MusicIntuit Academy (Bangalore).</li>
             </ul>
             
             <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3">Awards & Recognition:</h3>
             <ul className="list-disc pl-5 space-y-2 text-gray-700">
-              <li>Honored with the Best Classical Violin Teacher Award from MusicIntuit Academy, Bangalore.</li>
+              <li>Best Classical Violin Teacher Award from MusicIntuit Academy, Bangalore.</li>
               <li>Students have secured first prizes in District and School Kalolsavams.</li>
             </ul>
           </div>

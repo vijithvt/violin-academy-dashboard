@@ -13,7 +13,6 @@ import ContactSection from "@/components/home/ContactSection";
 import PaymentSection from "@/components/home/PaymentSection";
 import FooterSection from "@/components/home/FooterSection";
 import FloatingButtons from "@/components/home/FloatingButtons";
-import VideoSection from "@/components/home/VideoSection";
 
 const Home = () => {
   return (
@@ -25,7 +24,6 @@ const Home = () => {
       <RequirementsSection />
       <InstrumentSection />
       <LearningProcessSection />
-      <VideoSection />
       <RecognitionSection />
       <GuidelinesSection />
       <FAQSection />
