@@ -18,8 +18,8 @@ const AboutSection = () => {
             
             <div className="space-y-6">
               <div>
-                <h3 className="text-xl font-serif font-bold text-maroon-800 mb-2 flex items-center">
-                  <span className="mr-2">🎼</span> Early Training
+                <h3 className="text-xl font-serif font-bold text-maroon-800 mb-2">
+                  Early Training
                 </h3>
                 <p className="text-gray-700">
                   My journey with the Carnatic violin began under the guidance of Shri Divakaran. I later continued my learning at the Tharangani School of Music, founded by Padma Bhushan Dr. K. J. Yesudas, under Shri Rajagopal Rajappa, who encouraged me to begin teaching—marking the start of my lifelong passion for sharing music. My playing style was further refined through advanced training with Vid. S. R. Mahadeva Sarma (A-Top Grade Artist, AIR), blending the depth of the Parur M. S. Gopalakrishnan (MSG) style with the elegance of the Lalgudi Bani tradition.
@@ -28,8 +28,8 @@ const AboutSection = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3 flex items-center">
-                    <span className="mr-2">👨‍🏫</span> Performer & Teacher
+                  <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3">
+                    Performer & Teacher
                   </h3>
                   <ul className="list-disc pl-5 space-y-2 text-gray-700">
                     <li>Certified in Carnatic Classical Violin (4-year course) – Tharangani School of Music</li>
@@ -45,8 +45,8 @@ const AboutSection = () => {
                 </div>
                 
                 <div>
-                  <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3 flex items-center">
-                    <span className="mr-2">🏆</span> Awards & Recognition
+                  <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3">
+                    Awards & Recognition
                   </h3>
                   <ul className="list-disc pl-5 space-y-2 text-gray-700">
                     <li>Honoured with the Best Classical Violin Teacher Award by Music Intuit Academy, Bangalore</li>
@@ -56,8 +56,8 @@ const AboutSection = () => {
               </div>
               
               <div>
-                <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3 flex items-center">
-                  <span className="mr-2">🎯</span> Teaching Approach
+                <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3">
+                  Teaching Approach
                 </h3>
                 <ul className="list-disc pl-5 space-y-2 text-gray-700">
                   <li>Conduct monthly assessments in collaboration with partner music schools</li>
