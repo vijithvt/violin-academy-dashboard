@@ -4,7 +4,7 @@ import NavigationBar from "@/components/home/NavigationBar";
 import FooterSection from "@/components/home/FooterSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Clock, Tag } from "lucide-react";
+import { FileText, Clock, Tag, CheckCircle } from "lucide-react";
 
 const Blogs = () => {
   const blogCategories = [
@@ -17,40 +17,86 @@ const Blogs = () => {
   const blogPosts = [
     {
       id: 1,
-      title: "Perfecting Your Bow Grip",
-      excerpt: "Learn the proper techniques for holding the violin bow to produce the best sound quality.",
-      category: "techniques",
-      date: "April 28, 2025",
-      readTime: "5 min read",
-      tags: ["Beginners", "Technique", "Bow Control"]
-    },
-    {
-      id: 2,
-      title: "Understanding Carnatic Ragas",
-      excerpt: "A comprehensive guide to understanding the fundamental concepts of Carnatic ragas.",
-      category: "theory",
-      date: "April 21, 2025",
-      readTime: "8 min read",
-      tags: ["Intermediate", "Theory", "Ragas"]
-    },
-    {
-      id: 3,
-      title: "Daily Practice Routine for Beginners",
-      excerpt: "Establish an effective practice routine to build a strong foundation in violin playing.",
+      title: "Beginner's Daily Practice Routine (30 Minutes)",
+      excerpt: "Build strong foundations in Carnatic violin with this structured, easy-to-follow practice plan.",
       category: "practice-tips",
-      date: "April 15, 2025",
-      readTime: "6 min read",
-      tags: ["Beginners", "Practice", "Routine"]
-    },
-    {
-      id: 4,
-      title: "Fingering Techniques for Fast Passages",
-      excerpt: "Master advanced fingering techniques to play fast-paced musical passages with ease.",
-      category: "techniques",
-      date: "April 7, 2025",
-      readTime: "10 min read",
-      tags: ["Advanced", "Fingering", "Speed"]
-    },
+      date: "May 3, 2025",
+      readTime: "5 min read",
+      tags: ["Beginners", "Practice", "Routine"],
+      content: `
+        <div class="space-y-6">
+          <div class="flex items-center space-x-3">
+            <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm">⏱️ Duration: 30 Minutes</span>
+            <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm">Level: Beginner</span>
+          </div>
+          <p>Includes: Bowing, Varisais, and Simple Songs</p>
+          
+          <div class="bg-white p-6 rounded-lg shadow-sm border border-amber-100">
+            <h3 class="text-xl font-medium text-maroon-800 mb-3">1. Warm-up: Bowing & Posture</h3>
+            <p class="font-medium">Time: 5 Minutes</p>
+            <p class="mb-3">Open string bowing (Sa–Pa–Sa)</p>
+            <p class="font-medium mb-1">Focus on:</p>
+            <ul class="list-none space-y-1">
+              <li class="flex items-center"><span class="text-amber-600 mr-2">▸</span> Smooth, steady tone</li>
+              <li class="flex items-center"><span class="text-amber-600 mr-2">▸</span> Proper bow hold</li>
+              <li class="flex items-center"><span class="text-amber-600 mr-2">▸</span> Upright posture</li>
+            </ul>
+          </div>
+          
+          <div class="bg-white p-6 rounded-lg shadow-sm border border-amber-100">
+            <h3 class="text-xl font-medium text-maroon-800 mb-3">2. Varisa Practice</h3>
+            <p class="font-medium">Time: 15 Minutes</p>
+            <p class="mb-3">Practice each varisai slowly with sruti alignment.</p>
+            <p class="font-medium mb-1">Breakdown:</p>
+            <ul class="list-none space-y-3">
+              <li class="ml-4">Sarali Varisai – 5 min</li>
+              <li class="ml-4">Janta Varisai – 5 min</li>
+              <li class="ml-4">Madhyasthayi & Melstayi Varisai – 5 min</li>
+            </ul>
+            <p class="mt-3 flex items-center">
+              <span class="text-amber-600 mr-2">🎧</span> Use a metronome or app for keeping perfect rhythm.
+            </p>
+          </div>
+          
+          <div class="bg-white p-6 rounded-lg shadow-sm border border-amber-100">
+            <h3 class="text-xl font-medium text-maroon-800 mb-3">3. Simple Songs</h3>
+            <p class="font-medium">Time: 10 Minutes</p>
+            <p class="mb-3">Practice one or two from the list below daily:</p>
+            <ul class="list-none space-y-1 mb-4">
+              <li class="ml-4">Shyamale Meenakshi (Sriranjani)</li>
+              <li class="ml-4">Shakti Sahitha Ganapathim (Naatai)</li>
+              <li class="ml-4">National Anthem (Jana Gana Mana)</li>
+            </ul>
+            <p class="font-medium mb-1">Focus:</p>
+            <ul class="list-none space-y-1">
+              <li class="flex items-center"><span class="text-amber-600 mr-2">▸</span> Clear swaras</li>
+              <li class="flex items-center"><span class="text-amber-600 mr-2">▸</span> Bow control</li>
+              <li class="flex items-center"><span class="text-amber-600 mr-2">▸</span> Emotional expression</li>
+            </ul>
+          </div>
+          
+          <div class="bg-amber-50 p-6 rounded-lg shadow-sm border border-amber-200">
+            <h3 class="text-xl font-medium text-maroon-800 mb-3 flex items-center">
+              <span class="mr-2">📝</span> Tips for Success
+            </h3>
+            <ul class="list-none space-y-3">
+              <li class="flex items-start">
+                <CheckCircle class="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                <span>Record your practice weekly and upload via the student dashboard</span>
+              </li>
+              <li class="flex items-start">
+                <CheckCircle class="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                <span>Stay consistent – even short daily practice builds long-term skill</span>
+              </li>
+              <li class="flex items-start">
+                <CheckCircle class="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                <span>Track your daily goals using your Practice Journal</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      `
+    }
   ];
 
   return (
@@ -77,39 +123,38 @@ const Blogs = () => {
             
             {blogCategories.map((category) => (
               <TabsContent key={category.id} value={category.id}>
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-12">
                   {blogPosts
                     .filter(post => category.id === "all" || post.category === category.id)
                     .map((post) => (
-                      <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-xl text-maroon-800 hover:text-maroon-600 transition-colors">
-                            <a href={`#blog/${post.id}`}>{post.title}</a>
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="pb-2">
-                          <CardDescription className="text-gray-600">
+                      <div key={post.id} className="bg-white rounded-xl shadow-md overflow-hidden">
+                        <div className="p-6">
+                          <h2 className="text-2xl font-serif font-bold text-maroon-800 mb-3">
+                            {post.title}
+                          </h2>
+                          <div className="flex flex-wrap items-center text-xs text-gray-500 gap-4 mb-4">
+                            <div className="flex items-center">
+                              <Clock className="h-3 w-3 mr-1" />
+                              {post.readTime}
+                            </div>
+                            <div className="flex items-center">
+                              <FileText className="h-3 w-3 mr-1" />
+                              {post.date}
+                            </div>
+                            <div className="flex flex-wrap gap-1">
+                              {post.tags.map((tag, i) => (
+                                <span key={i} className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full text-xs">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          <p className="text-gray-600 mb-6">
                             {post.excerpt}
-                          </CardDescription>
-                        </CardContent>
-                        <CardFooter className="pt-2 border-t border-gray-100 flex flex-wrap items-center text-xs text-gray-500 gap-3">
-                          <div className="flex items-center">
-                            <Clock className="h-3 w-3 mr-1" />
-                            {post.readTime}
-                          </div>
-                          <div className="flex items-center">
-                            <FileText className="h-3 w-3 mr-1" />
-                            {post.date}
-                          </div>
-                          <div className="flex flex-wrap gap-1 mt-1 w-full">
-                            {post.tags.map((tag, i) => (
-                              <span key={i} className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full text-xs">
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                        </CardFooter>
-                      </Card>
+                          </p>
+                          <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                        </div>
+                      </div>
                     ))}
                 </div>
               </TabsContent>

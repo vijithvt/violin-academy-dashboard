@@ -36,9 +36,10 @@ const AboutSection = () => {
                     <li>Teaching students from India, USA, Thailand, and Bangalore since 2018</li>
                     <li>Faculty and collaborator at:</li>
                     <ul className="list-disc pl-5 space-y-2 text-gray-700 mt-2">
-                      <li>Music Intuit Academy, Bangalore</li>
+                      <li>Jovens Academy, USA</li>
                       <li>Laya Tarang Academy, Trivandrum</li>
                       <li>Bharathakala Dance & Music Cultural Society, Trivandrum</li>
+                      <li>Music Intuit Academy, Bangalore</li>
                     </ul>
                   </ul>
                 </div>
