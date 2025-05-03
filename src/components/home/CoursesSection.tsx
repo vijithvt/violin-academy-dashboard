@@ -1,4 +1,3 @@
-
 import { Clock, Award, Calendar, Globe, HomeIcon, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CourseAccordion from "./CourseAccordion";
@@ -128,7 +127,7 @@ const CoursesSection = () => {
             <div className="flex items-start">
               <Award className="h-5 w-5 text-amber-600 mr-2 mt-1" />
               <p className="text-gray-700 text-sm">
-                <strong>Welcome Kit includes:</strong> Practice notebook, finger placement guide, course materials, and a certificate of enrollment
+                <strong>Welcome Kit includes:</strong> Practice notebook, finger placement guide, course materials
               </p>
             </div>
           </div>
