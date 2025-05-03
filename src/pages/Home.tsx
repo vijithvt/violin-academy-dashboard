@@ -4,7 +4,6 @@ import HeroSection from "@/components/home/HeroSection";
 import AboutSection from "@/components/home/AboutSection";
 import CoursesSection from "@/components/home/CoursesSection";
 import RequirementsSection from "@/components/home/RequirementsSection";
-import InstrumentSection from "@/components/home/InstrumentSection";
 import RecognitionSection from "@/components/home/RecognitionSection";
 import GuidelinesSection from "@/components/home/GuidelinesSection";
 import FAQSection from "@/components/home/FAQSection";
@@ -21,7 +20,6 @@ const Home = () => {
       <AboutSection />
       <CoursesSection />
       <RequirementsSection />
-      <InstrumentSection />
       <RecognitionSection />
       <GuidelinesSection />
       <FAQSection />

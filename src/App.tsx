@@ -15,6 +15,7 @@ import NotFound from "./pages/NotFound";
 import StudentDetails from "./pages/StudentDetails";
 import EditStudent from "./pages/EditStudent";
 import Home from "./pages/Home";
+import Blogs from "./pages/Blogs";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
             
             {/* Public routes */}
             <Route path="/admin-login" element={<AdminLogin />} />
+            <Route path="/blogs" element={<Blogs />} />
             
             {/* Protected routes */}
             <Route element={<ProtectedRoute />}>
