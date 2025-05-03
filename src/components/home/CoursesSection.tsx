@@ -1,3 +1,4 @@
+
 import { Clock, Award, Calendar, Globe, HomeIcon, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CourseAccordion from "./CourseAccordion";
@@ -51,12 +52,6 @@ const CoursesSection = () => {
       icon: <Globe className="w-12 h-12 text-amber-600" />,
       fee: "₹2000 per month",
       time: "4 classes per month",
-      highlights: [
-        "Per class fee: ₹300",
-        "Yearly payment: 16% discount",
-        "Admission fee: ₹500 (one-time)",
-        "Includes welcome kit"
-      ]
     },
     {
       title: "Online Group Class",
@@ -83,6 +78,27 @@ const CoursesSection = () => {
         <p className="text-center text-gray-600 mb-10 max-w-3xl mx-auto">
           Our courses are designed to encourage lifelong learners of all age groups, develop a strong foundation in Carnatic violin techniques, and foster improvisation and performance skills.
         </p>
+        
+        {/* Common Fee Details */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-10 max-w-3xl mx-auto">
+          <h3 className="text-xl font-serif font-bold text-maroon-800 mb-4 text-center">
+            Common Fee Details
+          </h3>
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-700">
+            <li className="flex items-center">
+              <span className="text-green-500 mr-2">✓</span> Per class fee: ₹300
+            </li>
+            <li className="flex items-center">
+              <span className="text-green-500 mr-2">✓</span> Yearly payment: 16% discount
+            </li>
+            <li className="flex items-center">
+              <span className="text-green-500 mr-2">✓</span> Admission fee: ₹500 (one-time)
+            </li>
+            <li className="flex items-center">
+              <span className="text-green-500 mr-2">✓</span> Includes welcome kit (Practice notebook, finger placement guide, course materials)
+            </li>
+          </ul>
+        </div>
         
         {/* Course Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">

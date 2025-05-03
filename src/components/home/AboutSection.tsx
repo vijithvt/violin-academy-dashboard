@@ -18,39 +18,51 @@ const AboutSection = () => {
             
             <div className="space-y-6">
               <div>
-                <h3 className="text-xl font-serif font-bold text-maroon-800 mb-2">Early Training</h3>
+                <h3 className="text-xl font-serif font-bold text-maroon-800 mb-2 flex items-center">
+                  <span className="mr-2">🎼</span> Early Training
+                </h3>
                 <p className="text-gray-700">
-                  I began learning Carnatic violin under my first Guru, Shri Divakaran, and later trained at the Tharangani School of Music, founded by Padma Bhushan Dr. K. J. Yesudas. Under the guidance of Shri Rajagopal Rajappa, I was encouraged to start teaching, marking the beginning of my teaching journey. Further refinement of my style came through advanced lessons with Vid. S. R. Mahadeva Sarma, blending the rich nuances of the Parur M. S. Gopalakrishnan (MSG) style and Lalgudi Bani tradition.
+                  My journey with the Carnatic violin began under the guidance of Shri Divakaran. I later continued my learning at the Tharangani School of Music, founded by Padma Bhushan Dr. K. J. Yesudas, under Shri Rajagopal Rajappa, who encouraged me to begin teaching—marking the start of my lifelong passion for sharing music. My playing style was further refined through advanced training with Vid. S. R. Mahadeva Sarma (A-Top Grade Artist, AIR), blending the depth of the Parur M. S. Gopalakrishnan (MSG) style with the elegance of the Lalgudi Bani tradition.
                 </p>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3">As a Performer & Teacher</h3>
+                  <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3 flex items-center">
+                    <span className="mr-2">👨‍🏫</span> Performer & Teacher
+                  </h3>
                   <ul className="list-disc pl-5 space-y-2 text-gray-700">
-                    <li>Over 50 stage performances showcasing Carnatic classical concerts and fusion violin programs</li>
-                    <li>Certificate in Carnatic Classical Violin (4-year course) from Tharangani School of Music</li>
+                    <li>Certified in Carnatic Classical Violin (4-year course) – Tharangani School of Music</li>
                     <li>Teaching students from India, USA, Thailand, and Bangalore since 2018</li>
-                    <li>Teaching at institutions like MusicIntuit Academy, Laya Tarang Academy, and Bharathakala Dance & Music Cultural Society</li>
+                    <li>Faculty and collaborator at:</li>
+                    <ul className="list-disc pl-5 space-y-2 text-gray-700 mt-2">
+                      <li>Music Intuit Academy, Bangalore</li>
+                      <li>Laya Tarang Academy, Trivandrum</li>
+                      <li>Bharathakala Dance & Music Cultural Society, Trivandrum</li>
+                    </ul>
                   </ul>
                 </div>
                 
                 <div>
-                  <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3">Awards & Recognition</h3>
+                  <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3 flex items-center">
+                    <span className="mr-2">🏆</span> Awards & Recognition
+                  </h3>
                   <ul className="list-disc pl-5 space-y-2 text-gray-700">
-                    <li>Best Classical Violin Teacher Award from MusicIntuit Academy, Bangalore</li>
-                    <li>Students have won first prizes in District and School Kalolsavams</li>
+                    <li>Honoured with the Best Classical Violin Teacher Award by Music Intuit Academy, Bangalore</li>
+                    <li>Students have achieved top positions in District and School Kalolsavams</li>
                   </ul>
                 </div>
               </div>
               
               <div>
-                <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3">My Teaching Approach</h3>
+                <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3 flex items-center">
+                  <span className="mr-2">🎯</span> Teaching Approach
+                </h3>
                 <ul className="list-disc pl-5 space-y-2 text-gray-700">
-                  <li>Conduct monthly student assessments in collaboration with various music schools</li>
-                  <li>Developed a structured syllabus with progressive levels, based on university-level syllabi</li>
-                  <li>Created a student dashboard to track progress, attendance, and upload weekly practice sessions</li>
-                  <li>Learning Blog covering basics like violin tuning, shruti, tala practice, and more</li>
+                  <li>Conduct monthly assessments in collaboration with partner music schools</li>
+                  <li>Designed a structured curriculum aligned with university-level syllabi</li>
+                  <li>Developed a student dashboard to track attendance, progress, and weekly practice uploads</li>
+                  <li>Maintain an educational learning blog covering essential topics like violin tuning, shruti alignment, tala practice, and more</li>
                 </ul>
               </div>
             </div>
