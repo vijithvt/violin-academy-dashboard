@@ -2,15 +2,13 @@
 import React from "react";
 import NavigationBar from "@/components/home/NavigationBar";
 import FooterSection from "@/components/home/FooterSection";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Clock, Tag, CheckCircle } from "lucide-react";
 
 const Blogs = () => {
   const blogCategories = [
-    { id: "all", name: "All Posts" },
-    { id: "techniques", name: "Techniques" },
     { id: "practice-tips", name: "Practice Tips" },
+    { id: "techniques", name: "Techniques" },
     { id: "theory", name: "Music Theory" },
   ];
 
@@ -25,8 +23,8 @@ const Blogs = () => {
       tags: ["Beginners", "Practice", "Routine"],
       content: `
         <div class="space-y-6">
-          <div class="flex items-center space-x-3">
-            <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm">⏱️ Duration: 30 Minutes</span>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm">Duration: 30 Minutes</span>
             <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm">Level: Beginner</span>
           </div>
           <p>Includes: Bowing, Varisais, and Simple Songs</p>
@@ -77,20 +75,20 @@ const Blogs = () => {
           
           <div class="bg-amber-50 p-6 rounded-lg shadow-sm border border-amber-200">
             <h3 class="text-xl font-medium text-maroon-800 mb-3 flex items-center">
-              <span class="mr-2">📝</span> Tips for Success
+              <span class="mr-2">Tips for Success</span>
             </h3>
             <ul class="list-none space-y-3">
               <li class="flex items-start">
                 <CheckCircle class="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                <span>Record your practice weekly and upload via the student dashboard</span>
+                <span class="text-gray-800">Record your practice weekly and upload via the student dashboard</span>
               </li>
               <li class="flex items-start">
                 <CheckCircle class="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                <span>Stay consistent – even short daily practice builds long-term skill</span>
+                <span class="text-gray-800">Stay consistent – even short daily practice builds long-term skill</span>
               </li>
               <li class="flex items-start">
                 <CheckCircle class="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                <span>Track your daily goals using your Practice Journal</span>
+                <span class="text-gray-800">Track your daily goals using your Practice Journal</span>
               </li>
             </ul>
           </div>
@@ -103,63 +101,59 @@ const Blogs = () => {
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
       <NavigationBar />
       
-      <section className="py-16 bg-amber-50">
+      <section className="py-16">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl font-serif font-bold text-maroon-900 mb-6 text-center">
             Learning Resources & Blogs
           </h1>
           <p className="text-center text-gray-600 max-w-3xl mx-auto mb-10">
-            Explore our collection of articles, tips, and techniques to enhance your violin learning experience. These resources are designed for students at all levels.
+            Explore our collection of articles, tips, and techniques to enhance your violin learning experience.
           </p>
 
-          <Tabs defaultValue="all" className="max-w-4xl mx-auto">
-            <TabsList className="mb-8 grid grid-cols-2 md:grid-cols-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="mb-8 flex flex-wrap gap-2 justify-center">
               {blogCategories.map((category) => (
-                <TabsTrigger key={category.id} value={category.id} className="text-sm">
+                <span key={category.id} className="bg-white text-maroon-800 px-4 py-2 rounded-full text-sm shadow-sm border border-amber-100">
                   {category.name}
-                </TabsTrigger>
+                </span>
               ))}
-            </TabsList>
+            </div>
             
-            {blogCategories.map((category) => (
-              <TabsContent key={category.id} value={category.id}>
-                <div className="space-y-12">
-                  {blogPosts
-                    .filter(post => category.id === "all" || post.category === category.id)
-                    .map((post) => (
-                      <div key={post.id} className="bg-white rounded-xl shadow-md overflow-hidden">
-                        <div className="p-6">
-                          <h2 className="text-2xl font-serif font-bold text-maroon-800 mb-3">
-                            {post.title}
-                          </h2>
-                          <div className="flex flex-wrap items-center text-xs text-gray-500 gap-4 mb-4">
-                            <div className="flex items-center">
-                              <Clock className="h-3 w-3 mr-1" />
-                              {post.readTime}
-                            </div>
-                            <div className="flex items-center">
-                              <FileText className="h-3 w-3 mr-1" />
-                              {post.date}
-                            </div>
-                            <div className="flex flex-wrap gap-1">
-                              {post.tags.map((tag, i) => (
-                                <span key={i} className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full text-xs">
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                          <p className="text-gray-600 mb-6">
-                            {post.excerpt}
-                          </p>
-                          <div dangerouslySetInnerHTML={{ __html: post.content }} />
-                        </div>
+            <div className="space-y-12">
+              {blogPosts.map((post) => (
+                <Card key={post.id} className="overflow-hidden shadow-md border-amber-100">
+                  <CardHeader className="bg-gradient-to-r from-maroon-800 to-amber-800 text-white">
+                    <CardTitle className="text-2xl font-serif">
+                      {post.title}
+                    </CardTitle>
+                    <div className="flex flex-wrap items-center text-xs gap-4 mt-2 text-amber-100">
+                      <div className="flex items-center">
+                        <Clock className="h-3 w-3 mr-1" />
+                        {post.readTime}
                       </div>
-                    ))}
-                </div>
-              </TabsContent>
-            ))}
-          </Tabs>
+                      <div className="flex items-center">
+                        <FileText className="h-3 w-3 mr-1" />
+                        {post.date}
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {post.tags.map((tag, i) => (
+                          <span key={i} className="bg-white/20 text-white px-2 py-0.5 rounded-full text-xs">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <p className="text-gray-600 mb-6">
+                      {post.excerpt}
+                    </p>
+                    <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
       

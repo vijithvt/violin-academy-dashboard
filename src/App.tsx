@@ -5,7 +5,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
+import { SupabaseProvider } from "@/context/SupabaseContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import StudentProtectedRoute from "@/components/StudentProtectedRoute";
 
 // Pages
 import AdminLogin from "./pages/AdminLogin";
@@ -16,37 +18,47 @@ import StudentDetails from "./pages/StudentDetails";
 import EditStudent from "./pages/EditStudent";
 import Home from "./pages/Home";
 import Blogs from "./pages/Blogs";
+import Login from "./pages/Login";
+import BeginnerGuide from "./pages/BeginnerGuide";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {/* Home page is now the root route */}
-            <Route path="/" element={<Home />} />
-            
-            {/* Public routes */}
-            <Route path="/admin-login" element={<AdminLogin />} />
-            <Route path="/blogs" element={<Blogs />} />
-            
-            {/* Protected routes */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/admission" element={<AdmissionForm />} />
-              <Route path="/student/:id" element={<StudentDetails />} />
-              <Route path="/edit-student/:id" element={<EditStudent />} />
-            </Route>
-            
-            {/* 404 route */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <SupabaseProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              {/* Home page is now the root route */}
+              <Route path="/" element={<Home />} />
+              
+              {/* Public routes */}
+              <Route path="/admin-login" element={<AdminLogin />} />
+              <Route path="/blogs" element={<Blogs />} />
+              <Route path="/login" element={<Login />} />
+              
+              {/* Protected routes for admin */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/admission" element={<AdmissionForm />} />
+                <Route path="/student/:id" element={<StudentDetails />} />
+                <Route path="/edit-student/:id" element={<EditStudent />} />
+              </Route>
+              
+              {/* Protected routes for students */}
+              <Route element={<StudentProtectedRoute />}>
+                <Route path="/beginner-guide" element={<BeginnerGuide />} />
+              </Route>
+              
+              {/* 404 route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </SupabaseProvider>
     </AuthProvider>
   </QueryClientProvider>
 );

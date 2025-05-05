@@ -1,13 +1,7 @@
 
-import { CheckCircle, ShoppingCart, HelpCircle, AlertCircle } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckCircle, HelpCircle, AlertCircle } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
 
 const RequirementsSection = () => {
   const { toast } = useToast();
@@ -15,117 +9,106 @@ const RequirementsSection = () => {
   const requirements = [
     {
       name: "Violin",
-      description: "The main instrument for learning Carnatic music"
+      description: "Main instrument"
     },
     {
       name: "Bow",
-      description: "Essential for producing sound on your violin"
+      description: "For sound production"
     },
     {
       name: "Rosin",
-      description: "Helps the bow grip the strings properly"
+      description: "Helps bow grip strings"
     },
     {
-      name: "Metronome / Tala Meter",
-      description: "Helps maintain rhythm and tempo"
+      name: "Metronome",
+      description: "For rhythm practice"
     },
     {
-      name: "Tambura / Tambura App",
-      description: "Provides the drone sound for pitch reference"
+      name: "Tambura App",
+      description: "For pitch reference"
     },
     {
-      name: "Mirror, Notebook, Recorder",
-      description: "For self-assessment and note-taking"
+      name: "Practice Journal",
+      description: "To track progress"
     }
   ];
 
-  const handleJoinNow = () => {
-    toast({
-      title: "Join Now",
-      description: "Thank you for your interest! Please fill out the admission form or contact us via WhatsApp.",
-      duration: 5000,
-    });
-  };
-
   return (
-    <section id="requirements" className="py-16 bg-amber-50">
+    <section id="requirements" className="py-16 bg-gradient-to-r from-amber-50 to-white">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-serif font-bold text-maroon-900 mb-10 text-center">
           What You Need to Start
         </h2>
         
         <div className="max-w-6xl mx-auto mb-12">
-          <Tabs defaultValue="requirements" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger value="requirements" className="text-lg py-3">Basic Requirements</TabsTrigger>
-              <TabsTrigger value="purchase" className="text-lg py-3">Violin Purchase Guide</TabsTrigger>
-            </TabsList>
-            <TabsContent value="requirements" className="p-4 bg-white rounded-xl shadow-md">
-              <h3 className="text-xl font-bold text-maroon-800 mb-6">Essential Materials</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Basic Requirements */}
+            <div className="bg-white p-6 rounded-xl shadow-md border border-amber-100">
+              <h3 className="text-xl font-bold text-maroon-800 mb-6 flex items-center">
+                <span className="w-8 h-8 bg-maroon-800 text-white rounded-full flex items-center justify-center mr-3">1</span>
+                Essential Materials
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {requirements.map((item, index) => (
-                  <div key={index} className="bg-amber-50 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center">
-                    <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-4">
-                      <span className="text-maroon-700 text-xl font-semibold">{index + 1}</span>
+                  <div key={index} className="bg-amber-50 p-4 rounded-lg shadow-sm flex flex-col items-center text-center">
+                    <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mb-3">
+                      <span className="text-maroon-700 font-semibold">{index + 1}</span>
                     </div>
-                    <h4 className="font-semibold text-maroon-800 mb-1 text-lg">{item.name}</h4>
-                    <p className="text-gray-600">{item.description}</p>
+                    <h4 className="font-medium text-maroon-800 mb-1">{item.name}</h4>
+                    <p className="text-sm text-gray-600">{item.description}</p>
                   </div>
                 ))}
               </div>
-            </TabsContent>
-            <TabsContent value="purchase" className="p-4 bg-white rounded-xl shadow-md">
-              <h3 className="text-xl font-bold text-maroon-800 mb-6">Violin Purchase Guide</h3>
-              <div className="space-y-6">
-                <div className="bg-amber-50 p-6 rounded-lg">
-                  <h4 className="font-semibold text-lg flex items-center mb-2">
-                    <AlertCircle className="h-5 w-5 mr-2 text-amber-600" /> Where to Buy
-                  </h4>
-                  <p className="text-gray-700">
-                    Whichever part of the world you live in, it's best to go to a nearby music store to
-                    buy a violin in preference to buying it online on Amazon. This is because it's
-                    important to get the setup of the violin checked (tuning pegs, string adjusters,
-                    nut and bridge height) before you purchase and take the seller's suggestion on
-                    the best entry level model.
-                  </p>
-                </div>
+            </div>
+            
+            {/* Violin Purchase Guide */}
+            <div className="bg-white p-6 rounded-xl shadow-md border border-amber-100">
+              <h3 className="text-xl font-bold text-maroon-800 mb-6 flex items-center">
+                <span className="w-8 h-8 bg-maroon-800 text-white rounded-full flex items-center justify-center mr-3">2</span>
+                Violin Purchase Guide
+              </h3>
+              
+              <div className="space-y-4">
+                <Card className="border-amber-100">
+                  <CardContent className="p-4">
+                    <h4 className="font-medium flex items-center text-maroon-800 mb-2">
+                      <AlertCircle className="h-4 w-4 mr-2 text-amber-600" /> Where to Buy
+                    </h4>
+                    <p className="text-sm text-gray-700">
+                      Visit a local music store instead of buying online to check the violin setup (tuning pegs, 
+                      string adjusters, bridge height) before purchase.
+                    </p>
+                  </CardContent>
+                </Card>
                 
-                <div className="bg-amber-50 p-6 rounded-lg">
-                  <h4 className="font-semibold text-lg flex items-center mb-2">
-                    <AlertCircle className="h-5 w-5 mr-2 text-amber-600" /> Recommended Models
-                  </h4>
-                  <p className="text-gray-700 mb-3">
-                    If you are over 11 years of age you can get a full size 4/4 violin. The entry level models 
-                    (preferably Chinese or Korean made violins) in India cost around Rs 6000/7000. You can buy 
-                    these to begin with. Anything below this might not be of good quality and we will not recommend this.
-                  </p>
-                  <p className="text-gray-700">
-                    <a 
-                      href="http://www.fiddleheads.ca/shop/violin-sizes-viola-and-violin-size-chart.htm" 
-                      target="_blank" 
-                      rel="noreferrer"
-                      className="text-blue-600 hover:text-blue-800 underline"
-                    >
-                      Details on violin sizes for younger students
-                    </a>
-                  </p>
-                </div>
+                <Card className="border-amber-100">
+                  <CardContent className="p-4">
+                    <h4 className="font-medium flex items-center text-maroon-800 mb-2">
+                      <AlertCircle className="h-4 w-4 mr-2 text-amber-600" /> Recommended Models
+                    </h4>
+                    <p className="text-sm text-gray-700">
+                      For age 11+, choose a full size (4/4) violin. Entry-level Chinese/Korean violins 
+                      (₹6000-7000) are adequate for beginners.
+                    </p>
+                  </CardContent>
+                </Card>
                 
-                <div className="bg-amber-50 p-6 rounded-lg">
-                  <h4 className="font-semibold text-lg flex items-center mb-2">
-                    <HelpCircle className="h-5 w-5 mr-2 text-amber-600" /> Questions to Ask When Buying
-                  </h4>
-                  <ul className="list-disc pl-5 space-y-2 text-gray-700">
-                    <li>Are all the string heights according to norms?</li>
-                    <li>Are all the strings spaced uniformly on bridge and nut?</li>
-                    <li>Are the tuning pegs and string adjusters smooth enough to use?</li>
-                    <li>Does a bow rosin come along with the violin? (If not, buy a separate one)</li>
-                    <li>Always keep an extra set of beginner strings with you in case strings snap during playing.</li>
-                  </ul>
-                </div>
+                <Card className="border-amber-100">
+                  <CardContent className="p-4">
+                    <h4 className="font-medium flex items-center text-maroon-800 mb-2">
+                      <HelpCircle className="h-4 w-4 mr-2 text-amber-600" /> Before Buying, Check
+                    </h4>
+                    <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
+                      <li>String heights and spacing</li>
+                      <li>Smooth tuning pegs and adjusters</li>
+                      <li>Included rosin and accessories</li>
+                      <li>Extra beginner strings</li>
+                    </ul>
+                  </CardContent>
+                </Card>
               </div>
-            </TabsContent>
-          </Tabs>
+            </div>
+          </div>
         </div>
       </div>
     </section>
