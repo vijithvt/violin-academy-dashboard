@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 // Form schema
 const loginSchema = z.object({
@@ -39,6 +40,7 @@ const AdminLogin = () => {
   const [error, setError] = useState<string | null>(null);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   // Form initialization
   const form = useForm<LoginFormValues>({
@@ -55,10 +57,24 @@ const AdminLogin = () => {
     setError(null);
 
     try {
-      await login(values.email, values.password);
-      navigate("/dashboard");
+      const { error: loginError } = await login(values.email, values.password);
+      
+      if (loginError) {
+        setError("Invalid email or password. Please try again.");
+        toast({
+          title: "Login failed",
+          description: loginError.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Login successful",
+          description: "Welcome to admin dashboard!",
+        });
+        navigate("/dashboard");
+      }
     } catch (err) {
-      setError("Invalid email or password. Please try again.");
+      setError("An unexpected error occurred. Please try again.");
       console.error("Login error:", err);
     } finally {
       setIsLoading(false);

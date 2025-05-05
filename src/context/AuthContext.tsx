@@ -1,18 +1,13 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { 
-  onAuthStateChanged, 
-  signInWithEmailAndPassword, 
-  signOut, 
-  User 
-} from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { User } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
 
 // Define the context type
 interface AuthContextType {
   currentUser: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<{ error: any }>;
   logout: () => Promise<void>;
 }
 
@@ -37,32 +32,38 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Handle user login
+  // Handle user login - now using Supabase
   const login = async (email: string, password: string) => {
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (error) {
-      throw error;
-    }
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    return { error };
   };
 
-  // Handle user logout
+  // Handle user logout - now using Supabase
   const logout = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      throw error;
-    }
+    await supabase.auth.signOut();
   };
 
   // Listen for auth state changes
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    // Check active session and set the user
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
       setCurrentUser(user);
       setLoading(false);
-    });
+    };
 
-    return unsubscribe;
+    getUser();
+
+    // Listen for changes on auth state
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setCurrentUser(session?.user ?? null);
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const value = {
