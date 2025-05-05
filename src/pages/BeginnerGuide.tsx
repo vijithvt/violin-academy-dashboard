@@ -56,15 +56,20 @@ const BeginnerGuide = () => {
               <CardTitle className="text-xl font-serif">1. Introduction to Violin</CardTitle>
             </CardHeader>
             <CardContent className="pt-4">
-              <p className="text-gray-700 mb-3">
-                The violin is a bowed string instrument from Italy (~500 years old).
-              </p>
-              <p className="text-gray-700 mb-3">
-                It has four strings: G, D, A, E – made of spruce and maple wood.
-              </p>
-              <p className="text-gray-700">
-                Indian classical violin is played sitting cross-legged.
-              </p>
+              <ul className="space-y-3 text-gray-700">
+                <li className="flex items-start">
+                  <span className="mr-2">🎵</span>
+                  <span>It makes music when you pull a bow across the strings.</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">🪵</span>
+                  <span>It is made of special wood like spruce and maple.</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">🎻</span>
+                  <span>You play it sitting cross-legged in Indian music.</span>
+                </li>
+              </ul>
             </CardContent>
           </Card>
           
@@ -74,17 +79,33 @@ const BeginnerGuide = () => {
             </CardHeader>
             <CardContent className="pt-4">
               <div className="flex justify-center mb-4">
-                {/* Placeholder for violin diagram */}
-                <div className="w-48 h-48 bg-gray-200 flex items-center justify-center rounded-lg">
-                  <Music className="h-12 w-12 text-gray-400" />
-                </div>
+                <img 
+                  src="/lovable-uploads/0619c26f-3b88-4555-96d5-9006a2bc8dd7.png" 
+                  alt="Violin and bow diagram" 
+                  className="rounded-lg max-h-72 object-contain"
+                />
               </div>
-              <p className="text-gray-700 mb-3">
-                <strong>Parts:</strong> Scroll, tuning pegs, fingerboard, bridge, tailpiece, fine tuners
+              <p className="text-gray-700 mb-3 font-medium">
+                Look at your violin closely! It has:
               </p>
-              <p className="text-gray-700">
-                <strong>Bow:</strong> Made of horsehair and pernambuco/carbon fibre
-              </p>
+              <ul className="space-y-2 text-gray-700">
+                <li className="flex items-start">
+                  <span className="mr-2">🎚️</span>
+                  <span>Pegs (to tighten the strings)</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">🎯</span>
+                  <span>Fingerboard (where you press)</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">🎼</span>
+                  <span>Strings (to make notes)</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">🐴</span>
+                  <span>Bow (made of horsehair – very soft!)</span>
+                </li>
+              </ul>
             </CardContent>
           </Card>
         </div>
@@ -102,10 +123,11 @@ const BeginnerGuide = () => {
                 <li>Balance violin between collarbone and shoulder.</li>
               </ul>
               <div className="flex justify-center mt-4">
-                {/* Placeholder for holding position image */}
-                <div className="w-48 h-48 bg-gray-200 flex items-center justify-center rounded-lg">
-                  <Music className="h-12 w-12 text-gray-400" />
-                </div>
+                <img 
+                  src="/lovable-uploads/64ab8fd2-ed27-4e9b-b0db-65a08587711f.png" 
+                  alt="How to hold the violin" 
+                  className="rounded-lg max-h-72 object-contain"
+                />
               </div>
             </CardContent>
           </Card>
@@ -121,16 +143,17 @@ const BeginnerGuide = () => {
                 <li>Grip neither too loose nor too tight.</li>
               </ul>
               <div className="flex justify-center mt-4">
-                {/* Placeholder for bow hold image */}
-                <div className="w-48 h-48 bg-gray-200 flex items-center justify-center rounded-lg">
-                  <Music className="h-12 w-12 text-gray-400" />
-                </div>
+                <img 
+                  src="/lovable-uploads/d360aa7e-fe19-4f1d-9835-3b7e14e7b9ff.png" 
+                  alt="How to hold the bow" 
+                  className="rounded-lg max-h-72 object-contain"
+                />
               </div>
             </CardContent>
           </Card>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <Card className="border-amber-100 shadow-md">
             <CardHeader className="bg-gradient-to-r from-maroon-800 to-amber-800 text-white">
               <CardTitle className="text-xl font-serif">5. How to Tune the Violin</CardTitle>
@@ -165,75 +188,37 @@ const BeginnerGuide = () => {
             </CardContent>
           </Card>
           
-          <div className="grid grid-cols-1 gap-8">
-            <Card className="border-amber-100 shadow-md">
-              <CardHeader className="bg-gradient-to-r from-maroon-800 to-amber-800 text-white">
-                <CardTitle className="text-xl font-serif">6. Violin Tuning Apps</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-4">
-                <ul className="list-disc pl-5 space-y-2 text-gray-700">
-                  <li>
-                    <strong>Soundcorset</strong> – Android/iOS{" "}
-                    <a 
-                      href="https://play.google.com/store/apps/details?id=com.soundcorset.client.android" 
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                    >
-                      Download Link
-                    </a>
-                  </li>
-                  <li>
-                    <strong>Da Tuner</strong> – Android{" "}
-                    <a 
-                      href="https://play.google.com/store/search?q=da%20tuner" 
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                    >
-                      Download Link
-                    </a>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
-            
-            <Card className="border-amber-100 shadow-md">
-              <CardHeader className="bg-gradient-to-r from-maroon-800 to-amber-800 text-white">
-                <CardTitle className="text-xl font-serif">7. Daily Practice Routine</CardTitle>
-                <CardDescription className="text-amber-100">
-                  30 minutes, beginner-friendly
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-4">
-                <div className="space-y-3">
-                  <div>
-                    <h3 className="font-medium text-maroon-800 mb-1">🔁 Bowing Practice</h3>
-                    <p className="text-gray-700 text-sm">Open strings, long bows, wrist motion</p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="font-medium text-maroon-800 mb-1">🎼 Varisa Practice</h3>
-                    <ul className="list-disc pl-5 text-gray-700 text-sm">
-                      <li>Sarali Varisai</li>
-                      <li>Janta Varisai</li>
-                      <li>Madhyastayi Varisai</li>
-                      <li>Melsthayi Varisai</li>
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h3 className="font-medium text-maroon-800 mb-1">🎵 Simple Songs</h3>
-                    <ul className="list-disc pl-5 text-gray-700 text-sm">
-                      <li>Shyamale Meenakshi</li>
-                      <li>Shakti Sahitha Ganapathim</li>
-                      <li>National Anthem</li>
-                    </ul>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <Card className="border-amber-100 shadow-md">
+            <CardHeader className="bg-gradient-to-r from-maroon-800 to-amber-800 text-white">
+              <CardTitle className="text-xl font-serif">6. Violin Tuning Apps</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <ul className="list-disc pl-5 space-y-2 text-gray-700">
+                <li>
+                  <strong>Soundcorset</strong> – Android/iOS{" "}
+                  <a 
+                    href="https://play.google.com/store/apps/details?id=com.soundcorset.client.android" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    Download Link
+                  </a>
+                </li>
+                <li>
+                  <strong>Da Tuner</strong> – Android{" "}
+                  <a 
+                    href="https://play.google.com/store/search?q=da%20tuner" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    Download Link
+                  </a>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
         </div>
       </main>
     </div>
