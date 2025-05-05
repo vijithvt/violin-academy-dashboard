@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { LogOut, Music, Violin, Book } from "lucide-react";
+import { LogOut, Music, Book } from "lucide-react";
 
 const BeginnerGuide = () => {
   const { user, logout } = useSupabase();
@@ -30,7 +30,7 @@ const BeginnerGuide = () => {
       <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center">
-            <Violin className="h-6 w-6 text-maroon-800 mr-2" />
+            <Music className="h-6 w-6 text-maroon-800 mr-2" />
             <span className="text-xl font-serif font-bold text-maroon-800">Vijith Violinist</span>
           </div>
           

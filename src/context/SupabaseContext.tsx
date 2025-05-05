@@ -1,12 +1,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
-
-// Initialize Supabase client
-// These values will need to be replaced with your actual Supabase project URL and anon key
-// You'll need to connect your Lovable project to Supabase
-const supabaseUrl = 'https://your-project.supabase.co';
-const supabaseAnonKey = 'your-anon-key';
+import { supabase } from "@/integrations/supabase/client";
 
 interface SupabaseContextType {
   supabase: SupabaseClient;
@@ -33,7 +28,6 @@ interface SupabaseProviderProps {
 export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
   useEffect(() => {
     // Check active session and set the user
@@ -55,7 +49,7 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [supabase]);
+  }, []);
 
   // Login function
   const login = async (email: string, password: string) => {
