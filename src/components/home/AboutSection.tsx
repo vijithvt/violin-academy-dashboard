@@ -22,7 +22,7 @@ const AboutSection = () => {
                   Early Training
                 </h3>
                 <p className="text-gray-700">
-                  Vijith began his Carnatic violin journey under Shri Divakaran and later trained at the Tharangani School of Music (founded by Padma Bhushan Dr. K. J. Yesudas) under Shri Rajagopal Rajappa, who inspired his passion for teaching. Advanced training with Vid. S. R. Mahadeva Sarma (A-Top Grade Artist, AIR) helped shape a unique style blending the Parur M.S. Gopalakrishnan and Lalgudi Bani traditions.
+                  Vijith V T began his Carnatic violin journey under Shri Divakaran and later trained at the Tharangani School of Music (founded by Padma Bhushan Dr. K. J. Yesudas) under Shri Rajagopal Rajappa, who inspired his passion for teaching. Advanced training with Vid. S. R. Mahadeva Sarma (A-Top Grade Artist, AIR) helped shape a unique style blending the Parur M.S. Gopalakrishnan and Lalgudi Bani traditions.
                 </p>
               </div>
               
