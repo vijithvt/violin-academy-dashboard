@@ -20,6 +20,7 @@ import Home from "./pages/Home";
 import Blogs from "./pages/Blogs";
 import Login from "./pages/Login";
 import BeginnerGuide from "./pages/BeginnerGuide";
+import StudentDashboard from "./pages/StudentDashboard";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +52,7 @@ const App = () => (
               {/* Protected routes for students */}
               <Route element={<StudentProtectedRoute />}>
                 <Route path="/beginner-guide" element={<BeginnerGuide />} />
+                <Route path="/student-dashboard" element={<StudentDashboard />} />
               </Route>
               
               {/* 404 route */}

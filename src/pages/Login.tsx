@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSupabase } from "@/context/SupabaseContext";
@@ -37,7 +36,7 @@ const Login = () => {
           title: "Login successful",
           description: "Welcome back!",
         });
-        navigate("/beginner-guide");
+        navigate("/student-dashboard");
       }
     } catch (error) {
       toast({
