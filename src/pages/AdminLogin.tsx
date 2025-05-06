@@ -26,6 +26,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 // Form schema
 const loginSchema = z.object({
@@ -38,7 +39,6 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 const AdminLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { login } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -57,7 +57,10 @@ const AdminLogin = () => {
     setError(null);
 
     try {
-      const { error: loginError } = await login(values.email, values.password);
+      const { data, error: loginError } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password
+      });
       
       if (loginError) {
         setError("Invalid email or password. Please try again.");
@@ -67,11 +70,29 @@ const AdminLogin = () => {
           variant: "destructive",
         });
       } else {
-        toast({
-          title: "Login successful",
-          description: "Welcome to admin dashboard!",
-        });
-        navigate("/dashboard");
+        // Check if user has admin role
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', data.user?.id)
+          .single();
+          
+        if (profileError || profileData?.role !== 'admin') {
+          // Sign out if not admin
+          await supabase.auth.signOut();
+          setError("You do not have admin privileges. Access denied.");
+          toast({
+            title: "Access denied",
+            description: "You do not have admin privileges.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Login successful",
+            description: "Welcome to admin dashboard!",
+          });
+          navigate("/dashboard");
+        }
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
