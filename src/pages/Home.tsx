@@ -5,7 +5,6 @@ import AboutSection from "@/components/home/AboutSection";
 import CoursesSection from "@/components/home/CoursesSection";
 import RequirementsSection from "@/components/home/RequirementsSection";
 import RecognitionSection from "@/components/home/RecognitionSection";
-import GuidelinesSection from "@/components/home/GuidelinesSection";
 import FAQSection from "@/components/home/FAQSection";
 import ContactSection from "@/components/home/ContactSection";
 import PaymentSection from "@/components/home/PaymentSection";
@@ -21,7 +20,6 @@ const Home = () => {
       <CoursesSection />
       <RequirementsSection />
       <RecognitionSection />
-      <GuidelinesSection />
       <FAQSection />
       <ContactSection />
       <PaymentSection />

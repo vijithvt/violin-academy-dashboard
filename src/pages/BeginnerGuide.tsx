@@ -25,6 +25,41 @@ const BeginnerGuide = () => {
     { string: "G (4th)", note: "Mantrasthayi Sa", frequency: "D3 – 146Hz" },
   ];
 
+  const studentGuidelines = [
+    {
+      title: "Be Punctual",
+      description: "Join classes on time and be prepared"
+    },
+    {
+      title: "Maintain Discipline",
+      description: "Respect teacher and peers during sessions"
+    },
+    {
+      title: "Practice Regularly",
+      description: "Follow daily routine as prescribed"
+    },
+    {
+      title: "Stay Organized",
+      description: "Manage materials and notes systematically"
+    },
+    {
+      title: "Participate Actively",
+      description: "Submit recordings, join activities"
+    },
+    {
+      title: "Use Dashboard",
+      description: "Track attendance and monitor progress"
+    },
+    {
+      title: "Honest Submissions",
+      description: "Send genuine practice recordings"
+    },
+    {
+      title: "Communicate Well",
+      description: "Inform prior if absent (min. 6 hours notice)"
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
       <header className="bg-white shadow-sm sticky top-0 z-10">
@@ -49,6 +84,31 @@ const BeginnerGuide = () => {
           Beginner's Violin Guide
         </h1>
         <p className="text-gray-600 mb-8">Welcome to your personalized learning journey, {firstName}!</p>
+        
+        {/* Student Guidelines Section */}
+        <Card className="border-amber-100 shadow-md mb-10">
+          <CardHeader className="bg-gradient-to-r from-maroon-800 to-amber-800 text-white">
+            <CardTitle className="text-xl font-serif">Student Guidelines</CardTitle>
+            <CardDescription className="text-amber-100">
+              Follow these guidelines for successful learning
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {studentGuidelines.map((guideline, index) => (
+                <div key={index} className="bg-amber-50 rounded-xl shadow-sm border border-amber-100 p-5 hover:shadow-md transition-all">
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center mb-3">
+                      <span className="text-amber-700 font-medium">{index + 1}</span>
+                    </div>
+                    <h3 className="text-lg font-semibold text-maroon-800 mb-2">{guideline.title}</h3>
+                    <p className="text-center text-gray-600 text-sm">{guideline.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
           <Card className="border-amber-100 shadow-md">

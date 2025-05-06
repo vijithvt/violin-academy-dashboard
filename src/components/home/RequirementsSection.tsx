@@ -9,27 +9,33 @@ const RequirementsSection = () => {
   const requirements = [
     {
       name: "Violin",
-      description: "Main instrument"
+      description: "Main instrument",
+      image: "/lovable-uploads/6f4fc66e-f728-44f8-a1da-6721b9682495.png"
     },
     {
       name: "Bow",
-      description: "For sound production"
+      description: "For sound production",
+      image: "/lovable-uploads/2386dc2f-15e2-4fbc-b5af-d210ea749099.png"
     },
     {
       name: "Rosin",
-      description: "Helps bow grip strings"
+      description: "Helps bow grip strings",
+      image: "/lovable-uploads/25386e0b-f745-41d2-9872-a2e7cdb3a6e4.png"
     },
     {
       name: "Metronome",
-      description: "For rhythm practice"
+      description: "For rhythm practice",
+      image: "/lovable-uploads/cc04dd6a-b479-4eae-a679-718755823964.png"
     },
     {
       name: "Tambura App",
-      description: "For pitch reference"
+      description: "For pitch reference",
+      image: "/lovable-uploads/6b8c4f2e-e217-47eb-9d47-c1a8ed576634.png"
     },
     {
       name: "Practice Journal",
-      description: "To track progress"
+      description: "To track progress",
+      image: "/lovable-uploads/65a367ac-e8fa-48a2-80fa-7cbc03541542.png"
     }
   ];
 
@@ -51,8 +57,12 @@ const RequirementsSection = () => {
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {requirements.map((item, index) => (
                   <div key={index} className="bg-amber-50 p-4 rounded-lg shadow-sm flex flex-col items-center text-center">
-                    <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mb-3">
-                      <span className="text-maroon-700 font-semibold">{index + 1}</span>
+                    <div className="w-24 h-24 mb-3 bg-white rounded-lg overflow-hidden flex items-center justify-center border border-amber-100">
+                      <img 
+                        src={item.image} 
+                        alt={item.name} 
+                        className="object-contain h-20 w-20"
+                      />
                     </div>
                     <h4 className="font-medium text-maroon-800 mb-1">{item.name}</h4>
                     <p className="text-sm text-gray-600">{item.description}</p>
