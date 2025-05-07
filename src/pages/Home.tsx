@@ -19,6 +19,40 @@ const Home = () => {
   useEffect(() => {
     // Scroll to top on mount
     window.scrollTo(0, 0);
+    
+    // Add smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+    
+    // Add animation classes when elements come into view
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("animate-fade-in");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+    
+    document.querySelectorAll(".animate-on-scroll").forEach((el) => {
+      observer.observe(el);
+    });
+    
+    return () => {
+      observer.disconnect();
+    };
   }, []);
   
   return (
@@ -34,7 +68,7 @@ const Home = () => {
       <FAQSection />
       <ContactSection />
       <PaymentSection />
-      <AboutSection /> {/* Moved to the end as requested */}
+      <AboutSection /> {/* Kept at the end as requested */}
       <FooterSection />
       <FloatingButtons />
     </div>

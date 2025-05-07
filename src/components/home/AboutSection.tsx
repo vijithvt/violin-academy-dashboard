@@ -1,5 +1,5 @@
 
-import { Award, Globe, Music, BookOpen, Calendar, Users } from "lucide-react";
+import { Award, Globe, Music, BookOpen } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -29,21 +29,18 @@ const AboutSection = () => {
     };
   }, []);
 
-  const achievements = [
-    { year: "2005", event: "Started Violin Training" },
-    { year: "2010", event: "Completed 4-year course at Tharangani School" },
-    { year: "2012", event: "Advanced training with Vid. S. R. Mahadeva Sarma" },
-    { year: "2018", event: "Started Teaching Career" },
-    { year: "2020", event: "Best Classical Violin Teacher Award" },
-    { year: "2022", event: "Founded Online Academy" }
-  ];
-
   return (
     <section id="about" className="py-20 bg-gradient-to-b from-purple-50 to-amber-50 relative">
       {/* Decorative elements */}
       <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-white to-transparent"></div>
-      <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-200 rounded-full blur-3xl opacity-40"></div>
-      <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-amber-200 rounded-full blur-3xl opacity-40"></div>
+      <div 
+        className="absolute -top-24 -right-24 w-48 h-48 bg-purple-200 rounded-full blur-3xl opacity-40"
+        style={{ animation: 'float 8s ease-in-out infinite alternate' }}
+      ></div>
+      <div 
+        className="absolute -bottom-24 -left-24 w-64 h-64 bg-amber-200 rounded-full blur-3xl opacity-40"
+        style={{ animation: 'float 10s ease-in-out infinite alternate-reverse' }}
+      ></div>
       
       <div className="container mx-auto px-4" id="about-section">
         <div className={cn(
@@ -63,41 +60,23 @@ const AboutSection = () => {
             isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
           )}>
             <div className="relative">
-              <div className="rounded-2xl overflow-hidden border-4 border-white shadow-2xl w-full max-w-md mx-auto">
+              <div className="rounded-2xl overflow-hidden border-4 border-white shadow-2xl w-full max-w-md mx-auto hover:shadow-amber-500/20 hover:shadow-xl transition-all duration-500">
                 <img 
                   src="/lovable-uploads/392d5b68-5127-4b00-a0ab-8cee901d24b0.png" 
                   alt="Vijith VT" 
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-2000 hover:scale-105"
                 />
               </div>
               
               {/* Decorative elements */}
-              <div className="absolute -top-4 -right-4 w-32 h-32 bg-amber-400 rounded-full opacity-20 blur-md"></div>
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-purple-500 rounded-full opacity-20 blur-md"></div>
-              
-              {/* Achievement timeline */}
-              <div className="absolute -right-8 top-1/3 bottom-1/3 w-1 bg-amber-400 hidden lg:block"></div>
-              
-              {achievements.map((achievement, index) => (
-                <div 
-                  key={index}
-                  className={cn(
-                    "absolute right-0 hidden lg:flex items-center",
-                    index % 2 === 0 ? "translate-x-10" : "translate-x-16",
-                    `top-[${(index + 1) * 14 + 10}%]`
-                  )}
-                  style={{ top: `${(index + 1) * 14 + 10}%` }}
-                >
-                  <div className="w-2 h-2 bg-amber-400 rounded-full"></div>
-                  <div className={cn(
-                    "ml-4 bg-white p-2 rounded-md shadow-md text-center w-28",
-                    index % 2 === 0 ? "" : "mt-8"
-                  )}>
-                    <div className="text-xs text-purple-700 font-bold">{achievement.year}</div>
-                    <div className="text-xs">{achievement.event}</div>
-                  </div>
-                </div>
-              ))}
+              <div 
+                className="absolute -top-4 -right-4 w-32 h-32 bg-amber-400 rounded-full opacity-20 blur-md"
+                style={{ animation: 'pulse 6s ease-in-out infinite' }}
+              ></div>
+              <div 
+                className="absolute -bottom-4 -left-4 w-32 h-32 bg-purple-500 rounded-full opacity-20 blur-md"
+                style={{ animation: 'pulse 8s ease-in-out infinite 1s' }}
+              ></div>
             </div>
           </div>
           
@@ -110,63 +89,40 @@ const AboutSection = () => {
             </h2>
             
             <div className="space-y-8">
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-purple-100">
+              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-purple-100 transition-all duration-300 hover:shadow-xl hover:border-purple-200">
                 <h3 className="text-xl font-serif font-bold text-purple-800 mb-4 flex items-center">
                   <Music className="w-6 h-6 text-amber-500 mr-3" />
-                  Early Training
+                  Musical Journey
                 </h3>
                 <p className="text-gray-700">
-                  Vijith V T began his Carnatic violin journey under Shri Divakaran and later trained at the Tharangani School of Music (founded by Padma Bhushan Dr. K. J. Yesudas) under Shri Rajagopal Rajappa, who inspired his passion for teaching. Advanced training with Vid. S. R. Mahadeva Sarma (A-Top Grade Artist, AIR) helped shape a unique style blending the Parur M.S. Gopalakrishnan and Lalgudi Bani traditions.
+                  Vijith V T began his Carnatic violin journey under Shri Divakaran and later trained at the Tharangani School of Music (founded by Padma Bhushan Dr. K. J. Yesudas) under Shri Rajagopal Rajappa. Advanced training with Vid. S. R. Mahadeva Sarma (A-Top Grade Artist, AIR) helped shape his unique style blending the Parur M.S. Gopalakrishnan and Lalgudi Bani traditions.
                 </p>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-purple-100 h-full">
+                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-purple-100 h-full transition-all duration-300 hover:shadow-xl hover:border-purple-200">
                   <h3 className="text-xl font-serif font-bold text-purple-800 mb-3 flex items-center">
                     <Award className="w-6 h-6 text-amber-500 mr-3" />
                     Performer & Educator
                   </h3>
                   <ul className="list-disc pl-5 space-y-2 text-gray-700">
-                    <li>Certified in Carnatic Classical Violin (4-year course – Tharangani School of Music)</li>
                     <li>Teaching since 2018: Students from India, USA, Thailand & Bangalore</li>
-                    <li>Faculty/Collaborator at:</li>
-                    <ul className="list-disc pl-5 space-y-2 text-gray-700 mt-2">
-                      <li>Jovens Academy, USA</li>
-                      <li>Laya Tarang Academy, Trivandrum</li>
-                      <li>Bharathakala Dance & Music Cultural Society, Trivandrum</li>
-                      <li>Music Intuit Academy, Bangalore</li>
-                    </ul>
+                    <li>Faculty collaborator at leading music academies worldwide</li>
+                    <li>Best Classical Violin Teacher Award recipient</li>
+                    <li>Performances across Kerala and Karnataka</li>
                   </ul>
                 </div>
                 
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-purple-100 h-full">
+                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-purple-100 h-full transition-all duration-300 hover:shadow-xl hover:border-purple-200">
                   <h3 className="text-xl font-serif font-bold text-purple-800 mb-3 flex items-center">
-                    <Globe className="w-6 h-6 text-amber-500 mr-3" />
-                    Recognition
+                    <BookOpen className="w-6 h-6 text-amber-500 mr-3" />
+                    Teaching Approach
                   </h3>
-                  <ul className="list-disc pl-5 space-y-2 text-gray-700">
-                    <li>Best Classical Violin Teacher Award – Music Intuit Academy, Bangalore</li>
-                    <li>Students consistently win top ranks at District and School Kalolsavams</li>
-                    <li className="pt-2">Performances across Kerala and Karnataka</li>
-                    <li>Invited speaker at music education seminars</li>
-                    <li>Featured in local cultural events and music festivals</li>
-                  </ul>
-                </div>
-              </div>
-              
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-purple-100">
-                <h3 className="text-xl font-serif font-bold text-purple-800 mb-3 flex items-center">
-                  <BookOpen className="w-6 h-6 text-amber-500 mr-3" />
-                  Teaching Approach
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <ul className="list-disc pl-5 space-y-2 text-gray-700">
                     <li>Monthly student assessments in partnership with academies</li>
                     <li>Structured curriculum aligned with university-level standards</li>
-                  </ul>
-                  <ul className="list-disc pl-5 space-y-2 text-gray-700">
-                    <li>Custom student dashboard for tracking attendance, progress & practice</li>
-                    <li>Educational blog covering violin tuning, shruti, tala, and core concepts</li>
+                    <li>Custom student dashboard for tracking progress & practice</li>
+                    <li>Educational resources covering violin technique and theory</li>
                   </ul>
                 </div>
               </div>
@@ -174,6 +130,20 @@ const AboutSection = () => {
           </div>
         </div>
       </div>
+
+      {/* Add keyframes for custom animations */}
+      <style jsx>{`
+        @keyframes float {
+          0% { transform: translateY(0); }
+          100% { transform: translateY(-20px); }
+        }
+        
+        @keyframes pulse {
+          0% { transform: scale(1); opacity: 0.2; }
+          50% { transform: scale(1.1); opacity: 0.3; }
+          100% { transform: scale(1); opacity: 0.2; }
+        }
+      `}</style>
     </section>
   );
 };

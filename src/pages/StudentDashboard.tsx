@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSupabase } from "@/context/SupabaseContext";
@@ -43,28 +42,28 @@ const StudentDashboard = () => {
   
   const [currentQuote, setCurrentQuote] = useState(0);
 
-  // Complete syllabus with all lessons
+  // Complete syllabus with all lessons - Fixed the type issue by explicitly typing the status
   const fullSyllabus = [
     // Level 1 - AARAMBHA (Beginner)
-    { id: 1, title: "Basic Violin Positions", level: 1, status: "Completed", date: "2025-04-10" },
-    { id: 2, title: "Bow Handling Techniques", level: 1, status: "Completed", date: "2025-04-17" },
-    { id: 3, title: "Introduction to Sa-Pa", level: 1, status: "In Progress", date: "2025-04-24" },
-    { id: 4, title: "Sarali Varisai Practice", level: 1, status: "Not Started", date: "2025-05-01" },
-    { id: 5, title: "Basic Janta Varisai", level: 1, status: "Not Started", date: "2025-05-08" },
-    { id: 6, title: "Thattu Varisai Introduction", level: 1, status: "Not Started", date: "2025-05-15" },
+    { id: 1, title: "Basic Violin Positions", level: 1, status: "Completed" as "Completed" | "In Progress" | "Not Started", date: "2025-04-10" },
+    { id: 2, title: "Bow Handling Techniques", level: 1, status: "Completed" as "Completed" | "In Progress" | "Not Started", date: "2025-04-17" },
+    { id: 3, title: "Introduction to Sa-Pa", level: 1, status: "In Progress" as "Completed" | "In Progress" | "Not Started", date: "2025-04-24" },
+    { id: 4, title: "Sarali Varisai Practice", level: 1, status: "Not Started" as "Completed" | "In Progress" | "Not Started", date: "2025-05-01" },
+    { id: 5, title: "Basic Janta Varisai", level: 1, status: "Not Started" as "Completed" | "In Progress" | "Not Started", date: "2025-05-08" },
+    { id: 6, title: "Thattu Varisai Introduction", level: 1, status: "Not Started" as "Completed" | "In Progress" | "Not Started", date: "2025-05-15" },
     
     // Level 2 - MADHYAMA (Intermediate)
-    { id: 7, title: "Basic Gamakas", level: 2, status: "Not Started", date: "2025-07-10" },
-    { id: 8, title: "2nd Position Playing", level: 2, status: "Not Started", date: "2025-07-17" },
-    { id: 9, title: "String Crossing Dexterity", level: 2, status: "Not Started", date: "2025-07-24" },
-    { id: 10, title: "Simple Geethams", level: 2, status: "Not Started", date: "2025-07-31" },
+    { id: 7, title: "Basic Gamakas", level: 2, status: "Not Started" as "Completed" | "In Progress" | "Not Started", date: "2025-07-10" },
+    { id: 8, title: "2nd Position Playing", level: 2, status: "Not Started" as "Completed" | "In Progress" | "Not Started", date: "2025-07-17" },
+    { id: 9, title: "String Crossing Dexterity", level: 2, status: "Not Started" as "Completed" | "In Progress" | "Not Started", date: "2025-07-24" },
+    { id: 10, title: "Simple Geethams", level: 2, status: "Not Started" as "Completed" | "In Progress" | "Not Started", date: "2025-07-31" },
     
     // Level 3 - UTTHAMA (Advanced)
-    { id: 11, title: "Advanced Gamakas", level: 3, status: "Not Started", date: "2026-01-10" },
-    { id: 12, title: "Raga Delineation", level: 3, status: "Not Started", date: "2026-01-17" },
-    { id: 13, title: "Alapana Basics", level: 3, status: "Not Started", date: "2026-01-24" },
-    { id: 14, title: "Varnams", level: 3, status: "Not Started", date: "2026-01-31" },
-    { id: 15, title: "Simple Krithis", level: 3, status: "Not Started", date: "2026-02-07" }
+    { id: 11, title: "Advanced Gamakas", level: 3, status: "Not Started" as "Completed" | "In Progress" | "Not Started", date: "2026-01-10" },
+    { id: 12, title: "Raga Delineation", level: 3, status: "Not Started" as "Completed" | "In Progress" | "Not Started", date: "2026-01-17" },
+    { id: 13, title: "Alapana Basics", level: 3, status: "Not Started" as "Completed" | "In Progress" | "Not Started", date: "2026-01-24" },
+    { id: 14, title: "Varnams", level: 3, status: "Not Started" as "Completed" | "In Progress" | "Not Started", date: "2026-01-31" },
+    { id: 15, title: "Simple Krithis", level: 3, status: "Not Started" as "Completed" | "In Progress" | "Not Started", date: "2026-02-07" }
   ];
 
   useEffect(() => {
