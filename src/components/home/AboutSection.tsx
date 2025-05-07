@@ -132,7 +132,8 @@ const AboutSection = () => {
       </div>
 
       {/* Add keyframes for custom animations */}
-      <style jsx>{`
+      <style>
+        {`
         @keyframes float {
           0% { transform: translateY(0); }
           100% { transform: translateY(-20px); }
@@ -143,7 +144,8 @@ const AboutSection = () => {
           50% { transform: scale(1.1); opacity: 0.3; }
           100% { transform: scale(1); opacity: 0.2; }
         }
-      `}</style>
+        `}
+      </style>
     </section>
   );
 };

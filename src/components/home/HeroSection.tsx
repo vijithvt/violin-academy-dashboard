@@ -125,7 +125,8 @@ const HeroSection = () => {
       </div>
 
       {/* Add keyframes for custom animations */}
-      <style jsx>{`
+      <style>
+        {`
         @keyframes float-up {
           0% { transform: translateY(0); opacity: 0.5; }
           50% { opacity: 0.9; }
@@ -137,7 +138,8 @@ const HeroSection = () => {
           50% { transform: scale(1.1); opacity: 0.5; }
           100% { transform: scale(1); opacity: 0.3; }
         }
-      `}</style>
+        `}
+      </style>
     </section>
   );
 };
