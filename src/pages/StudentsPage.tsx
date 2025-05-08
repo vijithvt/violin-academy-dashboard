@@ -1,15 +1,13 @@
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import AdminDashboardLayout from "@/components/admin/AdminDashboardLayout";
-import FreeTrialTable from "@/components/admin/FreeTrialTable";
+import StudentProfilesTable from "@/components/admin/StudentProfilesTable";
 import NotAuthorized from "@/components/admin/NotAuthorized";
 import { useAdminCheck } from "@/api/adminService";
 import { Loader2 } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const Dashboard = () => {
+const StudentsPage = () => {
   const { isAdmin, loading, checkAdminStatus } = useAdminCheck();
-  const [activeTab, setActiveTab] = useState("trials");
 
   useEffect(() => {
     checkAdminStatus();
@@ -29,26 +27,19 @@ const Dashboard = () => {
   }
 
   return (
-    <AdminDashboardLayout title="Admin Dashboard">
+    <AdminDashboardLayout title="Student Profiles">
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Student Profiles</h2>
           <p className="text-muted-foreground">
-            Manage trial requests, student profiles, and more.
+            Manage student, teacher, and admin profiles.
           </p>
         </div>
         
-        <Tabs defaultValue="trials" value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="trials">Trial Requests</TabsTrigger>
-          </TabsList>
-          <TabsContent value="trials" className="mt-6">
-            <FreeTrialTable />
-          </TabsContent>
-        </Tabs>
+        <StudentProfilesTable />
       </div>
     </AdminDashboardLayout>
   );
 };
 
-export default Dashboard;
+export default StudentsPage;

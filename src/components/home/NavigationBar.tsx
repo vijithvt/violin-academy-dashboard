@@ -1,28 +1,20 @@
 
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Menu, X, Music, BookOpen, Home, Info, Phone, ChevronDown } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { 
-  NavigationMenu, 
-  NavigationMenuList, 
-  NavigationMenuItem, 
-  NavigationMenuLink, 
-  NavigationMenuTrigger, 
-  NavigationMenuContent,
-  navigationMenuTriggerStyle 
-} from "@/components/ui/navigation-menu";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import FreeTrialForm from "./FreeTrialForm";
+import { useAuth } from "@/context/AuthContext";
 
 const NavigationBar = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isTrialDialogOpen, setIsTrialDialogOpen] = useState(false);
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
+  // Handle scroll event to add shadow when scrolled
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) {
+      if (window.scrollY > 10) {
         setIsScrolled(true);
       } else {
         setIsScrolled(false);
@@ -30,141 +22,119 @@ const NavigationBar = () => {
     };
 
     window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  const handleOpenTrialDialog = () => {
-    setIsTrialDialogOpen(true);
-    if (isMobileMenuOpen) setIsMobileMenuOpen(false);
-  };
-
   return (
-    <>
-      <header className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-maroon-900/95 backdrop-blur-md shadow-md' : 'bg-transparent'}`}>
-        <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center z-20">
-            <Link to="/" className="flex items-center space-x-2">
-              <Music className="h-7 w-7 text-white" />
-              <span className="text-xl font-serif font-bold text-white">
-                Vijith Violinist
-              </span>
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? "bg-white/95 shadow-sm backdrop-blur-sm" : "bg-transparent"
+      }`}
+    >
+      <div className="container mx-auto px-4">
+        <nav className="flex items-center justify-between py-4">
+          <Link to="/" className="flex items-center gap-2">
+            <span className="text-xl font-bold text-primary">Violin Academy</span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            <Link to="/" className="font-medium hover:text-primary transition-colors">
+              Home
             </Link>
-          </div>
-          
-          {/* Desktop Navigation - Simplified */}
-          <div className="hidden lg:flex items-center space-x-8">
-            <NavigationMenu className="text-white">
-              <NavigationMenuList className="gap-1">
-                <NavigationMenuItem>
-                  <a href="/#home" className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-white/10`}>
-                    <Home className="h-4 w-4 mr-1" /> Home
-                  </a>
-                </NavigationMenuItem>
-                
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="bg-transparent hover:bg-white/10">
-                    <BookOpen className="h-4 w-4 mr-1" /> Courses
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="w-[400px] p-4 grid gap-3">
-                      <div className="p-4 hover:bg-maroon-50 rounded-md">
-                        <h3 className="text-sm font-medium mb-1">1-to-1 Online Violin Class</h3>
-                        <p className="text-xs text-gray-500">Personalized instruction tailored to your pace</p>
-                      </div>
-                      <div className="p-4 hover:bg-maroon-50 rounded-md">
-                        <h3 className="text-sm font-medium mb-1">Online Group Class</h3>
-                        <p className="text-xs text-gray-500">Learn alongside peers in an interactive setting</p>
-                      </div>
-                      <div className="p-4 hover:bg-maroon-50 rounded-md">
-                        <h3 className="text-sm font-medium mb-1">Home Tuition</h3>
-                        <p className="text-xs text-gray-500">In-person classes at your location</p>
-                      </div>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-                
-                <NavigationMenuItem>
-                  <a href="/#about" className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-white/10`}>
-                    <Info className="h-4 w-4 mr-1" /> About
-                  </a>
-                </NavigationMenuItem>
-                
-                <NavigationMenuItem>
-                  <a href="/#contact" className={`${navigationMenuTriggerStyle()} bg-transparent hover:bg-white/10`}>
-                    <Phone className="h-4 w-4 mr-1" /> Contact
-                  </a>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
+            <Link to="/blogs" className="font-medium hover:text-primary transition-colors">
+              Blog
+            </Link>
             
-            <Button 
-              onClick={handleOpenTrialDialog}
-              className="bg-amber-500 hover:bg-amber-600 text-white shadow-lg hover:shadow-amber-500/30 transition-all duration-300 transform hover:scale-105"
-            >
-              Book a Free Trial
-            </Button>
-          </div>
-          
-          {/* Mobile Navigation Trigger */}
-          <div className="lg:hidden flex items-center space-x-3">
-            <Button 
-              onClick={handleOpenTrialDialog}
-              size="sm" 
-              className="bg-amber-500 hover:bg-amber-600 text-white shadow-sm"
-            >
-              Free Trial
-            </Button>
-            <Button variant="ghost" size="sm" onClick={toggleMobileMenu} className="text-white">
-              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
-          </div>
-        </nav>
-        
-        {/* Mobile Navigation Menu - Simplified */}
-        {isMobileMenuOpen && (
-          <div className="fixed inset-0 bg-maroon-900/98 z-40 lg:hidden pt-20">
-            <div className="container mx-auto px-4 py-8">
-              <div className="flex flex-col space-y-6">
-                <a href="/#home" className="text-white text-lg font-medium flex items-center" onClick={toggleMobileMenu}>
-                  <Home className="h-5 w-5 mr-3" /> Home
-                </a>
-                <a href="/#courses" className="text-white text-lg font-medium flex items-center" onClick={toggleMobileMenu}>
-                  <BookOpen className="h-5 w-5 mr-3" /> Courses
-                </a>
-                <a href="/#about" className="text-white text-lg font-medium flex items-center" onClick={toggleMobileMenu}>
-                  <Info className="h-5 w-5 mr-3" /> About
-                </a>
-                <a href="/#contact" className="text-white text-lg font-medium flex items-center" onClick={toggleMobileMenu}>
-                  <Phone className="h-5 w-5 mr-3" /> Contact
-                </a>
-                
-                <div className="pt-6">
+            {/* Login/Dashboard Buttons */}
+            <div className="flex gap-2 items-center">
+              {currentUser ? (
+                <Button 
+                  onClick={() => navigate(currentUser ? "/dashboard" : "/admin-login")}
+                >
+                  Dashboard
+                </Button>
+              ) : (
+                <>
                   <Button 
-                    onClick={handleOpenTrialDialog}
-                    className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+                    variant="outline" 
+                    onClick={() => navigate("/login")}
                   >
-                    Book a Free Trial
+                    Student Login
                   </Button>
-                </div>
-              </div>
+                  <Button 
+                    onClick={() => navigate("/admin-login")}
+                  >
+                    Admin Login
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden text-gray-700"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </nav>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden py-4 border-t">
+            <div className="flex flex-col space-y-4">
+              <Link
+                to="/"
+                className="px-2 py-1 hover:text-primary transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Home
+              </Link>
+              <Link
+                to="/blogs"
+                className="px-2 py-1 hover:text-primary transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Blog
+              </Link>
+              
+              {currentUser ? (
+                <Button 
+                  onClick={() => {
+                    navigate("/dashboard");
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  Dashboard
+                </Button>
+              ) : (
+                <>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      navigate("/login");
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    Student Login
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      navigate("/admin-login");
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    Admin Login
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         )}
-      </header>
-      
-      {/* Free Trial Dialog */}
-      <Dialog open={isTrialDialogOpen} onOpenChange={setIsTrialDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          <FreeTrialForm onClose={() => setIsTrialDialogOpen(false)} />
-        </DialogContent>
-      </Dialog>
-    </>
+      </div>
+    </header>
   );
 };
 
