@@ -30,11 +30,11 @@ const AboutSection = () => {
   }, []);
 
   return (
-    <section id="about" className="py-20 bg-gradient-to-b from-purple-50 to-amber-50 relative">
+    <section id="about" className="py-20 bg-gradient-to-b from-amber-50 to-maroon-50 relative">
       {/* Decorative elements */}
       <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-white to-transparent"></div>
       <div 
-        className="absolute -top-24 -right-24 w-48 h-48 bg-purple-200 rounded-full blur-3xl opacity-40"
+        className="absolute -top-24 -right-24 w-48 h-48 bg-maroon-200 rounded-full blur-3xl opacity-40"
         style={{ animation: 'float 8s ease-in-out infinite alternate' }}
       ></div>
       <div 
@@ -47,7 +47,7 @@ const AboutSection = () => {
           "text-center max-w-3xl mx-auto mb-16 transition-all duration-1000 transform",
           isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
         )}>
-          <h2 className="text-4xl font-serif font-bold text-purple-900 mb-3">
+          <h2 className="text-4xl font-serif font-bold text-maroon-900 mb-3">
             Meet Your Teacher
           </h2>
           <p className="text-lg text-gray-600 mb-4">Learn from an experienced performer and dedicated educator</p>
@@ -74,7 +74,7 @@ const AboutSection = () => {
                 style={{ animation: 'pulse 6s ease-in-out infinite' }}
               ></div>
               <div 
-                className="absolute -bottom-4 -left-4 w-32 h-32 bg-purple-500 rounded-full opacity-20 blur-md"
+                className="absolute -bottom-4 -left-4 w-32 h-32 bg-maroon-500 rounded-full opacity-20 blur-md"
                 style={{ animation: 'pulse 8s ease-in-out infinite 1s' }}
               ></div>
             </div>
@@ -84,13 +84,13 @@ const AboutSection = () => {
             "lg:w-2/3 transition-all duration-1000 delay-300 transform",
             isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
           )}>
-            <h2 className="text-2xl lg:text-3xl font-serif font-bold text-purple-900 mb-6">
+            <h2 className="text-2xl lg:text-3xl font-serif font-bold text-maroon-900 mb-6">
               About Vijith V T
             </h2>
             
             <div className="space-y-8">
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-purple-100 transition-all duration-300 hover:shadow-xl hover:border-purple-200">
-                <h3 className="text-xl font-serif font-bold text-purple-800 mb-4 flex items-center">
+              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-maroon-100 transition-all duration-300 hover:shadow-xl hover:border-maroon-200">
+                <h3 className="text-xl font-serif font-bold text-maroon-800 mb-4 flex items-center">
                   <Music className="w-6 h-6 text-amber-500 mr-3" />
                   Musical Journey
                 </h3>
@@ -100,8 +100,8 @@ const AboutSection = () => {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-purple-100 h-full transition-all duration-300 hover:shadow-xl hover:border-purple-200">
-                  <h3 className="text-xl font-serif font-bold text-purple-800 mb-3 flex items-center">
+                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-maroon-100 h-full transition-all duration-300 hover:shadow-xl hover:border-maroon-200">
+                  <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3 flex items-center">
                     <Award className="w-6 h-6 text-amber-500 mr-3" />
                     Performer & Educator
                   </h3>
@@ -113,8 +113,8 @@ const AboutSection = () => {
                   </ul>
                 </div>
                 
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-purple-100 h-full transition-all duration-300 hover:shadow-xl hover:border-purple-200">
-                  <h3 className="text-xl font-serif font-bold text-purple-800 mb-3 flex items-center">
+                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-maroon-100 h-full transition-all duration-300 hover:shadow-xl hover:border-maroon-200">
+                  <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3 flex items-center">
                     <BookOpen className="w-6 h-6 text-amber-500 mr-3" />
                     Teaching Approach
                   </h3>

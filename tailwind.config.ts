@@ -63,7 +63,7 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Enhanced color palette for the violin academy
+				// Enhanced color palette for South Indian classical themes
 				maroon: {
 					50: '#fdf2f2',
 					100: '#f9e0e0',
@@ -111,6 +111,18 @@ export default {
 					700: '#7a550b',
 					800: '#664710',
 					900: '#553a12',
+				},
+				peacock: {
+					50: '#ebfff9',
+					100: '#d0f7f0',
+					200: '#a5ebe2',
+					300: '#6dd8ce',
+					400: '#37bbb3',
+					500: '#1d9d96',
+					600: '#117d7c',
+					700: '#106465',
+					800: '#105152',
+					900: '#0f4344',
 				}
 			},
 			fontFamily: {
@@ -138,11 +150,46 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(10px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
+				},
+				'float-up': {
+					'0%': { 
+						transform: 'translateY(0)', 
+						opacity: '0.5' 
+					},
+					'50%': { 
+						opacity: '0.9' 
+					},
+					'100%': { 
+						transform: 'translateY(-100px)', 
+						opacity: '0' 
+					}
+				},
+				'scale-in': {
+					'0%': {
+						transform: 'scale(0.95)',
+						opacity: '0'
+					},
+					'100%': {
+						transform: 'scale(1)',
+						opacity: '1'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.5s ease-out forwards',
+				'scale-in': 'scale-in 0.3s ease-out'
 			}
 		}
 	},

@@ -6,14 +6,12 @@ import CoursesSection from "@/components/home/CoursesSection";
 import RequirementsSection from "@/components/home/RequirementsSection";
 import RecognitionSection from "@/components/home/RecognitionSection";
 import FAQSection from "@/components/home/FAQSection";
-import ContactSection from "@/components/home/ContactSection";
-import PaymentSection from "@/components/home/PaymentSection";
 import FooterSection from "@/components/home/FooterSection";
 import FloatingButtons from "@/components/home/FloatingButtons";
 import InstrumentSection from "@/components/home/InstrumentSection";
 import AboutSection from "@/components/home/AboutSection";
 import LearningProcessSection from "@/components/home/LearningProcessSection";
-import VideoSection from "@/components/home/VideoSection";
+import FloatingTrialButton from "@/components/home/FloatingTrialButton";
 
 const Home = () => {
   useEffect(() => {
@@ -67,10 +65,9 @@ const Home = () => {
       <RequirementsSection />
       <RecognitionSection />
       <FAQSection />
-      <ContactSection />
-      <PaymentSection />
-      <AboutSection /> {/* Kept at the end as requested */}
+      <AboutSection /> {/* Moved from end */}
       <FooterSection />
+      <FloatingTrialButton />
       <FloatingButtons />
     </div>
   );

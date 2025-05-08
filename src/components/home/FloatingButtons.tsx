@@ -7,7 +7,7 @@ const FloatingButtons = () => {
   const [showWhatsAppInfo, setShowWhatsAppInfo] = useState(false);
 
   return (
-    <div className="fixed bottom-8 right-8 z-50 flex flex-col gap-3">
+    <div className="fixed bottom-8 left-8 z-50 flex flex-col gap-3">
       {/* Call Button and Popup */}
       <div className="relative">
         {showCallInfo && (
@@ -22,7 +22,7 @@ const FloatingButtons = () => {
             setShowCallInfo(!showCallInfo);
             setShowWhatsAppInfo(false);
           }}
-          className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 transition-colors"
+          className="w-12 h-12 flex items-center justify-center rounded-full bg-maroon-700 text-white shadow-lg hover:bg-maroon-800 transition-colors"
           aria-label="Call"
         >
           <Phone className="w-5 h-5" />
