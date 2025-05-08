@@ -76,6 +76,66 @@ export type Database = {
           },
         ]
       }
+      free_trial_requests: {
+        Row: {
+          age: string
+          city: string
+          country: string
+          course: string
+          created_at: string
+          email: string
+          id: string
+          level: string
+          mobile_number: string
+          name: string
+          notes: string | null
+          preferred_time: string | null
+          state: string
+          status: string
+          student_name: string
+          timezone: string
+          whatsapp_number: string
+        }
+        Insert: {
+          age: string
+          city: string
+          country: string
+          course: string
+          created_at?: string
+          email: string
+          id?: string
+          level: string
+          mobile_number: string
+          name: string
+          notes?: string | null
+          preferred_time?: string | null
+          state: string
+          status?: string
+          student_name: string
+          timezone: string
+          whatsapp_number: string
+        }
+        Update: {
+          age?: string
+          city?: string
+          country?: string
+          course?: string
+          created_at?: string
+          email?: string
+          id?: string
+          level?: string
+          mobile_number?: string
+          name?: string
+          notes?: string | null
+          preferred_time?: string | null
+          state?: string
+          status?: string
+          student_name?: string
+          timezone?: string
+          whatsapp_number?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           id: string

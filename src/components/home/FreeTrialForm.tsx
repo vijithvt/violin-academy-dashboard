@@ -75,27 +75,25 @@ const FreeTrialForm = ({ onClose }: FreeTrialFormProps) => {
   const onSubmit = async (values: FormValues) => {
     setLoading(true);
     try {
-      // Store data in Supabase
+      // Store data in Supabase using the correct table name and field structure
       const { data, error } = await supabase
         .from('free_trial_requests')
-        .insert([
-          {
-            name: values.name,
-            email: values.email,
-            mobile_number: values.mobileNumber,
-            whatsapp_number: values.whatsappNumber,
-            student_name: values.studentName,
-            age: values.age,
-            country: values.country,
-            state: values.state,
-            city: values.city,
-            timezone: values.timezone,
-            course: values.course,
-            level: values.level,
-            preferred_time: values.preferredTime || null,
-            status: 'new',
-          }
-        ]);
+        .insert({
+          name: values.name,
+          email: values.email,
+          mobile_number: values.mobileNumber,
+          whatsapp_number: values.whatsappNumber,
+          student_name: values.studentName,
+          age: values.age,
+          country: values.country,
+          state: values.state,
+          city: values.city,
+          timezone: values.timezone,
+          course: values.course,
+          level: values.level,
+          preferred_time: values.preferredTime || null,
+          status: 'new',
+        });
 
       if (error) throw error;
 
