@@ -1,52 +1,41 @@
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-/**
- * Hook to check if the current user has admin privileges
- * @returns Object containing admin status and check function
- */
+// Hook to check if the current user is an admin
 export const useAdminCheck = () => {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const checkAdminStatus = async () => {
-    setLoading(true);
+  const checkAdminStatus = useCallback(async () => {
     try {
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      setLoading(true);
       
-      if (sessionError) {
-        throw sessionError;
-      }
-
-      if (!sessionData.session) {
+      // First, check if we have a session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
         setIsAdmin(false);
         return;
       }
-
-      // Instead of using the potentially problematic is_admin RPC,
-      // query the profiles table directly
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", sessionData.session.user.id)
-        .single();
+      
+      // Now call the is_admin function to check admin status
+      const { data, error } = await supabase.rpc('is_admin');
       
       if (error) {
-        console.error("Error fetching user role:", error);
+        console.error("Error checking admin status:", error);
         setIsAdmin(false);
         return;
       }
       
-      // Check if role is admin
-      setIsAdmin(data?.role === 'admin');
+      setIsAdmin(data);
     } catch (error) {
-      console.error("Error checking admin status:", error);
+      console.error("Unexpected error in admin check:", error);
       setIsAdmin(false);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   return { isAdmin, loading, checkAdminStatus };
 };

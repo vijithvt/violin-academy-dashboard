@@ -2,16 +2,22 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-// Hook to get dashboard statistics
+interface DashboardStats {
+  students: number;
+  teachers: number;
+  newRegistrations: number;
+  newTrials: number;
+}
+
+// Hook to fetch dashboard statistics
 export const useDashboardStats = () => {
   return useQuery({
     queryKey: ["dashboardStats"],
-    queryFn: async () => {
+    queryFn: async (): Promise<DashboardStats> => {
       try {
-        // Get counts by role
-        const { data: roleData, error: roleError } = await supabase
-          .rpc('count_profiles_by_role');
-          
+        // Get profiles count by role
+        const { data: roleData, error: roleError } = await supabase.rpc('count_profiles_by_role');
+        
         if (roleError) throw new Error(roleError.message);
         
         // Get new registrations this month
@@ -19,40 +25,34 @@ export const useDashboardStats = () => {
         startOfMonth.setDate(1);
         startOfMonth.setHours(0, 0, 0, 0);
         
-        const { count: newRegistrations, error: newRegError } = await supabase
-          .from("profiles")
-          .select("*", { count: "exact" })
-          .gte("created_at", startOfMonth.toISOString());
-          
-        if (newRegError) throw new Error(newRegError.message);
+        const { count: newRegistrations, error: regError } = await supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', startOfMonth.toISOString());
         
-        // Get trial requests this month
-        const { count: newTrials, error: trialsError } = await supabase
-          .from("free_trial_requests")
-          .select("*", { count: "exact" })
-          .gte("created_at", startOfMonth.toISOString());
-          
-        if (trialsError) throw new Error(trialsError.message);
+        if (regError) throw new Error(regError.message);
         
-        // Format the data
-        const roleCounts = roleData && Array.isArray(roleData) ? roleData.reduce((acc: Record<string, number>, item: any) => {
-          if (item && item.role && item.count) {
-            acc[item.role.toLowerCase()] = Number(item.count);
-          }
-          return acc;
-        }, {} as Record<string, number>) : {};
+        // Get new trial requests this month
+        const { count: newTrials, error: trialError } = await supabase
+          .from('free_trial_requests')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', startOfMonth.toISOString());
+        
+        if (trialError) throw new Error(trialError.message);
+        
+        // Get counts by role
+        const studentCount = roleData.find(r => r.role === 'student')?.count || 0;
+        const teacherCount = roleData.find(r => r.role === 'teacher')?.count || 0;
         
         return {
-          students: roleCounts.student || 0,
-          teachers: roleCounts.teacher || 0,
-          admins: roleCounts.admin || 0,
-          newRegistrations: newRegistrations || 0,
-          newTrials: newTrials || 0,
-          totalUsers: Object.values(roleCounts).reduce((sum: number, count: number) => sum + count, 0)
+          students: Number(studentCount),
+          teachers: Number(teacherCount),
+          newRegistrations: Number(newRegistrations || 0),
+          newTrials: Number(newTrials || 0),
         };
       } catch (error) {
-        console.error("Error fetching dashboard stats:", error);
-        throw new Error(error instanceof Error ? error.message : "Failed to load dashboard statistics");
+        console.error('Error fetching dashboard stats:', error);
+        throw error;
       }
     }
   });

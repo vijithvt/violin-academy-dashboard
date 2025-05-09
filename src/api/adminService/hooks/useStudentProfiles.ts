@@ -1,42 +1,33 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { StudentProfile } from "../types";
+import type { StudentProfile } from "../types";
 
-// Hook to fetch all student profiles
+// Hook to fetch all student profiles with optional role filtering
 export const useStudentProfiles = (roleFilter: string = "all") => {
   return useQuery({
     queryKey: ["studentProfiles", roleFilter],
     queryFn: async () => {
-      try {
-        let query = supabase
-          .from("profiles")
-          .select("*")
-          .order("created_at", { ascending: false });
-
-        if (roleFilter !== "all") {
-          query = query.eq("role", roleFilter);
-        }
-
-        const { data, error } = await query;
-
-        if (error) {
-          console.error("Supabase error:", error);
-          throw new Error(`Error loading profiles: ${error.message}`);
-        }
-
-        if (!data) {
-          throw new Error("No profiles data returned");
-        }
-
-        return data as StudentProfile[];
-      } catch (error) {
-        console.error("Error fetching student profiles:", error);
-        throw new Error(error instanceof Error ? error.message : "Failed to load student profiles");
+      let query = supabase
+        .from("profiles")
+        .select("*");
+      
+      // Apply role filter if not "all"
+      if (roleFilter && roleFilter !== "all") {
+        query = query.eq("role", roleFilter);
       }
-    },
-    retry: 2,
-    retryDelay: 1500
+      
+      // Order by name
+      query = query.order("name", { ascending: true });
+      
+      const { data, error } = await query;
+      
+      if (error) {
+        throw new Error(error.message);
+      }
+      
+      return data as StudentProfile[];
+    }
   });
 };
 
