@@ -1,6 +1,8 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useStudentProfiles, useDeleteStudentProfile } from "@/api/adminService";
+import type { StudentProfile } from "@/api/adminService";
 import { 
   Table, 
   TableBody, 

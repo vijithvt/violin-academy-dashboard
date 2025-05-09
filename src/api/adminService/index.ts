@@ -26,3 +26,6 @@ export {
   useDashboardStats,
   useAdminCheck
 };
+
+// Export student profile types
+export type { StudentProfile } from './types';

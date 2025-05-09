@@ -24,13 +24,22 @@ export const useAdminCheck = () => {
         return;
       }
 
-      const { data, error } = await supabase.rpc('is_admin');
+      // Instead of using the potentially problematic is_admin RPC,
+      // query the profiles table directly
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", sessionData.session.user.id)
+        .single();
       
       if (error) {
-        throw error;
+        console.error("Error fetching user role:", error);
+        setIsAdmin(false);
+        return;
       }
       
-      setIsAdmin(data);
+      // Check if role is admin
+      setIsAdmin(data?.role === 'admin');
     } catch (error) {
       console.error("Error checking admin status:", error);
       setIsAdmin(false);

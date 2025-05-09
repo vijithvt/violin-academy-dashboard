@@ -1,11 +1,9 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import AdminDashboardLayout from "@/components/admin/AdminDashboardLayout";
 import FreeTrialTable from "@/components/admin/FreeTrialTable";
 import NotAuthorized from "@/components/admin/NotAuthorized";
-import { useAdminCheck } from "@/api/adminService";
-import { useDashboardStats } from "@/api/adminService";
+import { useAdminCheck, useDashboardStats } from "@/api/adminService";
 import { Loader2, UserPlus, BookOpen, Users, GraduationCap, School, Award } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StudentProfilesTable from "@/components/admin/StudentProfilesTable";

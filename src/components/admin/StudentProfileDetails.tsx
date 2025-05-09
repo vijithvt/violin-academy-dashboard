@@ -1,6 +1,7 @@
 
 import { useState } from "react";
-import { useUpdateStudentProfile, StudentProfile } from "@/api/adminService";
+import { useUpdateStudentProfile } from "@/api/adminService";
+import type { StudentProfile } from "@/api/adminService";
 import {
   Dialog,
   DialogContent,
