@@ -10,7 +10,7 @@ interface StudentStatsProps {
 
 const StudentStats = ({ userId }: StudentStatsProps) => {
   const { data: studentPoints, isLoading } = useTotalStudentPoints(userId);
-  const points = studentPoints || 0; // Ensure it's a number
+  const points = studentPoints ?? 0; // Ensure it's a number with nullish coalescing
 
   // Calculate level based on points
   const getLevel = (points: number) => {

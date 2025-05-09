@@ -275,16 +275,16 @@ export const useStudentPoints = (userId?: string) => {
   return useQuery({
     queryKey: ["studentPoints", userId],
     queryFn: async () => {
-      let query = supabase.from("student_points");
-      
-      // Filter by user_id if provided
-      if (userId) {
-        query = query.eq("user_id", userId);
+      // If no user ID is provided, return empty array
+      if (!userId) {
+        return [] as StudentPoints[];
       }
 
-      query = query.order("created_at", { ascending: false });
-
-      const { data, error } = await query.select();
+      const { data, error } = await supabase
+        .from("student_points")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
 
       if (error) {
         throw new Error(error.message);
@@ -336,13 +336,11 @@ export const useAddStudentPoints = () => {
     }) => {
       const { data, error } = await supabase
         .from("student_points")
-        .insert([
-          {
-            user_id: userId,
-            activity,
-            points_change: points
-          }
-        ])
+        .insert({
+          user_id: userId,
+          activity,
+          points_change: points
+        })
         .select();
 
       if (error) {
