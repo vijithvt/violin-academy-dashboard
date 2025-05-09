@@ -20,7 +20,7 @@ const StudentDashboard = () => {
   const [progressData, setProgressData] = useState<ProgressData[]>([]);
   const [activeTab, setActiveTab] = useState("dashboard");
   const { data: studentPoints } = useTotalStudentPoints(user?.id);
-  const points = studentPoints || 0; // Ensure it's a number
+  const points = studentPoints ?? 0; // Use nullish coalescing to ensure it's a number
   
   // Stats for the dashboard - these would come from Supabase in a real implementation
   const [stats, setStats] = useState({

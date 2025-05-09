@@ -1,6 +1,29 @@
+import { useState, useEffect } from "react";
+import { Plus } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { toast, Toaster } from "sonner";
 
-import { useState } from "react";
-import { useStudentProfiles, useAddStudentPoints } from "@/api/adminService";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -8,299 +31,308 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
+import { Spinner } from "@/components/ui/spinner";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Loader2, Search, Plus, Minus } from "lucide-react";
+  useStudents,
+  useStudentPoints,
+  addPointsToStudent,
+} from "@/api/adminService";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
-const POINTS_ACTIVITIES = [
-  { name: "Regular attendance", points: 10, type: "positive" },
-  { name: "Practicing daily", points: 5, type: "positive" },
-  { name: "Completing lessons", points: 15, type: "positive" },
-  { name: "Monthly assessment participation", points: 20, type: "positive" },
-  { name: "Good assessment score (above 80%)", points: 25, type: "positive" },
-  { name: "Learning a new song", points: 20, type: "positive" },
-  { name: "Exploring a new raga", points: 10, type: "positive" },
-  { name: "Completing 10-day practice streak", points: 30, type: "positive" },
-  { name: "Helping peers / group performance", points: 15, type: "positive" },
-  { name: "Performing in a recital", points: 25, type: "positive" },
-  { name: "Late arrival", points: -5, type: "negative" },
-  { name: "Uninformed absence", points: -10, type: "negative" },
-  { name: "No practice updates", points: -5, type: "negative" },
-  { name: "Skipping monthly assessment", points: -15, type: "negative" },
-  { name: "Showing no interest in lessons", points: -10, type: "negative" },
-];
+const formSchema = z.object({
+  studentId: z.string().min(1, {
+    message: "Please select a student.",
+  }),
+  activity: z.string().min(2, {
+    message: "Activity must be at least 2 characters.",
+  }),
+  points: z.number().int().min(-1000, {
+    message: "Points must be at least -1000.",
+  }).max(1000, {
+    message: "Points must be at most 1000.",
+  }),
+});
 
 const PointsManagement = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
-  const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
-  const [customActivity, setCustomActivity] = useState("");
-  const [customPoints, setCustomPoints] = useState<number | null>(null);
-  const [isCustom, setIsCustom] = useState(false);
-
-  const { data: students, isLoading: loadingStudents } = useStudentProfiles(
-    searchTerm,
-    { role: "student" }
+  const [showAddPoints, setShowAddPoints] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { data: students, isLoading: isLoadingStudents } = useStudents();
+  const { toast } = useToast();
+  const [selectedStudentId, setSelectedStudentId] = useState<string | undefined>(
+    undefined
   );
 
-  const addPointsMutation = useAddStudentPoints();
+  const { data: studentPoints, isLoading: isLoadingPoints } = useStudentPoints(
+    selectedStudentId
+  );
 
-  const handleActivityChange = (value: string) => {
-    if (value === "custom") {
-      setIsCustom(true);
-      setSelectedActivity("custom");
-      setCustomPoints(null);
-      setCustomActivity("");
-    } else {
-      setIsCustom(false);
-      setSelectedActivity(value);
-      const activity = POINTS_ACTIVITIES.find(a => a.name === value);
-      if (activity) {
-        setCustomPoints(activity.points);
-        setCustomActivity(activity.name);
-      }
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      studentId: "",
+      activity: "",
+      points: 0,
+    },
+  });
+
+  useEffect(() => {
+    if (students && students.length > 0) {
+      form.setValue("studentId", students[0].id);
+      setSelectedStudentId(students[0].id);
     }
-  };
+  }, [students, form]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!selectedStudent || (!selectedActivity && !isCustom) || (isCustom && !customActivity) || customPoints === null) {
-      return;
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsSubmitting(true);
+    try {
+      await addPointsToStudent(
+        values.studentId,
+        values.points,
+        values.activity
+      );
+      toast({
+        title: "Success!",
+        description: "Points added successfully.",
+      });
+      form.reset();
+      setShowAddPoints(false);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error!",
+        description: error.message,
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-
-    addPointsMutation.mutate({
-      userId: selectedStudent,
-      activity: isCustom ? customActivity : (customActivity || ""),
-      points: customPoints
-    });
-
-    // Reset form after submission
-    setSelectedActivity(null);
-    setCustomActivity("");
-    setCustomPoints(null);
-    setIsCustom(false);
   };
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">Add Points</CardTitle>
-            <CardDescription>
-              Reward or deduct points for student activities
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Select Student</label>
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                  <Input
-                    placeholder="Search student by name"
-                    className="pl-8 mb-2"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-                
-                {loadingStudents ? (
-                  <div className="flex items-center justify-center py-4">
-                    <Loader2 className="h-5 w-5 animate-spin text-primary mr-2" />
-                    <span>Loading students...</span>
-                  </div>
-                ) : (
-                  <Select value={selectedStudent || ""} onValueChange={setSelectedStudent}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a student" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {students && students.length > 0 ? (
-                        students
-                          .filter(student => student.role === "student")
-                          .map(student => (
-                            <SelectItem key={student.id} value={student.id}>
-                              {student.name}
-                            </SelectItem>
-                          ))
-                      ) : (
-                        <SelectItem value="none" disabled>
-                          No students found
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold tracking-tight">Points Management</h2>
+        <Button onClick={() => setShowAddPoints(true)}>
+          <Plus className="mr-2 h-4 w-4" /> Add Points
+        </Button>
+      </div>
+
+      {/* Points Dashboard */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="bg-white rounded-md p-4 shadow-sm">
+          <h3 className="text-lg font-semibold">Total Students:</h3>
+          <p className="text-2xl font-bold text-gray-800">
+            {students ? students.length : "Loading..."}
+          </p>
+        </div>
+
+        <div className="bg-white rounded-md p-4 shadow-sm">
+          <h3 className="text-lg font-semibold">Total Points Awarded:</h3>
+          <p className="text-2xl font-bold text-gray-800">
+            {studentPoints
+              ? studentPoints.reduce(
+                  (acc, point) => acc + point.points_change,
+                  0
+                )
+              : "Loading..."}
+          </p>
+        </div>
+
+        <div className="bg-white rounded-md p-4 shadow-sm">
+          <h3 className="text-lg font-semibold">Average Points per Student:</h3>
+          <p className="text-2xl font-bold text-gray-800">
+            {students && studentPoints
+              ? (
+                  studentPoints.reduce(
+                    (acc, point) => acc + point.points_change,
+                    0
+                  ) / students.length
+                ).toFixed(2)
+              : "Loading..."}
+          </p>
+        </div>
+      </div>
+
+      {/* Add Points Dialog */}
+      <Dialog open={showAddPoints} onOpenChange={setShowAddPoints}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Add Student Points</DialogTitle>
+            <DialogDescription>
+              Award points to students for their achievements and progress.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="studentId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Student</FormLabel>
+                    <Select
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        setSelectedStudentId(value);
+                      }}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a student" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="" disabled className="text-gray-400">
+                          Select a student
                         </SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
+                        {students?.map((student) => (
+                          <SelectItem key={student.id} value={student.id}>
+                            {student.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Activity</label>
-                <Select value={selectedActivity || ""} onValueChange={handleActivityChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select an activity" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="custom">Custom Activity</SelectItem>
-                    
-                    <SelectItem value="positive-header" disabled className="font-semibold text-green-600">
-                      --- Positive Points ---
-                    </SelectItem>
-                    {POINTS_ACTIVITIES
-                      .filter(activity => activity.type === "positive")
-                      .map(activity => (
-                        <SelectItem key={activity.name} value={activity.name}>
-                          {activity.name} (+{activity.points})
+              />
+              <FormField
+                control={form.control}
+                name="activity"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Activity</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select an activity" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="" disabled className="text-gray-400">
+                          Select an activity
                         </SelectItem>
-                      ))
-                    }
-                    
-                    <SelectItem value="negative-header" disabled className="font-semibold text-red-600">
-                      --- Negative Points ---
-                    </SelectItem>
-                    {POINTS_ACTIVITIES
-                      .filter(activity => activity.type === "negative")
-                      .map(activity => (
-                        <SelectItem key={activity.name} value={activity.name}>
-                          {activity.name} ({activity.points})
+                        <SelectItem value="Weekly Practice Completed">
+                          Weekly Practice Completed
                         </SelectItem>
-                      ))
-                    }
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {isCustom && (
-                <>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Custom Activity Description</label>
-                    <Input
-                      value={customActivity}
-                      onChange={(e) => setCustomActivity(e.target.value)}
-                      placeholder="Describe the activity"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Points</label>
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="outline"
-                        onClick={() => setCustomPoints((prev) => (prev !== null ? prev - 5 : -5))}
-                      >
-                        <Minus className="h-4 w-4" />
-                      </Button>
+                        <SelectItem value="New Raga Learned">
+                          New Raga Learned
+                        </SelectItem>
+                        <SelectItem value="Assignment Completed">
+                          Assignment Completed
+                        </SelectItem>
+                        <SelectItem value="Performance">Performance</SelectItem>
+                        <SelectItem value="Monthly Assessment">
+                          Monthly Assessment
+                        </SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="points"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Points</FormLabel>
+                    <FormControl>
                       <Input
                         type="number"
-                        value={customPoints !== null ? customPoints : ""}
-                        onChange={(e) => setCustomPoints(parseInt(e.target.value) || 0)}
-                        className="text-center"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value === ""
+                              ? ""
+                              : parseInt(e.target.value, 10)
+                          )
+                        }
                       />
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="outline"
-                        onClick={() => setCustomPoints((prev) => (prev !== null ? prev + 5 : 5))}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </>
-              )}
-              
-              <Button 
-                type="submit" 
-                className="w-full mt-4"
-                disabled={!selectedStudent || (!selectedActivity && !isCustom) || (isCustom && !customActivity) || customPoints === null || addPointsMutation.isPending}
-              >
-                {addPointsMutation.isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Adding Points...
-                  </>
-                ) : (
-                  "Add Points"
+                    </FormControl>
+                    <FormDescription>
+                      Points can be positive or negative values
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </Button>
+              />
+
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => setShowAddPoints(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? <Spinner /> : "Save"}
+                </Button>
+              </DialogFooter>
             </form>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">Points System Guidelines</CardTitle>
-            <CardDescription>
-              How the points system works
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <h3 className="font-medium text-green-700 mb-2">Positive Points</h3>
-                <ul className="space-y-2 text-sm">
-                  {POINTS_ACTIVITIES
-                    .filter(activity => activity.type === "positive")
-                    .map(activity => (
-                      <li key={activity.name} className="flex justify-between">
-                        <span>{activity.name}</span>
-                        <span className="font-medium text-green-600">+{activity.points}</span>
-                      </li>
-                    ))
-                  }
-                </ul>
-              </div>
-              
-              <div>
-                <h3 className="font-medium text-red-700 mb-2">Negative Points</h3>
-                <ul className="space-y-2 text-sm">
-                  {POINTS_ACTIVITIES
-                    .filter(activity => activity.type === "negative")
-                    .map(activity => (
-                      <li key={activity.name} className="flex justify-between">
-                        <span>{activity.name}</span>
-                        <span className="font-medium text-red-600">{activity.points}</span>
-                      </li>
-                    ))
-                  }
-                </ul>
-              </div>
-              
-              <div className="border-t pt-4 mt-4">
-                <h3 className="font-medium mb-2">Level Multipliers</h3>
-                <ul className="space-y-2 text-sm">
-                  <li className="flex justify-between">
-                    <span>AARAMBHA (Beginner)</span>
-                    <span className="font-medium">x1</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span>MADHYAMA (Intermediate)</span>
-                    <span className="font-medium">x1.2</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span>UTTHAMA (Advanced)</span>
-                    <span className="font-medium">x1.5</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span>VIDHWATH (Expert)</span>
-                    <span className="font-medium">x2</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Student Points Table */}
+      <div className="rounded-md border">
+        <Table>
+          <TableCaption>
+            Student Points History -{" "}
+            {students?.find((student) => student.id === selectedStudentId)?.name}
+          </TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">Activity</TableHead>
+              <TableHead>Points Change</TableHead>
+              <TableHead>Created At</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoadingPoints && (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center">
+                  Loading...
+                </TableCell>
+              </TableRow>
+            )}
+            {!isLoadingPoints && studentPoints && studentPoints.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center">
+                  No points history found.
+                </TableCell>
+              </TableRow>
+            )}
+            {!isLoadingPoints &&
+              studentPoints &&
+              studentPoints.map((point) => (
+                <TableRow key={point.id}>
+                  <TableCell>{point.activity}</TableCell>
+                  <TableCell>{point.points_change}</TableCell>
+                  <TableCell>
+                    {new Date(point.created_at).toLocaleDateString()}
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
       </div>
+
+      <Toaster />
     </div>
   );
 };
