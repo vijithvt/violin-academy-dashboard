@@ -2,6 +2,7 @@
 import { Award, Globe, Music, BookOpen } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 const AboutSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -85,17 +86,21 @@ const AboutSection = () => {
             isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
           )}>
             <h2 className="text-2xl lg:text-3xl font-serif font-bold text-maroon-900 mb-6">
-              About Vijith V T
+              Meet Your Teacher – Vijith V T
             </h2>
             
             <div className="space-y-8">
               <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-maroon-100 transition-all duration-300 hover:shadow-xl hover:border-maroon-200">
                 <h3 className="text-xl font-serif font-bold text-maroon-800 mb-4 flex items-center">
                   <Music className="w-6 h-6 text-amber-500 mr-3" />
-                  Musical Journey
+                  🧑‍🏫 Performer & Educator
                 </h3>
                 <p className="text-gray-700">
-                  Vijith V T began his Carnatic violin journey under Shri Divakaran and later trained at the Tharangani School of Music (founded by Padma Bhushan Dr. K. J. Yesudas) under Shri Rajagopal Rajappa. Advanced training with Vid. S. R. Mahadeva Sarma (A-Top Grade Artist, AIR) helped shape his unique style blending the Parur M.S. Gopalakrishnan and Lalgudi Bani traditions.
+                  Vijith V T is a passionate Carnatic violinist with a teaching legacy spanning several countries and institutions. 
+                  His journey began under Shri Divakaran, and continued at the prestigious Tharangani School of Music (founded by 
+                  Padma Bhushan Dr. K. J. Yesudas) under Shri Rajagopal Rajappa. His artistry was further refined under Vid. S. R. 
+                  Mahadeva Sarma (A-Top Grade Artist, AIR), cultivating a unique style rooted in both the Parur M.S. Gopalakrishnan 
+                  and Lalgudi Bani traditions.
                 </p>
               </div>
               
@@ -103,25 +108,27 @@ const AboutSection = () => {
                 <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-maroon-100 h-full transition-all duration-300 hover:shadow-xl hover:border-maroon-200">
                   <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3 flex items-center">
                     <Award className="w-6 h-6 text-amber-500 mr-3" />
-                    Performer & Educator
+                    👨‍🏫 Teaching Experience
                   </h3>
                   <ul className="list-disc pl-5 space-y-2 text-gray-700">
                     <li>Teaching since 2018: Students from India, USA, Thailand & Bangalore</li>
-                    <li>Faculty collaborator at leading music academies worldwide</li>
-                    <li>Best Classical Violin Teacher Award recipient (Presented by Swara Ragam Academy for outstanding music education, 2022)</li>
+                    <li>🏆 Awarded Best Classical Violin Teacher (2022)<br />
+                      <span className="text-sm text-gray-600 italic">Presented by Swara Ragam Academy for outstanding music education</span>
+                    </li>
                   </ul>
                 </div>
                 
                 <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-maroon-100 h-full transition-all duration-300 hover:shadow-xl hover:border-maroon-200">
                   <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3 flex items-center">
-                    <BookOpen className="w-6 h-6 text-amber-500 mr-3" />
-                    Teaching Approach
+                    <Globe className="w-6 h-6 text-amber-500 mr-3" />
+                    🌍 Academic Collaborations
                   </h3>
+                  <p className="mb-2 text-gray-700">Faculty Collaborator at leading music academies:</p>
                   <ul className="list-disc pl-5 space-y-2 text-gray-700">
-                    <li>Monthly student assessments in partnership with academies</li>
-                    <li>Structured curriculum aligned with university-level standards</li>
-                    <li>Custom student dashboard for tracking progress & practice</li>
-                    <li>Educational resources covering violin technique and theory</li>
+                    <li>Jovens Academy, USA</li>
+                    <li>Bharathakala Dance & Cultural Society, Peyad, Trivandrum</li>
+                    <li>Laya Tarang Music Academy, Ambalamukku, Trivandrum</li>
+                    <li>Music Intuit Academy, Bangalore</li>
                   </ul>
                 </div>
               </div>
