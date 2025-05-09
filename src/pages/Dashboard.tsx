@@ -5,10 +5,9 @@ import AdminDashboardLayout from "@/components/admin/AdminDashboardLayout";
 import FreeTrialTable from "@/components/admin/FreeTrialTable";
 import NotAuthorized from "@/components/admin/NotAuthorized";
 import { useAdminCheck } from "@/api/adminService";
-import { Loader2, BookOpen, UserPlus } from "lucide-react";
+import { Loader2, UserPlus, BookOpen } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StudentProfilesTable from "@/components/admin/StudentProfilesTable";
-import PointsManagement from "@/components/admin/PointsManagement";
 import { Button } from "@/components/ui/button";
 
 const Dashboard = () => {
@@ -44,7 +43,7 @@ const Dashboard = () => {
         
         <div className="flex flex-wrap gap-3 mb-4">
           <Link to="/student-registration">
-            <Button variant="outline" className="flex items-center gap-2">
+            <Button className="flex items-center gap-2 bg-green-600 hover:bg-green-700">
               <UserPlus className="h-4 w-4" />
               Register New Student
             </Button>
@@ -61,11 +60,12 @@ const Dashboard = () => {
           <TabsList className="overflow-x-auto flex w-full">
             <TabsTrigger value="trials">Trial Requests</TabsTrigger>
             <TabsTrigger value="students">Students</TabsTrigger>
-            <TabsTrigger value="points">Points</TabsTrigger>
+            {/* Comment out unimplemented features */}
+            {/* <TabsTrigger value="points">Points</TabsTrigger>
             <TabsTrigger value="attendance">Attendance</TabsTrigger>
             <TabsTrigger value="fees">Fees</TabsTrigger>
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
-            <TabsTrigger value="performance">Performance</TabsTrigger>
+            <TabsTrigger value="performance">Performance</TabsTrigger> */}
           </TabsList>
           
           <TabsContent value="trials" className="mt-6">
@@ -76,7 +76,8 @@ const Dashboard = () => {
             <StudentProfilesTable />
           </TabsContent>
           
-          <TabsContent value="points" className="mt-6">
+          {/* Comment out unimplemented features */}
+          {/* <TabsContent value="points" className="mt-6">
             <PointsManagement />
           </TabsContent>
           
@@ -102,7 +103,7 @@ const Dashboard = () => {
             <div className="flex justify-center items-center h-64 bg-gray-50 rounded-lg border">
               <p className="text-gray-500">Coming soon: Performance tracking features</p>
             </div>
-          </TabsContent>
+          </TabsContent> */}
         </Tabs>
       </div>
     </AdminDashboardLayout>

@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { StudentProfile } from "./types";
@@ -26,10 +27,11 @@ export const useStudentProfiles = (roleFilter: string = "all") => {
         return data as StudentProfile[];
       } catch (error) {
         console.error("Error fetching student profiles:", error);
-        throw error;
+        throw new Error(error instanceof Error ? error.message : "Failed to load student profiles");
       }
     },
-    retry: 2, // Retry failed queries 2 times
+    retry: 1,
+    retryDelay: 1000
   });
 };
 
@@ -42,17 +44,22 @@ export const useStudentProfile = (id?: string) => {
         return null;
       }
 
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", id)
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", id)
+          .maybeSingle();
 
-      if (error) {
-        throw new Error(error.message);
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        return data as StudentProfile;
+      } catch (error) {
+        console.error("Error fetching student profile:", error);
+        throw new Error(error instanceof Error ? error.message : "Failed to load student profile");
       }
-
-      return data as StudentProfile;
     },
     enabled: !!id
   });
