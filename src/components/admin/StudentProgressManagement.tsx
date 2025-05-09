@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -180,6 +179,7 @@ export const StudentProgressManagement = ({
     setIsSubmitting(true);
     
     try {
+      // Use the proper table name and types
       const { error } = await supabase
         .from('student_progress')
         .upsert({
@@ -189,6 +189,8 @@ export const StudentProgressManagement = ({
           progress_percentage: data.progressPercentage,
           teacher_notes: data.teacherNotes || null,
           last_updated: new Date().toISOString()
+        }, { 
+          onConflict: 'user_id' 
         });
         
       if (error) throw error;

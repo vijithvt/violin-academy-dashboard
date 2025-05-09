@@ -50,7 +50,7 @@ const StudentProgress = () => {
           .from("student_progress")
           .select("*")
           .eq("user_id", studentId)
-          .single();
+          .maybeSingle(); // Use maybeSingle instead of single to handle no results case
 
         if (!profileError) {
           setStudentData({
@@ -88,7 +88,7 @@ const StudentProgress = () => {
         .from("student_progress")
         .select("*")
         .eq("user_id", studentId)
-        .single();
+        .maybeSingle();
         
       if (error) throw error;
       

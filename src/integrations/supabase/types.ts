@@ -280,6 +280,93 @@ export type Database = {
         }
         Relationships: []
       }
+      student_profiles: {
+        Row: {
+          address: string
+          created_at: string
+          date_of_birth: string
+          gender: string
+          heard_from: string
+          id: string
+          learning_level: string
+          mobile_number: string
+          parent_name: string
+          photo_url: string | null
+          preferred_course: string
+          preferred_timings: string[]
+          profession: string
+          referral_details: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address: string
+          created_at?: string
+          date_of_birth: string
+          gender: string
+          heard_from: string
+          id?: string
+          learning_level: string
+          mobile_number: string
+          parent_name: string
+          photo_url?: string | null
+          preferred_course: string
+          preferred_timings: string[]
+          profession: string
+          referral_details?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          date_of_birth?: string
+          gender?: string
+          heard_from?: string
+          id?: string
+          learning_level?: string
+          mobile_number?: string
+          parent_name?: string
+          photo_url?: string | null
+          preferred_course?: string
+          preferred_timings?: string[]
+          profession?: string
+          referral_details?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      student_progress: {
+        Row: {
+          current_module: string
+          id: string
+          last_updated: string
+          level: number
+          progress_percentage: number
+          teacher_notes: string | null
+          user_id: string
+        }
+        Insert: {
+          current_module: string
+          id?: string
+          last_updated?: string
+          level?: number
+          progress_percentage?: number
+          teacher_notes?: string | null
+          user_id: string
+        }
+        Update: {
+          current_module?: string
+          id?: string
+          last_updated?: string
+          level?: number
+          progress_percentage?: number
+          teacher_notes?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
