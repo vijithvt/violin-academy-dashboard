@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSupabase } from "@/context/SupabaseContext";
@@ -687,4 +688,120 @@ const StudentDashboard = () => {
           </div>
         </div>
         
-        <div className="bg-white rounded-xl shadow-md p-6 border
+        <div className="bg-white rounded-xl shadow-md p-6 border border-indigo-100">
+          <h3 className="text-lg font-serif font-semibold mb-4 text-indigo-900">Performance Summary</h3>
+          <div className="space-y-6">
+            <div>
+              <div className="flex justify-between mb-2 text-sm">
+                <span>Lessons Completed</span>
+                <span className="font-medium">{stats.lessonsCompleted}/{fullSyllabus.length}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="bg-green-500 h-2.5 rounded-full" style={{ width: `${stats.progressPercentage}%` }}></div>
+              </div>
+            </div>
+            
+            <div>
+              <div className="flex justify-between mb-2 text-sm">
+                <span>Practice Consistency</span>
+                <span className="font-medium">80%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: "80%" }}></div>
+              </div>
+            </div>
+            
+            <div>
+              <div className="flex justify-between mb-2 text-sm">
+                <span>Technique Score</span>
+                <span className="font-medium">65%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="bg-amber-500 h-2.5 rounded-full" style={{ width: "65%" }}></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+  
+  const renderPractice = () => (
+    <div>Practice content coming soon...</div>
+  );
+  
+  const renderTasks = () => (
+    <div>Tasks content coming soon...</div>
+  );
+  
+  const renderSyllabus = () => (
+    <div>Syllabus content coming soon...</div>
+  );
+
+  return (
+    <SidebarProvider>
+      <div className="min-h-screen bg-gray-50">
+        <Sidebar className="border-r border-gray-200">
+          <SidebarHeader className="px-4 py-3 border-b border-gray-100">
+            <div className="flex items-center justify-between">
+              <h2 className="font-serif text-lg font-bold">Violin Academy</h2>
+              <SidebarTrigger className="sm:hidden" />
+            </div>
+          </SidebarHeader>
+
+          <SidebarContent>
+            <div className="p-4 border-b border-gray-100">
+              <div className="flex items-center space-x-3">
+                <Avatar>
+                  <AvatarFallback className="bg-indigo-100 text-indigo-800">
+                    {firstName.substring(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="space-y-0.5">
+                  <p className="text-sm font-medium">{firstName}</p>
+                  <p className="text-xs text-gray-500">{getStudentLevel(points)}</p>
+                </div>
+              </div>
+            </div>
+
+            <SidebarMenu>
+              {menuItems.map((item) => (
+                <SidebarMenuItem key={item.path} active={activeSection === item.path}>
+                  <SidebarMenuButton onClick={() => setActiveSection(item.path)}>
+                    <item.icon className="w-5 h-5 mr-3" />
+                    {item.name}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarContent>
+
+          <SidebarFooter>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton className="text-red-500" onClick={handleLogout}>
+                  <LogOut className="w-5 h-5 mr-3" />
+                  Logout
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarFooter>
+        </Sidebar>
+
+        <div className="ml-0 sm:ml-64 p-6">
+          <div className="mb-6">
+            <h1 className="font-serif text-3xl font-bold">Welcome back, {firstName}!</h1>
+            <p className="text-gray-500">
+              Here's your learning progress and upcoming lessons.
+            </p>
+          </div>
+
+          {renderContent()}
+        </div>
+      </div>
+    </SidebarProvider>
+  );
+};
+
+export default StudentDashboard;
+
