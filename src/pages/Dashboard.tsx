@@ -1,22 +1,21 @@
+
 import { useState, useEffect } from "react";
 import AdminDashboardLayout from "@/components/admin/AdminDashboardLayout";
 import FreeTrialTable from "@/components/admin/FreeTrialTable";
 import NotAuthorized from "@/components/admin/NotAuthorized";
+import { useAdminCheck } from "@/api/adminService";
 import { Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StudentProfilesTable from "@/components/admin/StudentProfilesTable";
 import PointsManagement from "@/components/admin/PointsManagement";
-import AttendanceModule from "@/components/admin/attendance/AttendanceModule";
-import FeesModule from "@/components/admin/fees/FeesModule";
-import { useAuth } from "@/context/AuthContext";
 
 const Dashboard = () => {
-  const { isAdmin, loading, checkAdminStatus } = useAuth();
+  const { isAdmin, loading, checkAdminStatus } = useAdminCheck();
   const [activeTab, setActiveTab] = useState("trials");
 
   useEffect(() => {
     checkAdminStatus();
-  }, [checkAdminStatus]);
+  }, []);
 
   if (loading) {
     return (
@@ -37,7 +36,7 @@ const Dashboard = () => {
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
           <p className="text-muted-foreground">
-            Manage trial requests, student profiles, attendance, fees, and more.
+            Manage trial requests, student profiles, attendance, and more.
           </p>
         </div>
         
@@ -65,11 +64,15 @@ const Dashboard = () => {
           </TabsContent>
           
           <TabsContent value="attendance" className="mt-6">
-            <AttendanceModule />
+            <div className="flex justify-center items-center h-64 bg-gray-50 rounded-lg border">
+              <p className="text-gray-500">Coming soon: Attendance management features</p>
+            </div>
           </TabsContent>
           
           <TabsContent value="fees" className="mt-6">
-            <FeesModule />
+            <div className="flex justify-center items-center h-64 bg-gray-50 rounded-lg border">
+              <p className="text-gray-500">Coming soon: Fee management features</p>
+            </div>
           </TabsContent>
           
           <TabsContent value="schedule" className="mt-6">

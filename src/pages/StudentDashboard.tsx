@@ -6,9 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTotalStudentPoints } from "@/api/adminService";
 import { 
   motion, 
-  AnimatePresence,
-  useAnimation,
-  Variants
+  AnimatePresence 
 } from "framer-motion";
 import { 
   Sparkles, 
@@ -20,31 +18,11 @@ import {
   ChevronRight,
   LogOut,
   User,
-  Music,
-  LayoutDashboard,
-  BookMarked,
-  CheckCircle,
-  List,
-  LucideIcon,
-  Trophy,
-  ArrowRight
+  Music
 } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-  SidebarTrigger
-} from "@/components/ui/sidebar";
 
 // Animation variants
-const containerVariants: Variants = {
+const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -54,7 +32,7 @@ const containerVariants: Variants = {
   }
 };
 
-const itemVariants: Variants = {
+const itemVariants = {
   hidden: { y: 20, opacity: 0 },
   visible: {
     y: 0,
@@ -66,43 +44,17 @@ const itemVariants: Variants = {
   }
 };
 
-const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-  hover: { 
-    y: -5, 
-    boxShadow: "0 10px 20px rgba(0, 0, 0, 0.1)",
-    transition: { duration: 0.2 }
-  }
-};
-
 interface ProgressData {
   lesson: string;
   status: string;
 }
 
-interface MenuItem {
-  name: string;
-  icon: LucideIcon;
-  path: string;
-}
-
-const menuItems: MenuItem[] = [
-  { name: "Overview", icon: LayoutDashboard, path: "overview" },
-  { name: "My Lessons", icon: BookOpen, path: "lessons" },
-  { name: "Progress & Points", icon: Award, path: "progress" },
-  { name: "Weekly Practice", icon: Clock, path: "practice" },
-  { name: "Pending Tasks", icon: List, path: "tasks" },
-  { name: "Syllabus", icon: BookMarked, path: "syllabus" }
-];
-
 const StudentDashboard = () => {
   const { user, logout } = useSupabase();
   const navigate = useNavigate();
-  const controls = useAnimation();
   const [loading, setLoading] = useState(true);
   const [progressData, setProgressData] = useState<ProgressData[]>([]);
-  const [activeSection, setActiveSection] = useState("overview");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const { data: studentPoints } = useTotalStudentPoints(user?.id);
   const points = studentPoints ?? 0;
   
@@ -141,8 +93,8 @@ const StudentDashboard = () => {
 
   // Demo tasks
   const demoTasks = [
-    { id: 1, title: "Submit Sarali Varisai recording", dueDate: "2025-05-10", isUrgent: true },
-    { id: 2, title: "Practice Janta Varisai for 30 mins daily", dueDate: "2025-05-15", isUrgent: false }
+    { id: 1, title: "Submit Sarali Varisai recording", dueDate: "2025-05-10" },
+    { id: 2, title: "Practice Janta Varisai for 30 mins daily", dueDate: "2025-05-15" }
   ];
 
   // Classical music quotes for the quote of the day
@@ -190,13 +142,11 @@ const StudentDashboard = () => {
         console.error("Error fetching user data:", error);
       } finally {
         setLoading(false);
-        controls.start("visible");
       }
     };
 
     fetchUserData();
-    controls.start("visible");
-  }, [user, points, controls]);
+  }, [user, points]);
 
   const handleLogout = async () => {
     await logout();
@@ -222,6 +172,9 @@ const StudentDashboard = () => {
     return points + 500;
   };
 
+  // Get student rank (dummy data for now)
+  const studentRank = 8;
+
   // Format date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -237,571 +190,370 @@ const StudentDashboard = () => {
     }
   };
 
-  // Get initials from name
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(part => part[0])
-      .join('')
-      .toUpperCase()
-      .substring(0, 2);
-  };
-
-  const renderContent = () => {
-    switch (activeSection) {
-      case "overview":
-        return renderOverview();
-      case "lessons":
-        return renderLessons();
-      case "progress":
-        return renderProgress();
-      case "practice":
-        return renderPractice();
-      case "tasks":
-        return renderTasks();
-      case "syllabus":
-        return renderSyllabus();
-      default:
-        return renderOverview();
-    }
-  };
-
-  const renderOverview = () => {
-    return (
-      <motion.div 
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="space-y-8"
-      >
-        {/* Stats Overview */}
-        <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <motion.div 
-            variants={cardVariants}
-            whileHover="hover"
-            className="bg-white rounded-xl shadow-sm border border-indigo-100 p-4"
-          >
-            <div className="flex items-center mb-2">
-              <BookOpen className="h-5 w-5 text-indigo-600 mr-2" />
-              <h3 className="text-sm font-medium text-gray-500">Lessons Completed</h3>
-            </div>
-            <div className="flex items-end justify-between">
-              <p className="text-2xl font-bold">{stats.lessonsCompleted} <span className="text-sm font-normal text-gray-500">of {fullSyllabus.length}</span></p>
-              <div className="w-24 bg-gray-100 rounded-full h-2.5 mb-1">
-                <motion.div 
-                  className="bg-indigo-600 h-2.5 rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${stats.progressPercentage}%` }}
-                  transition={{ duration: 1, ease: "easeOut" }}
-                ></motion.div>
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div 
-            variants={cardVariants}
-            whileHover="hover"
-            className="bg-white rounded-xl shadow-sm border border-indigo-100 p-4"
-          >
-            <div className="flex items-center mb-2">
-              <Clock className="h-5 w-5 text-amber-600 mr-2" />
-              <h3 className="text-sm font-medium text-gray-500">Practice Hours</h3>
-            </div>
-            <div className="flex items-end justify-between">
-              <p className="text-2xl font-bold">{stats.practiceHours}h <span className="text-sm font-normal text-gray-500">this week</span></p>
-              <div className="relative w-10 h-10">
-                <svg className="w-10 h-10" viewBox="0 0 36 36">
-                  <circle cx="18" cy="18" r="16" fill="none" className="stroke-current text-gray-100" strokeWidth="3"></circle>
-                  <motion.circle 
-                    cx="18" cy="18" r="16" fill="none" 
-                    className="stroke-current text-amber-500" 
-                    strokeWidth="3"
-                    strokeDasharray="100"
-                    initial={{ strokeDashoffset: 100 }}
-                    animate={{ strokeDashoffset: 100 - (stats.practiceHours / 5 * 100) }}
-                    transition={{ duration: 1, ease: "easeOut" }}
-                    transform="rotate(-90 18 18)"
-                  ></motion.circle>
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center text-xs font-medium">
-                  {Math.round(stats.practiceHours / 5 * 100)}%
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div 
-            variants={cardVariants}
-            whileHover="hover"
-            className="bg-white rounded-xl shadow-sm border border-indigo-100 p-4"
-          >
-            <div className="flex items-center mb-2">
-              <Award className="h-5 w-5 text-purple-600 mr-2" />
-              <h3 className="text-sm font-medium text-gray-500">Your Points</h3>
-            </div>
-            <div className="flex items-center">
-              <p className="text-2xl font-bold">{stats.studentPoints}</p>
-              <motion.div 
-                animate={{ rotate: [0, 10, -10, 10, 0] }}
-                transition={{ 
-                  duration: 0.5, 
-                  ease: "easeInOut",
-                  repeat: 1,
-                  repeatDelay: 5
-                }}
-                className="ml-2"
-              >
-                <Sparkles className="h-5 w-5 text-yellow-500" />
-              </motion.div>
-            </div>
-            <p className="text-xs text-gray-500 mt-1">Next milestone: {getNextMilestone(stats.studentPoints)} points</p>
-          </motion.div>
-
-          <motion.div 
-            variants={cardVariants}
-            whileHover="hover"
-            className="bg-white rounded-xl shadow-sm border border-indigo-100 p-4"
-          >
-            <div className="flex items-center mb-2">
-              <Calendar className="h-5 w-5 text-red-600 mr-2" />
-              <h3 className="text-sm font-medium text-gray-500">Pending Tasks</h3>
-            </div>
-            <p className="text-2xl font-bold">{stats.pendingTasks}</p>
-            <p className="text-xs text-gray-500 mt-1">Due this week</p>
-          </motion.div>
-        </motion.div>
-
-        {/* Main Content Area - Lessons and Tasks */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Lessons Column (2/3 width) */}
-          <motion.div 
-            variants={itemVariants}
-            className="col-span-1 lg:col-span-2 space-y-6"
-          >
-            <motion.div 
-              variants={cardVariants}
-              whileHover={{ y: -3, boxShadow: "0 8px 30px rgba(0, 0, 0, 0.12)" }}
-              className="bg-white rounded-xl shadow-sm border border-indigo-100 overflow-hidden"
-            >
-              <div className="border-b px-6 py-4 flex justify-between items-center">
-                <div className="flex items-center">
-                  <GraduationCap className="h-5 w-5 text-indigo-600 mr-2" />
-                  <h2 className="text-lg font-serif font-bold">My Lessons</h2>
-                </div>
-                <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                  {getStudentLevel(points)}
-                </span>
-              </div>
-              
-              <div className="divide-y">
-                {fullSyllabus.slice(0, 4).map((lesson) => (
-                  <motion.div 
-                    key={lesson.id}
-                    whileHover={{ backgroundColor: "rgba(249, 250, 251, 0.5)" }}
-                    className="px-6 py-3 flex justify-between items-center"
-                  >
-                    <div className="flex items-center">
-                      <Music className="h-4 w-4 text-indigo-500 mr-3 flex-shrink-0" />
-                      <span className="font-medium text-gray-900">{lesson.title}</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <span className="text-sm text-gray-500">{formatDate(lesson.date)}</span>
-                      <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(lesson.status)}`}>
-                        {lesson.status}
-                      </span>
-                      <ChevronRight className="h-4 w-4 text-gray-400" />
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-              
-              <div className="px-6 py-3 bg-indigo-50">
-                <button 
-                  onClick={() => setActiveSection("lessons")}
-                  className="text-sm text-indigo-600 font-medium flex items-center"
-                >
-                  View all lessons
-                  <ChevronRight className="h-4 w-4 ml-1" />
-                </button>
-              </div>
-            </motion.div>
-            
-            {/* Quote of the Day */}
-            <motion.div 
-              variants={cardVariants}
-              whileHover={{ y: -3, boxShadow: "0 8px 30px rgba(0, 0, 0, 0.12)" }}
-              className="bg-white rounded-xl shadow-sm border border-indigo-100 p-6"
-            >
-              <h2 className="flex items-center text-lg font-serif font-bold mb-4">
-                <Sparkles className="h-5 w-5 text-amber-500 mr-2" />
-                Quote of the Day
-              </h2>
-              <blockquote className="italic text-gray-700">
-                "{todayQuote.text}"
-              </blockquote>
-              <p className="text-right text-sm text-gray-500 mt-2">— {todayQuote.author}</p>
-            </motion.div>
-          </motion.div>
-          
-          {/* Side Column (1/3 width) */}
-          <motion.div
-            variants={itemVariants}
-            className="space-y-6"
-          >
-            {/* Top Students */}
-            <motion.div 
-              variants={cardVariants}
-              whileHover={{ y: -3, boxShadow: "0 8px 30px rgba(0, 0, 0, 0.12)" }}
-              className="bg-gradient-to-br from-maroon-50 to-white border border-maroon-100 rounded-xl shadow-md p-4"
-            >
-              <div className="flex items-center mb-4">
-                <Trophy className="h-5 w-5 text-maroon-600 mr-2" />
-                <h2 className="text-lg font-serif font-bold text-maroon-900">Top Students</h2>
-              </div>
-              
-              <div className="space-y-3">
-                {[
-                  { rank: 1, name: "Ananya S", points: 540 },
-                  { rank: 2, name: "Rohan M", points: 485 },
-                  { rank: 3, name: "Sofia T", points: 410 }
-                ].map((student) => (
-                  <div key={student.rank} className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className={`h-7 w-7 rounded-full flex items-center justify-center text-white text-xs font-bold mr-3
-                        ${student.rank === 1 ? "bg-amber-500" : 
-                          student.rank === 2 ? "bg-gray-400" : 
-                          student.rank === 3 ? "bg-amber-700" : "bg-maroon-300"}`
-                      }>
-                        {student.rank}
-                      </div>
-                      <Avatar className="h-8 w-8 mr-2">
-                        <AvatarFallback className="bg-amber-100 text-amber-800">
-                          {getInitials(student.name)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="font-medium">{student.name}</span>
-                    </div>
-                    <span className="font-bold text-maroon-800">{student.points}</span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-            
-            {/* Your Stats */}
-            <motion.div 
-              variants={cardVariants}
-              whileHover={{ y: -3, boxShadow: "0 8px 30px rgba(0, 0, 0, 0.12)" }}
-              className="bg-white rounded-xl shadow-sm border border-indigo-100 p-4"
-            >
-              <h2 className="flex items-center text-lg font-serif font-bold mb-4">
-                <User className="h-5 w-5 text-indigo-600 mr-2" />
-                Your Stats
-              </h2>
-              
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Points:</span>
-                  <span className="font-bold text-xl">{points}</span>
-                </div>
-                
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Level:</span>
-                  <span className="font-bold">{getStudentLevel(points).split(" ")[0]}</span>
-                </div>
-                
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Next milestone:</span>
-                  <span className="font-bold">{getNextMilestone(points)} pts</span>
-                </div>
-              </div>
-            </motion.div>
-            
-            {/* Pending Tasks */}
-            <motion.div 
-              variants={cardVariants}
-              whileHover={{ y: -3, boxShadow: "0 8px 30px rgba(0, 0, 0, 0.12)" }}
-              className="bg-white rounded-xl shadow-sm border border-indigo-100 overflow-hidden"
-            >
-              <div className="border-b px-4 py-3">
-                <h2 className="text-lg font-serif font-bold flex items-center">
-                  <List className="h-5 w-5 mr-2 text-indigo-600" />
-                  Pending Tasks
-                </h2>
-              </div>
-              
-              <div>
-                {demoTasks.map((task) => (
-                  <motion.div 
-                    key={task.id}
-                    whileHover={{ backgroundColor: "rgba(249, 250, 251, 0.5)" }}
-                    className="px-4 py-3 border-b last:border-0"
-                  >
-                    <div className="flex items-start">
-                      <div className="mt-1">
-                        <input 
-                          type="checkbox" 
-                          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" 
-                        />
-                      </div>
-                      <div className="ml-3">
-                        <p className="text-sm font-medium text-gray-900">{task.title}</p>
-                        <p className={`text-xs mt-1 ${task.isUrgent ? "text-red-500 font-medium" : "text-gray-500"}`}>
-                          Due: {formatDate(task.dueDate)}
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-              
-              <div className="px-4 py-3 bg-indigo-50">
-                <button 
-                  onClick={() => setActiveSection("tasks")}
-                  className="text-sm text-indigo-600 font-medium flex items-center"
-                >
-                  View all tasks
-                  <ChevronRight className="h-4 w-4 ml-1" />
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </motion.div>
-    );
-  };
-
-  // These render functions would be implemented with real content
-  const renderLessons = () => (
-    <motion.div 
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="space-y-6"
-    >
-      <motion.h2 variants={itemVariants} className="text-2xl font-serif font-bold flex items-center">
-        <BookOpen className="h-6 w-6 mr-2 text-indigo-600" />
-        My Lessons
-      </motion.h2>
-
-      <motion.div variants={itemVariants} className="space-y-6">
-        <div className="bg-white rounded-xl shadow-md overflow-hidden border border-indigo-100">
-          <div className="border-b border-indigo-100 bg-indigo-50 px-6 py-4">
-            <h3 className="text-lg font-serif font-semibold text-indigo-900">
-              LEVEL 1 – AARAMBHA (Beginner)
-            </h3>
-          </div>
-          <div className="divide-y divide-gray-100">
-            {fullSyllabus.filter(lesson => lesson.level === 1).map((lesson) => (
-              <motion.div 
-                key={lesson.id}
-                whileHover={{ backgroundColor: "rgba(249, 250, 251, 0.5)" }}
-                className="px-6 py-4 flex justify-between items-center"
-              >
-                <div className="flex items-center">
-                  <Music className="h-4 w-4 text-indigo-500 mr-3 flex-shrink-0" />
-                  <span className="font-medium text-gray-900">{lesson.title}</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <span className="text-sm text-gray-500">{formatDate(lesson.date)}</span>
-                  <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(lesson.status)}`}>
-                    {lesson.status}
-                  </span>
-                  <ArrowRight className="h-4 w-4 text-gray-400" />
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-xl shadow-md overflow-hidden border border-indigo-100">
-          <div className="border-b border-indigo-100 bg-indigo-50 px-6 py-4">
-            <h3 className="text-lg font-serif font-semibold text-indigo-900">
-              LEVEL 2 – MADHYAMA (Intermediate)
-            </h3>
-          </div>
-          <div className="divide-y divide-gray-100">
-            {fullSyllabus.filter(lesson => lesson.level === 2).map((lesson) => (
-              <motion.div 
-                key={lesson.id}
-                whileHover={{ backgroundColor: "rgba(249, 250, 251, 0.5)" }}
-                className="px-6 py-4 flex justify-between items-center"
-              >
-                <div className="flex items-center">
-                  <Music className="h-4 w-4 text-indigo-500 mr-3 flex-shrink-0" />
-                  <span className="font-medium text-gray-900">{lesson.title}</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <span className="text-sm text-gray-500">{formatDate(lesson.date)}</span>
-                  <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(lesson.status)}`}>
-                    {lesson.status}
-                  </span>
-                  <ArrowRight className="h-4 w-4 text-gray-400" />
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-  
-  const renderProgress = () => (
-    <motion.div 
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="space-y-6"
-    >
-      <motion.h2 variants={itemVariants} className="text-2xl font-serif font-bold flex items-center">
-        <Award className="h-6 w-6 mr-2 text-indigo-600" />
-        Progress & Points
-      </motion.h2>
-      
-      <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-md p-6 border border-indigo-100">
-          <h3 className="text-lg font-serif font-semibold mb-4 text-indigo-900">Your Achievement Points</h3>
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <div className="text-4xl font-bold">{stats.studentPoints}</div>
-              <div className="text-sm text-gray-500">total points earned</div>
-            </div>
-            <div className="w-20 h-20 rounded-full bg-indigo-100 flex items-center justify-center">
-              <Award className="w-10 h-10 text-indigo-600" />
-            </div>
-          </div>
-          
-          <div className="space-y-4">
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-sm font-medium">Progress to next level</span>
-                <span className="text-sm font-medium">{points}/200</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
-                <div className="bg-indigo-600 h-2.5 rounded-full" style={{ width: `${Math.min(points/200*100, 100)}%` }}></div>
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-between text-sm">
-              <span>Current level: <span className="font-semibold">{getStudentLevel(points).split(" ")[0]}</span></span>
-              <span>Next: <span className="font-semibold">200 points</span></span>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-xl shadow-md p-6 border border-indigo-100">
-          <h3 className="text-lg font-serif font-semibold mb-4 text-indigo-900">Performance Summary</h3>
-          <div className="space-y-6">
-            <div>
-              <div className="flex justify-between mb-2 text-sm">
-                <span>Lessons Completed</span>
-                <span className="font-medium">{stats.lessonsCompleted}/{fullSyllabus.length}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
-                <div className="bg-green-500 h-2.5 rounded-full" style={{ width: `${stats.progressPercentage}%` }}></div>
-              </div>
-            </div>
-            
-            <div>
-              <div className="flex justify-between mb-2 text-sm">
-                <span>Practice Consistency</span>
-                <span className="font-medium">80%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
-                <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: "80%" }}></div>
-              </div>
-            </div>
-            
-            <div>
-              <div className="flex justify-between mb-2 text-sm">
-                <span>Technique Score</span>
-                <span className="font-medium">65%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
-                <div className="bg-amber-500 h-2.5 rounded-full" style={{ width: "65%" }}></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-  
-  const renderPractice = () => (
-    <div>Practice content coming soon...</div>
-  );
-  
-  const renderTasks = () => (
-    <div>Tasks content coming soon...</div>
-  );
-  
-  const renderSyllabus = () => (
-    <div>Syllabus content coming soon...</div>
-  );
-
   return (
-    <SidebarProvider>
-      <div className="min-h-screen bg-gray-50">
-        <Sidebar className="border-r border-gray-200">
-          <SidebarHeader className="px-4 py-3 border-b border-gray-100">
-            <div className="flex items-center justify-between">
-              <h2 className="font-serif text-lg font-bold">Violin Academy</h2>
-              <SidebarTrigger className="sm:hidden" />
+    <motion.div 
+      className="min-h-screen bg-gradient-to-b from-amber-50 to-white"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* Header */}
+      <header className="bg-gradient-to-r from-indigo-800 to-indigo-600 text-white">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div>
+              <h1 className="text-3xl font-serif font-bold">Carnatic Violin Academy</h1>
+              <p className="text-indigo-100 mt-1">
+                Welcome, <span className="font-medium">{firstName}</span>
+              </p>
             </div>
-          </SidebarHeader>
-
-          <SidebarContent>
-            <div className="p-4 border-b border-gray-100">
-              <div className="flex items-center space-x-3">
-                <Avatar>
-                  <AvatarFallback className="bg-indigo-100 text-indigo-800">
-                    {firstName.substring(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="space-y-0.5">
-                  <p className="text-sm font-medium">{firstName}</p>
-                  <p className="text-xs text-gray-500">{getStudentLevel(points)}</p>
-                </div>
-              </div>
+            
+            <div className="mt-4 md:mt-0 flex items-center">
+              <button 
+                onClick={() => setActiveTab("dashboard")} 
+                className={`px-3 py-1 mx-1 rounded-md transition-colors ${activeTab === "dashboard" ? "bg-white text-indigo-800" : "text-white hover:bg-indigo-700"}`}
+              >
+                Dashboard
+              </button>
+              <button 
+                onClick={() => setActiveTab("guide")} 
+                className={`px-3 py-1 mx-1 rounded-md transition-colors ${activeTab === "guide" ? "bg-white text-indigo-800" : "text-white hover:bg-indigo-700"}`}
+              >
+                Learning Guide
+              </button>
+              <button 
+                onClick={handleLogout}
+                className="ml-4 flex items-center px-3 py-1 bg-indigo-700 hover:bg-indigo-900 rounded-md transition-colors"
+              >
+                <LogOut className="h-4 w-4 mr-1" />
+                Logout
+              </button>
             </div>
-
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.path} active={activeSection === item.path}>
-                  <SidebarMenuButton onClick={() => setActiveSection(item.path)}>
-                    <item.icon className="w-5 h-5 mr-3" />
-                    {item.name}
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarContent>
-
-          <SidebarFooter>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton className="text-red-500" onClick={handleLogout}>
-                  <LogOut className="w-5 h-5 mr-3" />
-                  Logout
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarFooter>
-        </Sidebar>
-
-        <div className="ml-0 sm:ml-64 p-6">
-          <div className="mb-6">
-            <h1 className="font-serif text-3xl font-bold">Welcome back, {firstName}!</h1>
-            <p className="text-gray-500">
-              Here's your learning progress and upcoming lessons.
-            </p>
           </div>
-
-          {renderContent()}
         </div>
-      </div>
-    </SidebarProvider>
+      </header>
+      
+      <main className="container mx-auto px-4 py-8">
+        {activeTab === "dashboard" ? (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key="dashboard"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              className="space-y-8"
+            >
+              {/* Stats Overview */}
+              <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-white rounded-xl shadow-sm border border-indigo-100 p-4">
+                  <div className="flex items-center mb-2">
+                    <BookOpen className="h-5 w-5 text-indigo-600 mr-2" />
+                    <h3 className="text-sm font-medium text-gray-500">Lessons Completed</h3>
+                  </div>
+                  <div className="flex items-end justify-between">
+                    <p className="text-2xl font-bold">{stats.lessonsCompleted} <span className="text-sm font-normal text-gray-500">of {fullSyllabus.length}</span></p>
+                    <div className="w-24 bg-gray-100 rounded-full h-2.5 mb-1">
+                      <motion.div 
+                        className="bg-indigo-600 h-2.5 rounded-full"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${stats.progressPercentage}%` }}
+                        transition={{ duration: 1, ease: "easeOut" }}
+                      ></motion.div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-sm border border-indigo-100 p-4">
+                  <div className="flex items-center mb-2">
+                    <Clock className="h-5 w-5 text-amber-600 mr-2" />
+                    <h3 className="text-sm font-medium text-gray-500">Practice Hours</h3>
+                  </div>
+                  <div className="flex items-end justify-between">
+                    <p className="text-2xl font-bold">{stats.practiceHours}h <span className="text-sm font-normal text-gray-500">this week</span></p>
+                    <div className="relative w-10 h-10">
+                      <svg className="w-10 h-10" viewBox="0 0 36 36">
+                        <circle cx="18" cy="18" r="16" fill="none" className="stroke-current text-gray-100" strokeWidth="3"></circle>
+                        <motion.circle 
+                          cx="18" cy="18" r="16" fill="none" 
+                          className="stroke-current text-amber-500" 
+                          strokeWidth="3"
+                          strokeDasharray="100"
+                          initial={{ strokeDashoffset: 100 }}
+                          animate={{ strokeDashoffset: 100 - (stats.practiceHours / 5 * 100) }}
+                          transition={{ duration: 1, ease: "easeOut" }}
+                          transform="rotate(-90 18 18)"
+                        ></motion.circle>
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center text-xs font-medium">
+                        {Math.round(stats.practiceHours / 5 * 100)}%
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-sm border border-indigo-100 p-4">
+                  <div className="flex items-center mb-2">
+                    <Award className="h-5 w-5 text-purple-600 mr-2" />
+                    <h3 className="text-sm font-medium text-gray-500">Your Points</h3>
+                  </div>
+                  <div className="flex items-center">
+                    <p className="text-2xl font-bold">{stats.studentPoints}</p>
+                    <motion.div 
+                      animate={{ rotate: [0, 10, -10, 10, 0] }}
+                      transition={{ 
+                        duration: 0.5, 
+                        ease: "easeInOut",
+                        repeat: 1,
+                        repeatDelay: 5
+                      }}
+                      className="ml-2"
+                    >
+                      <Sparkles className="h-5 w-5 text-yellow-500" />
+                    </motion.div>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Next milestone: {getNextMilestone(stats.studentPoints)} points</p>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-sm border border-indigo-100 p-4">
+                  <div className="flex items-center mb-2">
+                    <Calendar className="h-5 w-5 text-red-600 mr-2" />
+                    <h3 className="text-sm font-medium text-gray-500">Pending Tasks</h3>
+                  </div>
+                  <p className="text-2xl font-bold">{stats.pendingTasks}</p>
+                  <p className="text-xs text-gray-500 mt-1">Due this week</p>
+                </div>
+              </motion.div>
+
+              {/* Main Content Area - Lessons and Tasks */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Lessons Column (2/3 width) */}
+                <motion.div 
+                  variants={itemVariants}
+                  className="col-span-1 lg:col-span-2 space-y-6"
+                >
+                  <div className="bg-white rounded-xl shadow-sm border border-indigo-100 overflow-hidden">
+                    <div className="border-b px-6 py-4 flex justify-between items-center">
+                      <div className="flex items-center">
+                        <GraduationCap className="h-5 w-5 text-indigo-600 mr-2" />
+                        <h2 className="text-lg font-serif font-bold">My Lessons</h2>
+                      </div>
+                      <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                        {getStudentLevel(points)}
+                      </span>
+                    </div>
+                    
+                    <div className="divide-y">
+                      {fullSyllabus.slice(0, 6).map((lesson) => (
+                        <motion.div 
+                          key={lesson.id}
+                          whileHover={{ backgroundColor: "rgba(249, 250, 251, 0.5)" }}
+                          className="px-6 py-3 flex justify-between items-center"
+                        >
+                          <div className="flex items-center">
+                            <Music className="h-4 w-4 text-indigo-500 mr-3 flex-shrink-0" />
+                            <span className="font-medium text-gray-900">{lesson.title}</span>
+                          </div>
+                          <div className="flex items-center space-x-3">
+                            <span className="text-sm text-gray-500">{formatDate(lesson.date)}</span>
+                            <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(lesson.status)}`}>
+                              {lesson.status}
+                            </span>
+                            <ChevronRight className="h-4 w-4 text-gray-400" />
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                    
+                    <div className="px-6 py-3 bg-indigo-50">
+                      <button className="text-sm text-indigo-600 font-medium flex items-center">
+                        View all lessons
+                        <ChevronRight className="h-4 w-4 ml-1" />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Quote of the Day */}
+                  <motion.div 
+                    variants={itemVariants}
+                    className="bg-white rounded-xl shadow-sm border border-indigo-100 p-6"
+                  >
+                    <h2 className="flex items-center text-lg font-serif font-bold mb-4">
+                      <Sparkles className="h-5 w-5 text-amber-500 mr-2" />
+                      Quote of the Day
+                    </h2>
+                    <blockquote className="italic text-gray-700">
+                      "{todayQuote.text}"
+                    </blockquote>
+                    <p className="text-right text-sm text-gray-500 mt-2">— {todayQuote.author}</p>
+                  </motion.div>
+                </motion.div>
+                
+                {/* Side Column (1/3 width) */}
+                <motion.div
+                  variants={itemVariants}
+                  className="space-y-6"
+                >
+                  {/* Student Stats */}
+                  <div className="bg-white rounded-xl shadow-sm border border-indigo-100 overflow-hidden">
+                    <div className="border-b px-6 py-4">
+                      <h2 className="flex items-center text-lg font-serif font-bold">
+                        <User className="h-5 w-5 text-indigo-600 mr-2" />
+                        Your Stats
+                      </h2>
+                    </div>
+                    
+                    <div className="p-6 space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Points:</span>
+                        <span className="font-bold text-xl">{points}</span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Rank:</span>
+                        <span className="font-bold">{studentRank}th</span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Level:</span>
+                        <span className="font-bold">{getStudentLevel(points).split(" ")[0]}</span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Next milestone:</span>
+                        <span className="font-bold">{getNextMilestone(points)} pts</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Pending Tasks */}
+                  <div className="bg-white rounded-xl shadow-sm border border-indigo-100 overflow-hidden">
+                    <div className="border-b px-6 py-4">
+                      <h2 className="text-lg font-serif font-bold">Pending Tasks</h2>
+                    </div>
+                    
+                    <div>
+                      {demoTasks.map((task) => (
+                        <motion.div 
+                          key={task.id}
+                          whileHover={{ backgroundColor: "rgba(249, 250, 251, 0.5)" }}
+                          className="px-6 py-4 border-b last:border-0"
+                        >
+                          <div className="flex items-start">
+                            <input 
+                              type="checkbox" 
+                              className="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" 
+                            />
+                            <div className="ml-3">
+                              <p className="text-sm font-medium text-gray-900">{task.title}</p>
+                              <p className="text-xs text-gray-500 mt-1">Due: {formatDate(task.dueDate)}</p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key="guide"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+            >
+              <div className="max-w-3xl mx-auto">
+                <motion.h1 variants={itemVariants} className="text-3xl font-serif font-bold text-center mb-8">
+                  Learning Guide for Carnatic Violin
+                </motion.h1>
+                
+                <motion.p variants={itemVariants} className="text-lg text-gray-700 mb-8">
+                  Welcome to your personalized learning journey, {firstName}! This guide will help you navigate through 
+                  the beautiful world of Carnatic violin music, from the basics to advanced techniques.
+                </motion.p>
+                
+                <motion.div variants={itemVariants} className="mb-10">
+                  <h2 className="text-2xl font-serif font-bold mb-4">Your Learning Path</h2>
+                  <div className="relative">
+                    {/* Progress bar */}
+                    <div className="absolute left-4 top-0 bottom-0 w-1 bg-gray-200"></div>
+                    <div className="absolute left-4 top-0 w-1 bg-indigo-600" style={{ height: `${stats.progressPercentage}%` }}></div>
+                    
+                    {/* Levels */}
+                    <div className="space-y-12">
+                      {[
+                        { name: "AARAMBHA (Beginner)", desc: "Fundamentals of violin holding, bowing, and basic notation", active: points < 200 },
+                        { name: "MADHYAMA (Intermediate)", desc: "Exploration of ragas, gamakas, and more complex techniques", active: points >= 200 && points < 500 },
+                        { name: "UTTHAMA (Advanced)", desc: "Raga improvisation, advanced gamakas, and complete compositions", active: points >= 500 && points < 1000 },
+                        { name: "VIDHWATH (Professional)", desc: "Concert-level performance, advanced improvisation, and teaching", active: points >= 1000 }
+                      ].map((level, index) => (
+                        <div key={index} className="relative pl-12">
+                          {/* Level marker */}
+                          <div className={`absolute left-2.5 -translate-x-1/2 w-5 h-5 rounded-full ${level.active ? 'bg-indigo-600 ring-4 ring-indigo-100' : 'bg-gray-200'}`}></div>
+                          
+                          <h3 className={`text-xl font-serif font-bold ${level.active ? 'text-indigo-800' : 'text-gray-500'}`}>
+                            {level.name}
+                          </h3>
+                          <p className="text-gray-600 mt-1">{level.desc}</p>
+                          
+                          {level.active && (
+                            <div className="mt-4 bg-indigo-50 border border-indigo-100 rounded-lg p-4">
+                              <p className="text-sm text-indigo-800">
+                                <span className="font-medium">Your current level!</span> Focus on completing the lessons in this level before advancing.
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+                
+                <motion.div variants={itemVariants} className="mb-10">
+                  <h2 className="text-2xl font-serif font-bold mb-4">Practice Tips</h2>
+                  <div className="bg-white rounded-lg shadow-sm border border-indigo-100 p-6 space-y-4">
+                    <div className="flex items-start">
+                      <div className="rounded-full bg-indigo-100 p-2 mr-4">
+                        <Music className="h-5 w-5 text-indigo-600" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-medium">Daily Consistency</h3>
+                        <p className="text-gray-600">Practice for at least 30 minutes every day, focusing on one element at a time.</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start">
+                      <div className="rounded-full bg-amber-100 p-2 mr-4">
+                        <Clock className="h-5 w-5 text-amber-600" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-medium">Slow and Steady</h3>
+                        <p className="text-gray-600">Master techniques at slow speeds before increasing tempo. Quality over speed!</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start">
+                      <div className="rounded-full bg-green-100 p-2 mr-4">
+                        <GraduationCap className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-medium">Record Yourself</h3>
+                        <p className="text-gray-600">Record your practice sessions and listen back to identify areas for improvement.</p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        )}
+      </main>
+    </motion.div>
   );
 };
 
 export default StudentDashboard;
-

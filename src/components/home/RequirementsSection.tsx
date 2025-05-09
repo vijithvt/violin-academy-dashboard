@@ -1,85 +1,124 @@
 
-import { Link } from 'react-router-dom';
-import { ExternalLink } from 'lucide-react';
+import { CheckCircle, HelpCircle, AlertCircle } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 
 const RequirementsSection = () => {
+  const { toast } = useToast();
+  
+  const requirements = [
+    {
+      name: "Violin",
+      description: "Main instrument",
+      image: "/lovable-uploads/6f4fc66e-f728-44f8-a1da-6721b9682495.png"
+    },
+    {
+      name: "Bow",
+      description: "For sound production",
+      image: "/lovable-uploads/2386dc2f-15e2-4fbc-b5af-d210ea749099.png"
+    },
+    {
+      name: "Rosin",
+      description: "Helps bow grip strings",
+      image: "/lovable-uploads/25386e0b-f745-41d2-9872-a2e7cdb3a6e4.png"
+    },
+    {
+      name: "Metronome",
+      description: "For rhythm practice",
+      image: "/lovable-uploads/cc04dd6a-b479-4eae-a679-718755823964.png"
+    },
+    {
+      name: "Tambura App",
+      description: "For pitch reference",
+      image: "/lovable-uploads/6b8c4f2e-e217-47eb-9d47-c1a8ed576634.png"
+    },
+    {
+      name: "Practice Journal",
+      description: "To track progress",
+      image: "/lovable-uploads/65a367ac-e8fa-48a2-80fa-7cbc03541542.png"
+    }
+  ];
+
   return (
-    <section id="requirements" className="py-16 bg-gray-50">
+    <section id="requirements" className="py-16 bg-gradient-to-r from-amber-50 to-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-12">Before You Start</h2>
-        <p className="text-xl text-center mb-12 max-w-3xl mx-auto">
-          What you'll need to begin your musical journey
-        </p>
+        <h2 className="text-3xl font-serif font-bold text-maroon-900 mb-10 text-center">
+          What You Need to Start
+        </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Instrument */}
-          <div className="bg-white rounded-lg shadow-md p-6 transition-transform hover:-translate-y-1 hover:shadow-lg">
-            <div className="mb-4 h-48 rounded-md overflow-hidden">
-              <img 
-                src="/lovable-uploads/f9ac38e5-1bd9-4dbe-ac19-73b8866cc805.png" 
-                alt="Violin" 
-                className="w-full h-full object-cover"
-              />
+        <div className="max-w-6xl mx-auto mb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Basic Requirements */}
+            <div className="bg-white p-6 rounded-xl shadow-md border border-amber-100">
+              <h3 className="text-xl font-bold text-maroon-800 mb-6 flex items-center">
+                <span className="w-8 h-8 bg-maroon-800 text-white rounded-full flex items-center justify-center mr-3">1</span>
+                Essential Materials
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {requirements.map((item, index) => (
+                  <div key={index} className="bg-amber-50 p-4 rounded-lg shadow-sm flex flex-col items-center text-center">
+                    <div className="w-24 h-24 mb-3 bg-white rounded-lg overflow-hidden flex items-center justify-center border border-amber-100">
+                      <img 
+                        src={item.image} 
+                        alt={item.name} 
+                        className="object-contain h-20 w-20"
+                      />
+                    </div>
+                    <h4 className="font-medium text-maroon-800 mb-1">{item.name}</h4>
+                    <p className="text-sm text-gray-600">{item.description}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-            <h3 className="text-xl font-semibold mb-2">Instrument</h3>
-            <p className="text-gray-600 mb-4">
-              Quality student violin (3/4 or 4/4 size based on student age)
-            </p>
-          </div>
-          
-          {/* Accessories */}
-          <div className="bg-white rounded-lg shadow-md p-6 transition-transform hover:-translate-y-1 hover:shadow-lg">
-            <div className="mb-4 h-48 rounded-md overflow-hidden">
-              <img 
-                src="/lovable-uploads/2386dc2f-15e2-4fbc-b5af-d210ea749099.png" 
-                alt="Violin Accessories" 
-                className="w-full h-full object-cover"
-              />
+            
+            {/* Violin Purchase Guide */}
+            <div className="bg-white p-6 rounded-xl shadow-md border border-amber-100">
+              <h3 className="text-xl font-bold text-maroon-800 mb-6 flex items-center">
+                <span className="w-8 h-8 bg-maroon-800 text-white rounded-full flex items-center justify-center mr-3">2</span>
+                Violin Purchase Guide
+              </h3>
+              
+              <div className="space-y-4">
+                <Card className="border-amber-100">
+                  <CardContent className="p-4">
+                    <h4 className="font-medium flex items-center text-maroon-800 mb-2">
+                      <AlertCircle className="h-4 w-4 mr-2 text-amber-600" /> Where to Buy
+                    </h4>
+                    <p className="text-sm text-gray-700">
+                      Visit a local music store instead of buying online to check the violin setup (tuning pegs, 
+                      string adjusters, bridge height) before purchase.
+                    </p>
+                  </CardContent>
+                </Card>
+                
+                <Card className="border-amber-100">
+                  <CardContent className="p-4">
+                    <h4 className="font-medium flex items-center text-maroon-800 mb-2">
+                      <AlertCircle className="h-4 w-4 mr-2 text-amber-600" /> Recommended Models
+                    </h4>
+                    <p className="text-sm text-gray-700">
+                      For age 11+, choose a full size (4/4) violin. Entry-level Chinese/Korean violins 
+                      (₹6000-7000) are adequate for beginners.
+                    </p>
+                  </CardContent>
+                </Card>
+                
+                <Card className="border-amber-100">
+                  <CardContent className="p-4">
+                    <h4 className="font-medium flex items-center text-maroon-800 mb-2">
+                      <HelpCircle className="h-4 w-4 mr-2 text-amber-600" /> Before Buying, Check
+                    </h4>
+                    <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
+                      <li>String heights and spacing</li>
+                      <li>Smooth tuning pegs and adjusters</li>
+                      <li>Included rosin and accessories</li>
+                      <li>Extra beginner strings</li>
+                    </ul>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-            <h3 className="text-xl font-semibold mb-2">Accessories</h3>
-            <p className="text-gray-600 mb-4">
-              Shoulder rest, rosin, extra strings, and a digital tuner
-            </p>
           </div>
-          
-          {/* Practice Space */}
-          <div className="bg-white rounded-lg shadow-md p-6 transition-transform hover:-translate-y-1 hover:shadow-lg">
-            <div className="mb-4 h-48 rounded-md overflow-hidden">
-              <img 
-                src="/lovable-uploads/cc04dd6a-b479-4eae-a679-718755823964.png" 
-                alt="Practice Space" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <h3 className="text-xl font-semibold mb-2">Practice Space</h3>
-            <p className="text-gray-600 mb-4">
-              Quiet room with good lighting and a sturdy chair without armrests
-            </p>
-          </div>
-          
-          {/* Time Commitment */}
-          <div className="bg-white rounded-lg shadow-md p-6 transition-transform hover:-translate-y-1 hover:shadow-lg">
-            <div className="mb-4 h-48 rounded-md overflow-hidden">
-              <img 
-                src="/lovable-uploads/48f9d0f7-776f-493e-995f-6855aa1e6a6e.png" 
-                alt="Practice Time" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <h3 className="text-xl font-semibold mb-2">Time Commitment</h3>
-            <p className="text-gray-600 mb-4">
-              20-30 minutes daily practice (beginners), 45-60 minutes (advanced)
-            </p>
-          </div>
-        </div>
-        
-        <div className="text-center mt-12">
-          <Link to="/beginner-guide" className="inline-flex items-center text-primary font-medium hover:underline">
-            View Violin Purchase Guide <ExternalLink className="ml-1 h-4 w-4" />
-          </Link>
-          <p className="text-gray-500 mt-2">
-            Don't have an instrument yet? We provide guidance on selecting the right violin for your needs and budget.
-          </p>
         </div>
       </div>
     </section>

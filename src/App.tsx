@@ -1,73 +1,68 @@
 
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import AdminLogin from './pages/AdminLogin';
-import Blogs from './pages/Blogs';
-import BeginnerGuide from './pages/BeginnerGuide';
-import StudentDashboard from './pages/StudentDashboard';
-import Dashboard from './pages/Dashboard';
-import StudentsPage from './pages/StudentsPage';
-import StudentDetails from './pages/StudentDetails';
-import EditStudent from './pages/EditStudent';
-import AdmissionForm from './pages/AdmissionForm';
-import NotFound from './pages/NotFound';
-import ProtectedRoute from './components/auth/ProtectedRoute';
-import StudentProtectedRoute from './components/auth/StudentProtectedRoute';
 import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "@/context/AuthContext";
+import { SupabaseProvider } from "@/context/SupabaseContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import StudentProtectedRoute from "@/components/StudentProtectedRoute";
 
-function App() {
-  return (
+// Pages
+import AdminLogin from "./pages/AdminLogin";
+import Dashboard from "./pages/Dashboard";
+import AdmissionForm from "./pages/AdmissionForm";
+import NotFound from "./pages/NotFound";
+import StudentDetails from "./pages/StudentDetails";
+import EditStudent from "./pages/EditStudent";
+import Home from "./pages/Home";
+import Blogs from "./pages/Blogs";
+import Login from "./pages/Login";
+import StudentDashboard from "./pages/StudentDashboard";
+import StudentsPage from "./pages/StudentsPage"; // Add the new Students page
+
+const queryClient = new QueryClient();
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/admin-login" element={<AdminLogin />} />
-          <Route path="/blogs" element={<Blogs />} />
-          <Route path="/beginner-guide" element={<BeginnerGuide />} />
-          
-          {/* Protected Student Routes */}
-          <Route path="/dashboard/student" element={
-            <StudentProtectedRoute>
-              <StudentDashboard />
-            </StudentProtectedRoute>
-          } />
-          
-          {/* Protected Admin Routes */}
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } />
-          <Route path="/students" element={
-            <ProtectedRoute>
-              <StudentsPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/student/:id" element={
-            <ProtectedRoute>
-              <StudentDetails />
-            </ProtectedRoute>
-          } />
-          <Route path="/student/edit/:id" element={
-            <ProtectedRoute>
-              <EditStudent />
-            </ProtectedRoute>
-          } />
-          <Route path="/admission" element={
-            <ProtectedRoute>
-              <AdmissionForm />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <Toaster />
-      </Router>
+      <SupabaseProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              {/* Home page is now the root route */}
+              <Route path="/" element={<Home />} />
+              
+              {/* Public routes */}
+              <Route path="/admin-login" element={<AdminLogin />} />
+              <Route path="/blogs" element={<Blogs />} />
+              <Route path="/login" element={<Login />} />
+              
+              {/* Protected routes for admin */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dashboard/students" element={<StudentsPage />} />
+                <Route path="/admission" element={<AdmissionForm />} />
+                <Route path="/student/:id" element={<StudentDetails />} />
+                <Route path="/edit-student/:id" element={<EditStudent />} />
+              </Route>
+              
+              {/* Protected routes for students */}
+              <Route element={<StudentProtectedRoute />}>
+                <Route path="/student-dashboard" element={<StudentDashboard />} />
+              </Route>
+              
+              {/* 404 route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </SupabaseProvider>
     </AuthProvider>
-  );
-}
+  </QueryClientProvider>
+);
 
 export default App;

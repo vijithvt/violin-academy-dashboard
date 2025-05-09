@@ -1,38 +1,8 @@
 
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { ChevronRight, Music, Award, Clock, BookOpen, Star, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { Music, Book, Award, Sparkles, Users, Calendar, Compass } from "lucide-react";
-
-const FeatureCard = ({ icon, title, description, delay }: { 
-  icon: React.ReactNode, 
-  title: string, 
-  description: string,
-  delay: number
-}) => {
-  const [isHovered, setIsHovered] = useState(false);
-  
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: delay * 0.1 }}
-      whileHover={{ y: -5 }}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      className="relative"
-    >
-      <div className="bg-white rounded-xl shadow-sm border border-amber-100 p-6 transition-all duration-300 hover:shadow-xl hover:border-amber-200 h-full">
-        <div className={`rounded-full w-12 h-12 flex items-center justify-center mb-4 transition-all duration-300 ${isHovered ? 'bg-indigo-600 text-white' : 'bg-amber-100 text-amber-600'}`}>
-          {icon}
-        </div>
-        <h3 className="text-lg font-serif font-bold mb-2 text-maroon-800">{title}</h3>
-        <p className="text-gray-600">{description}</p>
-      </div>
-    </motion.div>
-  );
-};
 
 const InstrumentSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -48,98 +18,164 @@ const InstrumentSection = () => {
       { threshold: 0.1 }
     );
     
-    const element = document.getElementById("instrument-section");
-    if (element) {
-      observer.observe(element);
+    const section = document.getElementById("instrument-section");
+    if (section) {
+      observer.observe(section);
     }
     
     return () => {
-      if (element) {
-        observer.unobserve(element);
+      if (section) {
+        observer.unobserve(section);
       }
     };
   }, []);
 
-  const featuresList = [
+  const features = [
     {
-      icon: <Music className="h-6 w-6" />,
+      icon: <Music className="w-8 h-8 text-purple-600" />,
       title: "Authentic Technique",
-      description: "Learn proper finger positioning, bowing techniques, and posture for Carnatic violin."
+      description: "Learn proper finger positioning, bowing techniques, and posture for Carnatic violin"
     },
     {
-      icon: <Book className="h-6 w-6" />,
-      title: "Traditional Learning",
-      description: "Study ragas and compositions passed down through generations of great masters."
+      icon: <Award className="w-8 h-8 text-amber-500" />,
+      title: "Traditional Approach",
+      description: "Study classical ragas and compositions passed down through generations"
     },
     {
-      icon: <Award className="h-6 w-6" />,
-      title: "Monthly Student Assessments",
-      description: "Regular evaluations in partnership with renowned music academies ensure steady progress."
-    },
-    {
-      icon: <Compass className="h-6 w-6" />,
-      title: "Structured Curriculum",
-      description: "A comprehensive path aligned with university-level standards covering theory, technique, and performance."
-    },
-    {
-      icon: <Sparkles className="h-6 w-6" />,
-      title: "Personalized Student Dashboard",
-      description: "Track progress, access practice materials, and set learning goals through your own dashboard."
-    },
-    {
-      icon: <Book className="h-6 w-6" />,
-      title: "Educational Resources",
-      description: "Practice modules, bowing exercises, theory notes, and raga practice kits—all in one place."
-    },
-    {
-      icon: <Calendar className="h-6 w-6" />,
-      title: "Trial Class Available",
-      description: "First-time learners can book a personalized trial session with the instructor."
-    },
-    {
-      icon: <Users className="h-6 w-6" />,
-      title: "Online & Offline Options",
-      description: "Attend classes online via video or in-person at our center—flexibility that suits your schedule."
+      icon: <BookOpen className="w-8 h-8 text-purple-600" />,
+      title: "Monthly Assessments",
+      description: "Regular evaluations and feedback sessions conducted with leading music academies"
     }
   ];
   
+  const teachingApproaches = [
+    {
+      icon: <Star className="w-7 h-7 text-amber-500" />,
+      title: "Teaching Approach",
+      description: "A proven methodology combining tradition with modern educational practices"
+    },
+    {
+      icon: <BookOpen className="w-7 h-7 text-purple-600" />,
+      title: "Structured Curriculum",
+      description: "Comprehensive learning path aligned with university-level standards covering theory, technique, and performance"
+    },
+    {
+      icon: <Users className="w-7 h-7 text-amber-500" />,
+      title: "Custom Dashboard",
+      description: "Personalized student portal for tracking progress, accessing practice materials, and setting learning goals"
+    }
+  ];
+
   return (
-    <section id="instrument" className="py-20 bg-gradient-to-b from-white to-amber-50 relative">
-      <div className="container mx-auto px-4" id="instrument-section">
-        {/* Learn Carnatic Classical Violin Section */}
+    <section id="instrument-section" className="py-20 relative overflow-hidden">
+      {/* Background with subtle pattern and parallax effect */}
+      <div 
+        className="absolute inset-0 bg-gradient-to-r from-purple-50 to-amber-50 opacity-70"
+        style={{
+          backgroundSize: '200% 200%',
+          animation: 'gradient 15s ease infinite'
+        }}
+      ></div>
+      <div 
+        className="absolute inset-0 bg-[url('/placeholder.svg')] bg-repeat opacity-5"
+        style={{
+          animation: 'slow-drift 30s linear infinite'
+        }}
+      ></div>
+      
+      <div className="container mx-auto px-4 relative z-10">
         <div className={cn(
-          "mb-8 transition-all duration-1000 transform",
+          "text-center max-w-3xl mx-auto mb-16 transition-all duration-1000 transform",
           isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
         )}>
-          <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-4xl font-serif font-bold text-maroon-900 mb-3">
-              Learn Carnatic Classical Violin
-            </h2>
-            <p className="text-lg text-gray-600">Comprehensive education for students at all levels</p>
-            <div className="h-1 w-24 bg-amber-400 mx-auto mt-4"></div>
-          </div>
+          <div className="h-1 w-24 bg-purple-600 mx-auto mb-8 rounded-full"></div>
+          <h2 className="text-4xl font-serif font-bold text-purple-900 mb-4">
+            Learn Carnatic Classical Violin
+          </h2>
+          <p className="text-lg text-gray-700">
+            Discover the rich tradition and expressive capabilities of one of India's most beloved classical instruments
+          </p>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuresList.map((feature, index) => (
-            <FeatureCard 
-              key={index}
-              icon={feature.icon}
-              title={feature.title}
-              description={feature.description}
-              delay={index}
-            />
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-16">
+          {features.map((feature, index) => (
+            <div 
+              key={index} 
+              className={cn(
+                "bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-purple-100 transition-all duration-500",
+                isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0",
+                "hover:translate-y-[-8px] hover:shadow-xl hover:border-purple-200"
+              )}
+              style={{ transitionDelay: `${index * 200}ms` }}
+            >
+              <div className="rounded-full bg-amber-50 w-16 h-16 flex items-center justify-center mb-4 mx-auto transition-all duration-300 hover:scale-110">
+                {feature.icon}
+              </div>
+              <h3 className="text-xl font-serif font-bold text-purple-800 mb-2 text-center">{feature.title}</h3>
+              <p className="text-gray-600 text-center">{feature.description}</p>
+            </div>
           ))}
         </div>
+        
+        {/* Teaching Approach Section */}
+        <div className={cn(
+          "text-center max-w-3xl mx-auto mt-20 mb-12 transition-all duration-1000 transform",
+          isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0",
+          "delay-300"
+        )}>
+          <div className="h-1 w-24 bg-amber-500 mx-auto mb-8 rounded-full"></div>
+          <h2 className="text-3xl font-serif font-bold text-purple-900 mb-4">
+            Teaching Approach
+          </h2>
+          <p className="text-lg text-gray-700">
+            A proven methodology combining tradition with modern educational practices
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          {teachingApproaches.map((approach, index) => (
+            <div 
+              key={`approach-${index}`} 
+              className={cn(
+                "bg-gradient-to-br from-purple-50 to-amber-50 rounded-xl p-6 shadow-lg border border-amber-100 transition-all duration-500",
+                isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0",
+                "hover:shadow-xl hover:border-amber-200"
+              )}
+              style={{ transitionDelay: `${(index + 3) * 200}ms` }}
+            >
+              <div className="rounded-full bg-white w-16 h-16 flex items-center justify-center mb-4 mx-auto shadow-md transition-all duration-300 hover:scale-110">
+                {approach.icon}
+              </div>
+              <h3 className="text-xl font-serif font-bold text-purple-800 mb-3 text-center">{approach.title}</h3>
+              <p className="text-gray-700 text-center">{approach.description}</p>
+            </div>
+          ))}
+        </div>
+        
+        <div className={cn(
+          "flex justify-center transition-all duration-1000 transform",
+          isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0",
+          "delay-500"
+        )}>
+          <Button className="bg-purple-600 hover:bg-purple-700 text-white font-medium px-6 py-2 rounded-full shadow-lg transition-all duration-300 hover:shadow-purple-500/30 hover:shadow-xl transform hover:scale-105">
+            Explore Lessons <ChevronRight className="h-4 w-4 ml-1" />
+          </Button>
+        </div>
       </div>
 
-      {/* Background decorative elements */}
-      <div className="absolute top-32 -left-24 w-64 h-64 bg-amber-200 rounded-full opacity-20 blur-3xl"
-        style={{ animation: 'float 15s ease-in-out infinite alternate' }}>
-      </div>
-      <div className="absolute bottom-20 -right-32 w-80 h-80 bg-maroon-200 rounded-full opacity-10 blur-3xl"
-        style={{ animation: 'float 20s ease-in-out infinite alternate-reverse' }}>
-      </div>
+      <style>{`
+        @keyframes gradient {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes slow-drift {
+          0% { transform: translateX(0) translateY(0); }
+          50% { transform: translateX(-5px) translateY(-5px); }
+          100% { transform: translateX(0) translateY(0); }
+        }
+      `}</style>
     </section>
   );
 };

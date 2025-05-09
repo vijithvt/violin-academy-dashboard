@@ -3,15 +3,15 @@ import { useEffect } from "react";
 import AdminDashboardLayout from "@/components/admin/AdminDashboardLayout";
 import StudentProfilesTable from "@/components/admin/StudentProfilesTable";
 import NotAuthorized from "@/components/admin/NotAuthorized";
+import { useAdminCheck } from "@/api/adminService";
 import { Loader2 } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
 
 const StudentsPage = () => {
-  const { isAdmin, loading, checkAdminStatus } = useAuth();
+  const { isAdmin, loading, checkAdminStatus } = useAdminCheck();
 
   useEffect(() => {
     checkAdminStatus();
-  }, [checkAdminStatus]);
+  }, []);
 
   if (loading) {
     return (

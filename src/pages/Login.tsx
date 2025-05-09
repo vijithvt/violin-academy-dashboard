@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/AuthContext";
+import { useSupabase } from "@/context/SupabaseContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +14,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { login } = useSupabase();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -24,17 +24,24 @@ const Login = () => {
 
     try {
       const { error } = await login(email, password);
-      if (error) throw error;
       
-      toast({
-        title: "Login successful",
-        description: "Welcome back!",
-      });
-      navigate("/dashboard/student");
+      if (error) {
+        toast({
+          title: "Login failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Login successful",
+          description: "Welcome back!",
+        });
+        navigate("/student-dashboard");
+      }
     } catch (error) {
       toast({
-        title: "Login failed",
-        description: error instanceof Error ? error.message : "Please check your credentials and try again",
+        title: "An unexpected error occurred",
+        description: "Please try again later.",
         variant: "destructive",
       });
     } finally {

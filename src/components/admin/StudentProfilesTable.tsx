@@ -1,7 +1,6 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useStudents, useDeleteStudentProfile } from "@/api/adminService/profileService";
+import { useStudentProfiles, StudentProfile, useDeleteStudentProfile } from "@/api/adminService";
 import { 
   Table, 
   TableBody, 
@@ -10,26 +9,8 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { StudentRegistrationForm } from "@/components/admin/StudentRegistrationForm";
-import { useToast } from "@/hooks/use-toast";
-import { 
-  ChevronDown, 
-  Search, 
-  MoreHorizontal, 
-  Plus, 
-  Trash2, 
-  Edit, 
-  Eye 
-} from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -37,6 +18,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Loader2, Search, Eye, Filter, Edit, Trash2, AlertCircle } from "lucide-react";
+import StudentProfileDetails from "./StudentProfileDetails";
+import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,184 +31,214 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 
 const StudentProfilesTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [courseFilter, setCourseFilter] = useState("");
-  const [levelFilter, setLevelFilter] = useState("");
-  const [open, setOpen] = useState(false);
-  const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
-  const [studentToDelete, setStudentToDelete] = useState<string | null>(null);
-  const navigate = useNavigate();
-  const { toast } = useToast();
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [selectedProfile, setSelectedProfile] = useState<StudentProfile | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [profileToDelete, setProfileToDelete] = useState<StudentProfile | null>(null);
   
-  const { data: students, isLoading, error } = useStudents(searchTerm, courseFilter, levelFilter);
-  const deleteStudentProfile = useDeleteStudentProfile();
+  const { toast } = useToast();
+  const deleteMutation = useDeleteStudentProfile();
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
+  // Fix: Pass the roleFilter directly as a string instead of an object
+  const { data: profiles, isLoading, isError } = useStudentProfiles(
+    searchTerm,
+    roleFilter
+  );
+
+  const handleViewDetails = (profile: StudentProfile) => {
+    setSelectedProfile(profile);
+    setDetailsOpen(true);
   };
 
-  const handleCourseFilterChange = (value: string) => {
-    setCourseFilter(value);
+  const handleEditProfile = (profile: StudentProfile) => {
+    setSelectedProfile(profile);
+    setDetailsOpen(true);
   };
 
-  const handleLevelFilterChange = (value: string) => {
-    setLevelFilter(value);
+  const handleDeleteClick = (profile: StudentProfile) => {
+    setProfileToDelete(profile);
+    setDeleteDialogOpen(true);
   };
 
-  const handleEdit = (id: string) => {
-    navigate(`/dashboard/students/${id}`);
+  const handleConfirmDelete = async () => {
+    if (profileToDelete) {
+      deleteMutation.mutate(profileToDelete.id);
+      setDeleteDialogOpen(false);
+      setProfileToDelete(null);
+    }
   };
 
-  const handleView = (id: string) => {
-    navigate(`/dashboard/students/view/${id}`);
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   };
 
-  const handleDelete = (id: string) => {
-    setStudentToDelete(id);
-    setDeleteAlertOpen(true);
-  };
-
-  const confirmDelete = async () => {
-    if (studentToDelete) {
-      try {
-        await deleteStudentProfile.mutateAsync(studentToDelete);
-        toast({
-          title: "Success!",
-          description: "Student profile deleted successfully.",
-        });
-      } catch (error) {
-        console.error("Error deleting student profile:", error);
-        toast({
-          title: "Error",
-          description: "Failed to delete student profile. Please try again.",
-          variant: "destructive",
-        });
-      } finally {
-        setDeleteAlertOpen(false);
-        setStudentToDelete(null);
-      }
+  const getRoleBadgeStyles = (role: string) => {
+    switch (role) {
+      case 'admin':
+        return 'bg-purple-100 text-purple-800';
+      case 'teacher':
+        return 'bg-blue-100 text-blue-800';
+      case 'student':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   if (isLoading) {
-    return <div>Loading student profiles...</div>;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="ml-2">Loading student profiles...</span>
+      </div>
+    );
   }
 
-  if (error) {
-    return <div>Error: {(error as Error).message}</div>;
+  if (isError) {
+    return (
+      <div className="bg-red-50 text-red-800 p-4 rounded-md flex items-center">
+        <AlertCircle className="h-5 w-5 mr-2" />
+        An error occurred while loading student profiles. Please try again.
+      </div>
+    );
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold">Student Profiles</h2>
-        <Button onClick={() => setOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Student
-        </Button>
+    <div className="space-y-4">
+      {/* Search and Filter Controls */}
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+          <Input
+            placeholder="Search by name"
+            className="pl-8"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <Filter className="h-4 w-4 text-gray-500" />
+          <Select value={roleFilter} onValueChange={setRoleFilter}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Role Filter" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Roles</SelectItem>
+              <SelectItem value="student">Student</SelectItem>
+              <SelectItem value="admin">Admin</SelectItem>
+              <SelectItem value="teacher">Teacher</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      <div className="flex items-center space-x-4 mb-4">
-        <Input
-          type="text"
-          placeholder="Search students..."
-          value={searchTerm}
-          onChange={handleSearchChange}
-          className="max-w-md"
-        />
-
-        <Select onValueChange={handleCourseFilterChange}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by Course" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="">All Courses</SelectItem>
-            <SelectItem value="violin">Carnatic Violin</SelectItem>
-            <SelectItem value="vocal">Carnatic Vocal</SelectItem>
-            <SelectItem value="veena">Veena</SelectItem>
-            <SelectItem value="mridangam">Mridangam</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select onValueChange={handleLevelFilterChange}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by Level" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="">All Levels</SelectItem>
-            <SelectItem value="AARAMBHA">AARAMBHA (Beginner)</SelectItem>
-            <SelectItem value="MADHYAMA">MADHYAMA (Intermediate)</SelectItem>
-            <SelectItem value="UTTHAMA">UTTHAMA (Advanced)</SelectItem>
-            <SelectItem value="VIDHWATH">VIDHWATH (Professional)</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Course</TableHead>
-            <TableHead>Level</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {students?.map((student) => (
-            <TableRow key={student.id}>
-              <TableCell>{student.name}</TableCell>
-              <TableCell>{student.email}</TableCell>
-              <TableCell>{student.course}</TableCell>
-              <TableCell>{student.level}</TableCell>
-              <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                      <span className="sr-only">Open menu</span>
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleView(student.id)}>
-                      <Eye className="mr-2 h-4 w-4" />
-                      View
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleEdit(student.id)}>
-                      <Edit className="mr-2 h-4 w-4" />
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleDelete(student.id)}>
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
+      {/* Student Profiles Table */}
+      <div className="border rounded-md overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>Joined Date</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {profiles && profiles.length > 0 ? (
+              profiles.map((profile) => (
+                <TableRow key={profile.id}>
+                  <TableCell className="font-medium">{profile.name}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className={`${getRoleBadgeStyles(profile.role)}`}>
+                      {profile.role.charAt(0).toUpperCase() + profile.role.slice(1)}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{formatDate(profile.created_at)}</TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleViewDetails(profile)}
+                        title="View Details"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEditProfile(profile)}
+                        title="Edit Profile"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteClick(profile)}
+                        title="Delete Profile"
+                      >
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center py-6 text-gray-500">
+                  No student profiles found
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          <StudentRegistrationForm />
-        </DialogContent>
-      </Dialog>
+      {/* Student Profile Details Dialog */}
+      {selectedProfile && (
+        <StudentProfileDetails
+          profile={selectedProfile}
+          open={detailsOpen}
+          onOpenChange={setDetailsOpen}
+        />
+      )}
 
-      <AlertDialog open={deleteAlertOpen} onOpenChange={setDeleteAlertOpen}>
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle>Are you sure you want to delete this profile?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. Are you sure you want to delete this student profile?
+              This action cannot be undone. This will permanently delete the profile
+              of {profileToDelete?.name} and remove all associated data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setStudentToDelete(null)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {deleteMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete"
+              )}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
