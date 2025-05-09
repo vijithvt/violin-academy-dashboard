@@ -42,17 +42,17 @@ const InstrumentSection = () => {
       description: "Study classical ragas and compositions passed down through generations"
     },
     {
-      icon: <Clock className="w-8 h-8 text-purple-600" />,
-      title: "Structured Learning",
-      description: "Progress through a systematic curriculum designed for all skill levels"
+      icon: <BookOpen className="w-8 h-8 text-purple-600" />,
+      title: "Monthly Assessments",
+      description: "Regular evaluations and feedback sessions conducted with leading music academies"
     }
   ];
   
   const teachingApproaches = [
     {
       icon: <Star className="w-7 h-7 text-amber-500" />,
-      title: "Monthly Assessments",
-      description: "Regular student evaluations conducted in partnership with leading music academies to track and enhance progress"
+      title: "Teaching Approach",
+      description: "A proven methodology combining tradition with modern educational practices"
     },
     {
       icon: <BookOpen className="w-7 h-7 text-purple-600" />,

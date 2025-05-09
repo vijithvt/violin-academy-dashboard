@@ -107,9 +107,8 @@ const AboutSection = () => {
                   </h3>
                   <ul className="list-disc pl-5 space-y-2 text-gray-700">
                     <li>Teaching since 2018: Students from India, USA, Thailand & Bangalore</li>
-                    <li>Faculty collaborator at leading music academies worldwide</li>
-                    <li>Best Classical Violin Teacher Award recipient</li>
-                    <li>Performances across Kerala and Karnataka</li>
+                    <li>Faculty collaborator at leading institutions worldwide</li>
+                    <li>Best Classical Violin Teacher Award recipient (Presented by Swara Ragam Academy for outstanding music education, 2022)</li>
                   </ul>
                 </div>
                 

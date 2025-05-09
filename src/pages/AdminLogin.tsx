@@ -86,16 +86,6 @@ const AdminLogin = () => {
           variant: "destructive",
         });
       } else {
-        // For testing purposes: Skip admin check temporarily
-        if (values.email === "vijithviolinist@gmail.com") {
-          toast({
-            title: "Login successful",
-            description: "Welcome to admin dashboard!",
-          });
-          navigate("/dashboard");
-          return;
-        }
-        
         // Check if user has admin role
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
@@ -103,7 +93,16 @@ const AdminLogin = () => {
           .eq('id', data.user?.id)
           .single();
           
-        if (profileError || profileData?.role !== 'admin') {
+        if (profileError) {
+          console.error("Error fetching profile:", profileError);
+          setError("Unable to validate admin privileges. Please try again.");
+          toast({
+            title: "Authentication error",
+            description: "Failed to verify admin status",
+            variant: "destructive",
+          });
+          await supabase.auth.signOut();
+        } else if (profileData?.role !== 'admin') {
           // Sign out if not admin
           await supabase.auth.signOut();
           setError("You do not have admin privileges. Access denied.");
