@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useStudentProfiles, StudentProfile } from "@/api/adminService";
+import { useStudentProfiles, StudentProfile, useDeleteStudentProfile } from "@/api/adminService";
 import { 
   Table, 
   TableBody, 
@@ -18,14 +18,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Search, Eye, Filter } from "lucide-react";
+import { Loader2, Search, Eye, Filter, Edit, Trash2, AlertCircle } from "lucide-react";
 import StudentProfileDetails from "./StudentProfileDetails";
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 
 const StudentProfilesTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [roleFilter, setRoleFilter] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
   const [selectedProfile, setSelectedProfile] = useState<StudentProfile | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [profileToDelete, setProfileToDelete] = useState<StudentProfile | null>(null);
+  
+  const { toast } = useToast();
+  const deleteMutation = useDeleteStudentProfile();
 
   const { data: profiles, isLoading, isError } = useStudentProfiles(
     searchTerm,
@@ -37,6 +54,24 @@ const StudentProfilesTable = () => {
     setDetailsOpen(true);
   };
 
+  const handleEditProfile = (profile: StudentProfile) => {
+    setSelectedProfile(profile);
+    setDetailsOpen(true);
+  };
+
+  const handleDeleteClick = (profile: StudentProfile) => {
+    setProfileToDelete(profile);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (profileToDelete) {
+      deleteMutation.mutate(profileToDelete.id);
+      setDeleteDialogOpen(false);
+      setProfileToDelete(null);
+    }
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -44,6 +79,19 @@ const StudentProfilesTable = () => {
       month: "short",
       day: "numeric",
     });
+  };
+
+  const getRoleBadgeStyles = (role: string) => {
+    switch (role) {
+      case 'admin':
+        return 'bg-purple-100 text-purple-800';
+      case 'teacher':
+        return 'bg-blue-100 text-blue-800';
+      case 'student':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
   };
 
   if (isLoading) {
@@ -57,7 +105,8 @@ const StudentProfilesTable = () => {
 
   if (isError) {
     return (
-      <div className="bg-red-50 text-red-800 p-4 rounded-md">
+      <div className="bg-red-50 text-red-800 p-4 rounded-md flex items-center">
+        <AlertCircle className="h-5 w-5 mr-2" />
         An error occurred while loading student profiles. Please try again.
       </div>
     );
@@ -109,25 +158,38 @@ const StudentProfilesTable = () => {
                 <TableRow key={profile.id}>
                   <TableCell className="font-medium">{profile.name}</TableCell>
                   <TableCell>
-                    <span className={`inline-block px-2 py-1 text-xs rounded-full ${
-                      profile.role === 'admin' ? 'bg-purple-100 text-purple-800' :
-                      profile.role === 'teacher' ? 'bg-blue-100 text-blue-800' :
-                      profile.role === 'student' ? 'bg-green-100 text-green-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
+                    <Badge variant="outline" className={`${getRoleBadgeStyles(profile.role)}`}>
                       {profile.role.charAt(0).toUpperCase() + profile.role.slice(1)}
-                    </span>
+                    </Badge>
                   </TableCell>
                   <TableCell>{formatDate(profile.created_at)}</TableCell>
                   <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleViewDetails(profile)}
-                      title="View Details"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
+                    <div className="flex justify-end gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleViewDetails(profile)}
+                        title="View Details"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEditProfile(profile)}
+                        title="Edit Profile"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteClick(profile)}
+                        title="Delete Profile"
+                      >
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
@@ -150,6 +212,35 @@ const StudentProfilesTable = () => {
           onOpenChange={setDetailsOpen}
         />
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to delete this profile?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the profile
+              of {profileToDelete?.name} and remove all associated data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {deleteMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

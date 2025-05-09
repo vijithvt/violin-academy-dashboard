@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -55,7 +56,7 @@ export const useTrialRequests = (
         query = query.eq("status", filterBy.status);
       }
 
-      if (filterBy.course && filterBy.course && filterBy.course !== "all") {
+      if (filterBy.course && filterBy.course !== "all") {
         query = query.eq("course", filterBy.course);
       }
 
@@ -176,10 +177,6 @@ export const useStudentProfiles = (
         throw new Error(error.message);
       }
 
-      // For each profile, we need to fetch the user email
-      // Since we can't access auth.users directly, we'll need to fetch that separately
-      // from your own API or use another approach in a production app
-
       return profiles as StudentProfile[];
     },
   });
@@ -220,6 +217,39 @@ export const useUpdateStudentProfile = () => {
       toast({
         title: "Error",
         description: `Failed to update student profile: ${error.message}`,
+        variant: "destructive",
+      });
+    }
+  });
+};
+
+export const useDeleteStudentProfile = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("profiles")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return id;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["studentProfiles"] });
+      toast({
+        title: "Success",
+        description: "Student profile deleted successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: `Failed to delete student profile: ${error.message}`,
         variant: "destructive",
       });
     }
