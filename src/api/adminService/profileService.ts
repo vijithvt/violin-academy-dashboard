@@ -1,267 +1,133 @@
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { StudentProfile } from "./types";
-import { v4 as uuidv4 } from "uuid";
-import { Database } from "@/integrations/supabase/types";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
-type ProfileRow = Database['public']['Tables']['profiles']['Row'];
-
-// Fetch all students
-export const useStudents = (searchTerm: string = "", courseFilter: string = "", levelFilter: string = "") => {
-  return useQuery({
-    queryKey: ["students", searchTerm, courseFilter, levelFilter],
-    queryFn: async () => {
-      try {
-        let query = supabase.from("profiles").select("*");
-        
-        // Apply role filter - only get students
-        query = query.eq("role", "student");
-        
-        // Apply search if provided
-        if (searchTerm) {
-          query = query.ilike("name", `%${searchTerm}%`);
-        }
-        
-        // Apply course filter if provided - note: column may not exist in actual schema
-        if (courseFilter && courseFilter !== "") {
-          // Handle this in transform if column doesn't exist
-        }
-        
-        // Apply level filter if provided - note: column may not exist in actual schema
-        if (levelFilter && levelFilter !== "") {
-          // Handle this in transform if column doesn't exist
-        }
-        
-        const { data, error } = await query;
-        
-        if (error) {
-          throw error;
-        }
-        
-        // Transform data to match our StudentProfile type
-        const students: StudentProfile[] = [];
-        
-        (data as ProfileRow[]).forEach(profile => {
-          const student: StudentProfile = {
-            id: profile.id,
-            name: profile.name,
-            role: profile.role,
-            created_at: profile.created_at,
-            // Add other fields with defaults
-            email: undefined,
-            phone: undefined,
-            address: undefined,
-            dob: undefined,
-            gender: undefined,
-            course: undefined,
-            level: undefined,
-            preferred_timing: undefined,
-            profession: undefined,
-            referred_by: undefined,
-            hear_about: undefined,
-            photo_url: undefined
-          };
-          students.push(student);
-        });
-        
-        return students;
-      } catch (error) {
-        console.error("Error fetching students:", error);
-        return [] as StudentProfile[];
-      }
-    },
-  });
-};
-
-// Fetch a single student by ID
-export const useStudentById = (id: string) => {
-  return useQuery({
-    queryKey: ["student", id],
-    queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", id)
-          .eq("role", "student")
-          .single();
-        
-        if (error) {
-          throw error;
-        }
-        
-        // Transform to match our StudentProfile type
-        const student: StudentProfile = {
-          id: data.id,
-          name: data.name,
-          role: data.role,
-          created_at: data.created_at,
-          // Add other fields with defaults
-          email: undefined,
-          phone: undefined,
-          address: undefined,
-          dob: undefined,
-          gender: undefined,
-          course: undefined,
-          level: undefined,
-          preferred_timing: undefined,
-          profession: undefined,
-          referred_by: undefined,
-          hear_about: undefined,
-          photo_url: undefined
-        };
-        
-        return student;
-      } catch (error) {
-        console.error("Error fetching student by ID:", error);
-        throw error;
-      }
-    },
-    enabled: !!id,
-  });
-};
-
-// Update a student profile
-export const useUpdateStudentProfile = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async (profile: Partial<StudentProfile> & { id: string }) => {
-      try {
-        // Only include fields that are in the profiles table
-        const updateData: Record<string, any> = {};
-        
-        // Only add fields that exist in our database schema
-        if (profile.name !== undefined) updateData.name = profile.name;
-        if (profile.role !== undefined) updateData.role = profile.role;
-        
-        const { data, error } = await supabase
-          .from("profiles")
-          .update(updateData)
-          .eq("id", profile.id)
-          .select();
-        
-        if (error) {
-          throw error;
-        }
-        
-        return data;
-      } catch (error) {
-        console.error("Error updating student profile:", error);
-        throw error;
-      }
-    },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["students"] });
-      queryClient.invalidateQueries({ queryKey: ["student", variables.id] });
-    },
-  });
-};
-
-// Create a new student profile
-export interface CreateStudentProfileData {
+export interface StudentProfile {
+  id: string;
   name: string;
-  role?: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-  dob?: string;
-  gender?: string;
-  course?: string;
-  level?: string;
-  preferred_timing?: string;
-  profession?: string;
-  referred_by?: string;
-  hear_about?: string;
-  photo_url?: string;
+  role: string;
+  created_at: string;
 }
 
-// Create a new student profile
-export const useCreateStudentProfile = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async (newProfile: CreateStudentProfileData) => {
-      try {
-        // Create the basic profile with required fields and a random UUID
-        const id = uuidv4();
-        
-        const profileData = {
-          id,
-          name: newProfile.name,
-          role: newProfile.role || "student"
-        };
-        
-        const { data, error } = await supabase
-          .from("profiles")
-          .insert(profileData)
-          .select();
-        
-        if (error) {
-          throw error;
-        }
-        
-        if (data && data.length > 0) {
-          // Transform to match our StudentProfile type
-          const student: StudentProfile = {
-            id: data[0].id,
-            name: data[0].name,
-            role: data[0].role,
-            created_at: data[0].created_at,
-            // Add other fields with defaults
-            email: newProfile.email,
-            phone: newProfile.phone,
-            address: newProfile.address,
-            dob: newProfile.dob,
-            gender: newProfile.gender,
-            course: newProfile.course,
-            level: newProfile.level,
-            preferred_timing: newProfile.preferred_timing,
-            profession: newProfile.profession,
-            referred_by: newProfile.referred_by,
-            hear_about: newProfile.hear_about,
-            photo_url: newProfile.photo_url
-          };
-          return student;
-        }
-        
-        return null;
-      } catch (error) {
-        console.error("Error creating student profile:", error);
-        throw error;
+export interface CreateStudentProfileData {
+  name: string;
+  email: string;
+  role?: string;
+}
+
+// Hook to fetch all student profiles
+export const useStudentProfiles = () => {
+  return useQuery({
+    queryKey: ['studentProfiles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('role', 'student')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching student profiles:', error);
+        throw new Error(error.message);
       }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["students"] });
-    },
+
+      return data as StudentProfile[];
+    }
   });
 };
 
-// Delete a student profile
-export const useDeleteStudentProfile = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async (id: string) => {
-      try {
-        const { error } = await supabase
-          .from("profiles")
-          .delete()
-          .eq("id", id);
-        
-        if (error) {
-          throw error;
-        }
-        
-        return { success: true };
-      } catch (error) {
-        console.error("Error deleting student profile:", error);
-        throw error;
+// Hook to fetch a single student profile
+export const useStudentProfile = (id?: string) => {
+  return useQuery({
+    queryKey: ['studentProfile', id],
+    queryFn: async () => {
+      if (!id) {
+        throw new Error('Student ID is required');
       }
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) {
+        console.error(`Error fetching student profile with ID ${id}:`, error);
+        throw new Error(error.message);
+      }
+
+      return data as StudentProfile;
+    },
+    enabled: !!id
+  });
+};
+
+// Hook to create a student profile
+export const useCreateStudentProfile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (profileData: CreateStudentProfileData) => {
+      // First create auth user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: profileData.email,
+        password: 'temp-password-' + Math.random().toString(36).substring(2, 12),
+      });
+
+      if (authError) {
+        console.error('Error creating auth user:', authError);
+        throw new Error(authError.message);
+      }
+
+      if (!authData.user) {
+        throw new Error('Failed to create auth user');
+      }
+
+      // Then create profile (will be automatic via trigger)
+      const { data: profileUpdateData, error: profileUpdateError } = await supabase
+        .from('profiles')
+        .update({ 
+          name: profileData.name,
+          role: profileData.role || 'student' 
+        })
+        .eq('id', authData.user.id)
+        .select();
+
+      if (profileUpdateError) {
+        console.error('Error updating profile:', profileUpdateError);
+        throw new Error(profileUpdateError.message);
+      }
+
+      return profileUpdateData;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["students"] });
+      queryClient.invalidateQueries({ queryKey: ['studentProfiles'] });
+    }
+  });
+};
+
+// Hook to update a student profile
+export const useUpdateStudentProfile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, ...updates }: Partial<StudentProfile> & { id: string }) => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', id)
+        .select();
+
+      if (error) {
+        console.error('Error updating student profile:', error);
+        throw new Error(error.message);
+      }
+
+      return data;
     },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['studentProfile', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['studentProfiles'] });
+    }
   });
 };

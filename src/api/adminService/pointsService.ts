@@ -32,28 +32,6 @@ export const useStudentPoints = (userId?: string) => {
   });
 };
 
-// Hook to fetch total points for a student
-export const useTotalStudentPoints = (userId?: string) => {
-  return useQuery({
-    queryKey: ["totalPoints", userId],
-    queryFn: async () => {
-      if (!userId) return 0;
-
-      const { data, error } = await supabase
-        .rpc("get_total_points", { user_id_param: userId });
-
-      if (error) {
-        console.error("Error fetching total points:", error);
-        throw new Error(error.message);
-      }
-
-      return data as number;
-    },
-    enabled: !!userId,
-    retry: 3,
-  });
-};
-
 // Function to add points to a student
 export const addPointsToStudent = async (
   userId: string,

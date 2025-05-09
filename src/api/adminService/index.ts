@@ -11,6 +11,9 @@ export { pointsService };
 export { trialService };
 export { feesService };
 
+// Re-export all the hooks and functions used throughout the app
+export { useTotalStudentPoints } from './useTotalStudentPoints';
+
 // Admin check function
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
