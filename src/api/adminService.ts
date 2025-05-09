@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -51,12 +50,12 @@ export const useTrialRequests = (
         query = query.or(`name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`);
       }
 
-      // Apply filters if provided
-      if (filterBy.status) {
+      // Apply filters if provided and not empty strings
+      if (filterBy.status && filterBy.status !== "all") {
         query = query.eq("status", filterBy.status);
       }
 
-      if (filterBy.course) {
+      if (filterBy.course && filterBy.course && filterBy.course !== "all") {
         query = query.eq("course", filterBy.course);
       }
 
@@ -166,8 +165,8 @@ export const useStudentProfiles = (
         query = query.ilike("name", `%${searchTerm}%`);
       }
 
-      // Apply role filter if provided
-      if (filterBy.role) {
+      // Apply role filter if provided and not an empty string
+      if (filterBy.role && filterBy.role !== "all") {
         query = query.eq("role", filterBy.role);
       }
 

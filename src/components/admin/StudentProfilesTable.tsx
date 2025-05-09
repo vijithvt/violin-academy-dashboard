@@ -83,7 +83,7 @@ const StudentProfilesTable = () => {
               <SelectValue placeholder="Role Filter" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Roles</SelectItem>
+              <SelectItem value="all">All Roles</SelectItem>
               <SelectItem value="student">Student</SelectItem>
               <SelectItem value="admin">Admin</SelectItem>
               <SelectItem value="teacher">Teacher</SelectItem>

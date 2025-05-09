@@ -290,7 +290,7 @@ const FreeTrialForm = ({ onClose }: FreeTrialFormProps) => {
                             <SelectItem value="other_usa">Other</SelectItem>
                           </>
                         ) : (
-                          <SelectItem value="other">Other</SelectItem>
+                          <SelectItem value="other_state">Other</SelectItem>
                         )}
                       </SelectContent>
                     </Select>

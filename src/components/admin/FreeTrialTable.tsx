@@ -117,7 +117,7 @@ const FreeTrialTable = () => {
                 <SelectValue placeholder="Status Filter" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Statuses</SelectItem>
+                <SelectItem value="all">All Statuses</SelectItem>
                 <SelectItem value="new">New</SelectItem>
                 <SelectItem value="contacted">Contacted</SelectItem>
                 <SelectItem value="scheduled">Scheduled</SelectItem>
@@ -134,7 +134,7 @@ const FreeTrialTable = () => {
                 <SelectValue placeholder="Course Filter" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Courses</SelectItem>
+                <SelectItem value="all">All Courses</SelectItem>
                 <SelectItem value="Violin">Violin</SelectItem>
                 <SelectItem value="Piano">Piano</SelectItem>
                 <SelectItem value="Guitar">Guitar</SelectItem>
