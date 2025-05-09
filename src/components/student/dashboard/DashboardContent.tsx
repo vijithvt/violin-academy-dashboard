@@ -6,6 +6,8 @@ import LessonProgression from "@/components/student/LessonProgression";
 import TasksContent from "./TasksContent";
 import TopStudents from "@/components/student/TopStudents";
 import StudentStats from "./StudentStats";
+import PointsHistory from "./PointsHistory";
+import { useSupabase } from "@/context/SupabaseContext";
 
 interface SyllabusItem {
   id: number;
@@ -34,6 +36,8 @@ interface DashboardContentProps {
 }
 
 const DashboardContent = ({ stats, syllabus, tasks }: DashboardContentProps) => {
+  const { user } = useSupabase();
+  
   return (
     <>
       <h1 className="text-3xl md:text-4xl font-serif font-bold text-maroon-900 mb-6">
@@ -53,6 +57,7 @@ const DashboardContent = ({ stats, syllabus, tasks }: DashboardContentProps) => 
             <TabsList className="bg-amber-100">
               <TabsTrigger value="lessons" className="data-[state=active]:bg-amber-200">My Lessons</TabsTrigger>
               <TabsTrigger value="tasks" className="data-[state=active]:bg-amber-200">Pending Tasks</TabsTrigger>
+              <TabsTrigger value="points" className="data-[state=active]:bg-amber-200">Points History</TabsTrigger>
             </TabsList>
             
             <TabsContent value="lessons" className="space-y-4">
@@ -62,13 +67,17 @@ const DashboardContent = ({ stats, syllabus, tasks }: DashboardContentProps) => 
             <TabsContent value="tasks" className="space-y-4">
               <TasksContent tasks={tasks} />
             </TabsContent>
+            
+            <TabsContent value="points" className="space-y-4">
+              <PointsHistory userId={user?.id} />
+            </TabsContent>
           </Tabs>
         </div>
         
         {/* Right Sidebar - Top Students */}
         <div>
           <TopStudents />
-          <StudentStats stats={stats} />
+          <StudentStats userId={user?.id} />
         </div>
       </div>
     </>

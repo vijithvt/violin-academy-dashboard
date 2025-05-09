@@ -7,6 +7,7 @@ import { useAdminCheck } from "@/api/adminService";
 import { Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StudentProfilesTable from "@/components/admin/StudentProfilesTable";
+import PointsManagement from "@/components/admin/PointsManagement";
 
 const Dashboard = () => {
   const { isAdmin, loading, checkAdminStatus } = useAdminCheck();
@@ -43,6 +44,7 @@ const Dashboard = () => {
           <TabsList>
             <TabsTrigger value="trials">Trial Requests</TabsTrigger>
             <TabsTrigger value="students">Students</TabsTrigger>
+            <TabsTrigger value="points">Points</TabsTrigger>
             <TabsTrigger value="attendance">Attendance</TabsTrigger>
             <TabsTrigger value="fees">Fees</TabsTrigger>
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
@@ -55,6 +57,10 @@ const Dashboard = () => {
           
           <TabsContent value="students" className="mt-6">
             <StudentProfilesTable />
+          </TabsContent>
+          
+          <TabsContent value="points" className="mt-6">
+            <PointsManagement />
           </TabsContent>
           
           <TabsContent value="attendance" className="mt-6">

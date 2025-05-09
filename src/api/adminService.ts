@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -30,6 +29,15 @@ export interface StudentProfile {
   name: string;
   email?: string;
   role: string;
+  created_at: string;
+}
+
+export interface StudentPoints {
+  id: string;
+  user_id: string;
+  points: number;
+  activity: string;
+  points_change: number;
   created_at: string;
 }
 
@@ -252,6 +260,131 @@ export const useDeleteStudentProfile = () => {
         description: `Failed to delete student profile: ${error.message}`,
         variant: "destructive",
       });
+    }
+  });
+};
+
+// API Calls for Student Points
+export const useStudentPoints = (userId?: string) => {
+  return useQuery({
+    queryKey: ["studentPoints", userId],
+    queryFn: async () => {
+      let query = supabase
+        .from("student_points")
+        .select("*");
+
+      // Filter by user_id if provided
+      if (userId) {
+        query = query.eq("user_id", userId);
+      }
+
+      query = query.order("created_at", { ascending: false });
+
+      const { data, error } = await query;
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data as StudentPoints[];
+    },
+    enabled: !!userId
+  });
+};
+
+export const useTotalStudentPoints = (userId?: string) => {
+  return useQuery({
+    queryKey: ["totalStudentPoints", userId],
+    queryFn: async () => {
+      // If no user ID is provided, get the current user's ID
+      let id = userId;
+      
+      if (!id) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("User not authenticated");
+        id = user.id;
+      }
+
+      const { data, error } = await supabase
+        .rpc('get_total_points', { user_id_param: id });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data || 0;
+    },
+    enabled: !!userId
+  });
+};
+
+export const useAddStudentPoints = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({
+      userId,
+      activity,
+      points
+    }: {
+      userId: string;
+      activity: string;
+      points: number;
+    }) => {
+      const { data, error } = await supabase
+        .from("student_points")
+        .insert([
+          {
+            user_id: userId,
+            activity,
+            points_change: points
+          }
+        ])
+        .select()
+        .single();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["studentPoints"] });
+      queryClient.invalidateQueries({ queryKey: ["totalStudentPoints"] });
+      queryClient.invalidateQueries({ queryKey: ["topStudents"] });
+      toast({
+        title: "Success",
+        description: "Points added successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: `Failed to add points: ${error.message}`,
+        variant: "destructive",
+      });
+    }
+  });
+};
+
+export const useTopStudents = (limit: number = 5) => {
+  return useQuery({
+    queryKey: ["topStudents", limit],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .rpc('get_top_students', { limit_param: limit });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data as {
+        id: string;
+        name: string;
+        points: number;
+        rank: number;
+      }[];
     }
   });
 };
