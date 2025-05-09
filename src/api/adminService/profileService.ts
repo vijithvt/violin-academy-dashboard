@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { StudentProfile } from "./types";
@@ -24,8 +25,8 @@ export const useStudentProfiles = (roleFilter: string = "all") => {
 
       return data as StudentProfile[];
     },
-    retry: 2,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 3, // Increase retry attempts
+    staleTime: 1 * 60 * 1000, // 1 minute 
   });
 };
 
@@ -52,7 +53,7 @@ export const useStudentProfile = (id?: string) => {
       return data as StudentProfile;
     },
     enabled: !!id,
-    retry: 2,
+    retry: 3, // Increase retry attempts
   });
 };
 
@@ -72,6 +73,7 @@ export const useUpdateStudentProfile = () => {
         .single();
       
       if (error) {
+        console.error("Error updating profile:", error);
         throw new Error(error.message);
       }
       
@@ -80,6 +82,9 @@ export const useUpdateStudentProfile = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["studentProfile", variables.id] });
       queryClient.invalidateQueries({ queryKey: ["studentProfiles"] });
+    },
+    onError: (error) => {
+      console.error("Mutation error:", error);
     }
   });
 };
@@ -90,12 +95,30 @@ export const useDeleteStudentProfile = () => {
   
   return useMutation({
     mutationFn: async (id: string) => {
+      // First, try to delete the auth user if exists
+      try {
+        // Note: This requires admin privileges
+        const { error: authError } = await supabase.functions.invoke('delete-user', {
+          body: { userId: id }
+        });
+        
+        if (authError) {
+          console.warn("Could not delete auth user:", authError);
+          // Continue anyway, as we still want to delete the profile
+        }
+      } catch (err) {
+        console.warn("Error calling delete-user function:", err);
+        // Continue with profile deletion anyway
+      }
+      
+      // Delete the profile
       const { error } = await supabase
         .from("profiles")
         .delete()
         .eq("id", id);
       
       if (error) {
+        console.error("Error deleting profile:", error);
         throw new Error(error.message);
       }
       
@@ -103,6 +126,37 @@ export const useDeleteStudentProfile = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["studentProfiles"] });
+    },
+    onError: (error) => {
+      console.error("Delete mutation error:", error);
+    }
+  });
+};
+
+// Hook to create a new student profile directly
+export const useCreateStudentProfile = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (profileData: Partial<StudentProfile>) => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .insert(profileData)
+        .select()
+        .single();
+        
+      if (error) {
+        console.error("Error creating profile:", error);
+        throw new Error(error.message);
+      }
+      
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["studentProfiles"] });
+    },
+    onError: (error) => {
+      console.error("Create profile error:", error);
     }
   });
 };

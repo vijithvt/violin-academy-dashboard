@@ -23,9 +23,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
+import { Loader2, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarTrigger,
+} from "@/components/ui/menubar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // Form schema
 const loginSchema = z.object({
@@ -141,8 +149,54 @@ const AdminLogin = () => {
     }
   };
 
+  // Functions to navigate to different sections
+  const navigateToSection = (section: string) => {
+    if (section === 'home') {
+      navigate('/');
+    } else if (section === 'contact') {
+      window.open('mailto:admin@violinacademy.com', '_blank');
+    } else if (section === 'help') {
+      toast({
+        title: "Help Information",
+        description: "For assistance, please contact our support team at admin@violinacademy.com",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-indigo-50 to-white p-4">
+      {/* Top Navigation Bar */}
+      <div className="w-full max-w-4xl mb-8">
+        <Menubar className="border-none bg-transparent">
+          <MenubarMenu>
+            <MenubarTrigger className="text-indigo-900 font-semibold">Academy</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem onClick={() => navigateToSection('home')}>Home Page</MenubarItem>
+              <MenubarItem onClick={() => navigateToSection('courses')}>Courses</MenubarItem>
+              <MenubarItem onClick={() => navigateToSection('about')}>About Us</MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+          
+          <MenubarMenu>
+            <MenubarTrigger className="text-indigo-900 font-semibold">Students</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem onClick={() => navigate('/login')}>Student Login</MenubarItem>
+              <MenubarItem onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLSc7NvHejvLzY_bOXUUr1ud4aehT4btulEktJm8_dnGKBB4-CQ/viewform', '_blank')}>
+                Admission Form
+              </MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+          
+          <MenubarMenu>
+            <MenubarTrigger className="text-indigo-900 font-semibold">Support</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem onClick={() => navigateToSection('contact')}>Contact Us</MenubarItem>
+              <MenubarItem onClick={() => navigateToSection('help')}>Help</MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+        </Menubar>
+      </div>
+
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-indigo-900 mb-2">Violin Academy</h1>
@@ -212,8 +266,22 @@ const AdminLogin = () => {
               </form>
             </Form>
           </CardContent>
-          <CardFooter className="flex justify-center text-sm text-muted-foreground">
-            <p>Secure access for authorized personnel only</p>
+          <CardFooter className="flex flex-col space-y-2 text-sm text-muted-foreground">
+            <p className="text-center">Secure access for authorized personnel only</p>
+            
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center text-xs text-indigo-600 cursor-help">
+                    <Info className="h-3 w-3 mr-1" />
+                    <span>Need help?</span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Contact the system administrator for account issues</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </CardFooter>
         </Card>
       </div>

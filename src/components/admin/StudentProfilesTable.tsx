@@ -18,8 +18,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Search, Eye, Filter, Edit, Trash2, AlertCircle, RefreshCw } from "lucide-react";
+import { Loader2, Search, Eye, Filter, Edit, Trash2, AlertCircle, RefreshCw, UserPlus } from "lucide-react";
 import StudentProfileDetails from "./StudentProfileDetails";
+import StudentRegistrationForm from "./StudentRegistrationForm";
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -38,6 +39,8 @@ const StudentProfilesTable = () => {
   const [roleFilter, setRoleFilter] = useState("all");
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [registrationOpen, setRegistrationOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [profileToDelete, setProfileToDelete] = useState(null);
   
@@ -45,7 +48,14 @@ const StudentProfilesTable = () => {
   const deleteMutation = useDeleteStudentProfile();
 
   // Get student profiles with search term and role filter
-  const { data: profiles, isLoading, isError, error, refetch } = useStudentProfiles(roleFilter);
+  const { 
+    data: profiles, 
+    isLoading, 
+    isError, 
+    error, 
+    refetch,
+    isRefetching
+  } = useStudentProfiles(roleFilter);
 
   const handleViewDetails = (profile) => {
     setSelectedProfile(profile);
@@ -54,7 +64,14 @@ const StudentProfilesTable = () => {
 
   const handleEditProfile = (profile) => {
     setSelectedProfile(profile);
-    setDetailsOpen(true);
+    setEditMode(true);
+    setRegistrationOpen(true);
+  };
+
+  const handleAddNewStudent = () => {
+    setSelectedProfile(null);
+    setEditMode(false);
+    setRegistrationOpen(true);
   };
 
   const handleDeleteClick = (profile) => {
@@ -88,7 +105,8 @@ const StudentProfilesTable = () => {
 
   // Filter profiles based on search term
   const filteredProfiles = profiles?.filter(profile => 
-    profile.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    profile.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    profile.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const formatDate = (dateString) => {
@@ -120,7 +138,7 @@ const StudentProfilesTable = () => {
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
           <Input
-            placeholder="Search by name"
+            placeholder="Search by name or email"
             className="pl-8"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -143,16 +161,24 @@ const StudentProfilesTable = () => {
             variant="outline" 
             size="icon"
             onClick={handleRefresh}
+            disabled={isRefetching}
             title="Refresh"
           >
-            <RefreshCw className="h-4 w-4" />
+            <RefreshCw className={`h-4 w-4 ${isRefetching ? 'animate-spin' : ''}`} />
+          </Button>
+          <Button 
+            onClick={handleAddNewStudent}
+            className="gap-1"
+          >
+            <UserPlus className="h-4 w-4" />
+            <span className="hidden md:inline">Add Student</span>
           </Button>
         </div>
       </div>
 
       {/* Student Profiles Table */}
       <div className="border rounded-md overflow-hidden">
-        {isLoading ? (
+        {isLoading || isRefetching ? (
           <div className="flex justify-center items-center h-64">
             <Loader2 className="h-8 w-8 animate-spin text-primary mr-2" />
             <span>Loading student profiles...</span>
@@ -161,7 +187,7 @@ const StudentProfilesTable = () => {
           <div className="flex flex-col items-center justify-center h-64 gap-4">
             <div className="bg-red-50 text-red-800 p-4 rounded-md flex items-center">
               <AlertCircle className="h-5 w-5 mr-2" />
-              An error occurred while loading student profiles: {error.message}
+              An error occurred while loading student profiles: {error?.message || "Unknown error"}
             </div>
             <Button variant="outline" onClick={handleRefresh}>
               <RefreshCw className="h-4 w-4 mr-2" /> Try again
@@ -172,6 +198,7 @@ const StudentProfilesTable = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Joined Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -182,6 +209,7 @@ const StudentProfilesTable = () => {
                 filteredProfiles.map((profile) => (
                   <TableRow key={profile.id}>
                     <TableCell className="font-medium">{profile.name}</TableCell>
+                    <TableCell>{profile.email || "N/A"}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className={`${getRoleBadgeStyles(profile.role)}`}>
                         {profile.role.charAt(0).toUpperCase() + profile.role.slice(1)}
@@ -220,7 +248,7 @@ const StudentProfilesTable = () => {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center py-6 text-gray-500">
+                  <TableCell colSpan={5} className="text-center py-6 text-gray-500">
                     No student profiles found
                   </TableCell>
                 </TableRow>
@@ -238,6 +266,14 @@ const StudentProfilesTable = () => {
           onOpenChange={setDetailsOpen}
         />
       )}
+
+      {/* Student Registration/Edit Form */}
+      <StudentRegistrationForm
+        open={registrationOpen}
+        onOpenChange={setRegistrationOpen}
+        existingProfile={editMode ? selectedProfile : null}
+        onSuccess={handleRefresh}
+      />
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
