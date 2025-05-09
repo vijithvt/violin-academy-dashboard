@@ -1,80 +1,136 @@
 
-import { Award, Star } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useSupabase } from "@/context/SupabaseContext";
 import { useTotalStudentPoints } from "@/api/adminService";
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 
-interface StudentStatsProps {
-  userId?: string;
-}
-
-const StudentStats = ({ userId }: StudentStatsProps) => {
-  const { data: studentPoints, isLoading } = useTotalStudentPoints(userId);
-  const points = studentPoints ?? 0; // Ensure it's a number with nullish coalescing
-
-  // Calculate level based on points
-  const getLevel = (points: number) => {
-    if (points >= 500) return "Expert";
-    if (points >= 300) return "Advanced";
-    if (points >= 100) return "Intermediate";
-    return "Beginner";
-  };
-
-  // Calculate next milestone
-  const getNextMilestone = (points: number) => {
-    if (points < 100) return 100;
-    if (points < 300) return 300;
-    if (points < 500) return 500;
-    return 1000;
-  };
-
-  // Calculate current rank (placeholder for now)
-  const getRank = (points: number) => {
-    // This would be replaced with an actual rank from the database
-    return "8th";
-  };
+const StudentStats = () => {
+  const { user } = useSupabase();
+  const { data: totalPoints, loading, error } = useTotalStudentPoints(user?.id);
 
   return (
-    <Card className="mt-6 bg-gradient-to-br from-amber-50 to-white border-amber-100">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center">
-          <Star className="h-5 w-5 mr-2 text-maroon-700" />
-          Your Stats
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {isLoading ? (
-          // Loading skeleton
-          <div className="space-y-3">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="flex justify-between items-center">
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-4 w-8" />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Points:</span>
-              <span className="font-bold text-maroon-800">{points}</span>
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">
+            Total Points
+          </CardTitle>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            className="h-4 w-4 text-muted-foreground"
+          >
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="flex items-center space-x-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Loading...</span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Rank:</span>
-              <span className="font-bold text-maroon-800">{getRank(points)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Level:</span>
-              <span className="font-bold text-maroon-800">{getLevel(points)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Next milestone:</span>
-              <span className="font-bold text-maroon-800">{getNextMilestone(points)} pts</span>
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          ) : error ? (
+            <div className="text-sm text-red-500">Error loading points</div>
+          ) : (
+            <>
+              <div className="text-2xl font-bold">{totalPoints}</div>
+              <p className="text-xs text-muted-foreground">
+                Keep practicing to earn more!
+              </p>
+            </>
+          )}
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">
+            Lessons Completed
+          </CardTitle>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            className="h-4 w-4 text-muted-foreground"
+          >
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">3</div>
+          <p className="text-xs text-muted-foreground">
+            Continue your learning journey
+          </p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">
+            Current Level
+          </CardTitle>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            className="h-4 w-4 text-muted-foreground"
+          >
+            <rect width="20" height="14" x="2" y="5" rx="2" />
+            <path d="M2 10h20" />
+          </svg>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">Level 1</div>
+          <p className="text-xs text-muted-foreground">
+            Beginner - Sarali Varisai
+          </p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">
+            Next Class
+          </CardTitle>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            className="h-4 w-4 text-muted-foreground"
+          >
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+          </svg>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">Friday</div>
+          <p className="text-xs text-muted-foreground">
+            May 12, 5:00 PM
+          </p>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

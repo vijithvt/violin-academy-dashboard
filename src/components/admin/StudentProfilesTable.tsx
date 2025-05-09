@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useStudentProfiles, StudentProfile, useDeleteStudentProfile } from "@/api/adminService";
 import { 
   Table, 
@@ -18,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Search, Eye, Filter, Edit, Trash2, AlertCircle } from "lucide-react";
+import { Loader2, Search, Eye, Filter, Edit, Trash2, AlertCircle, Plus, BookOpen } from "lucide-react";
 import StudentProfileDetails from "./StudentProfileDetails";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -115,30 +116,39 @@ const StudentProfilesTable = () => {
 
   return (
     <div className="space-y-4">
-      {/* Search and Filter Controls */}
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-          <Input
-            placeholder="Search by name"
-            className="pl-8"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-gray-500" />
-          <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className="w-[150px]">
-              <SelectValue placeholder="Role Filter" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Roles</SelectItem>
-              <SelectItem value="student">Student</SelectItem>
-              <SelectItem value="admin">Admin</SelectItem>
-              <SelectItem value="teacher">Teacher</SelectItem>
-            </SelectContent>
-          </Select>
+      {/* Action Button and Search Row */}
+      <div className="flex flex-col md:flex-row md:justify-between gap-4">
+        <Link to="/student-registration">
+          <Button className="w-full md:w-auto">
+            <Plus className="h-4 w-4 mr-1" />
+            Register New Student
+          </Button>
+        </Link>
+        
+        <div className="flex flex-col md:flex-row gap-4 md:w-3/4">
+          <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+            <Input
+              placeholder="Search by name"
+              className="pl-8"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <Filter className="h-4 w-4 text-gray-500" />
+            <Select value={roleFilter} onValueChange={setRoleFilter}>
+              <SelectTrigger className="w-[150px]">
+                <SelectValue placeholder="Role Filter" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Roles</SelectItem>
+                <SelectItem value="student">Student</SelectItem>
+                <SelectItem value="admin">Admin</SelectItem>
+                <SelectItem value="teacher">Teacher</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
@@ -182,6 +192,17 @@ const StudentProfilesTable = () => {
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
+                      {profile.role === 'student' && (
+                        <Link to={`/student-progress/${profile.id}`}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Manage Student Progress"
+                          >
+                            <BookOpen className="h-4 w-4 text-blue-500" />
+                          </Button>
+                        </Link>
+                      )}
                       <Button
                         variant="ghost"
                         size="icon"

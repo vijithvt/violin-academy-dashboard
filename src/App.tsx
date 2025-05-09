@@ -20,7 +20,9 @@ import Home from "./pages/Home";
 import Blogs from "./pages/Blogs";
 import Login from "./pages/Login";
 import StudentDashboard from "./pages/StudentDashboard";
-import StudentsPage from "./pages/StudentsPage"; // Add the new Students page
+import StudentsPage from "./pages/StudentsPage";
+import StudentRegistration from "./pages/StudentRegistration"; // Add the new page
+import StudentProgress from "./pages/StudentProgress"; // Add the new page
 
 const queryClient = new QueryClient();
 
@@ -48,6 +50,8 @@ const App = () => (
                 <Route path="/admission" element={<AdmissionForm />} />
                 <Route path="/student/:id" element={<StudentDetails />} />
                 <Route path="/edit-student/:id" element={<EditStudent />} />
+                <Route path="/student-registration" element={<StudentRegistration />} /> 
+                <Route path="/student-progress/:studentId" element={<StudentProgress />} />
               </Route>
               
               {/* Protected routes for students */}
