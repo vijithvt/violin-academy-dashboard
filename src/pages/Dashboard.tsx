@@ -8,6 +8,7 @@ import { Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StudentProfilesTable from "@/components/admin/StudentProfilesTable";
 import PointsManagement from "@/components/admin/PointsManagement";
+import AttendanceModule from "@/components/admin/attendance/AttendanceModule";
 
 const Dashboard = () => {
   const { isAdmin, loading, checkAdminStatus } = useAdminCheck();
@@ -64,9 +65,7 @@ const Dashboard = () => {
           </TabsContent>
           
           <TabsContent value="attendance" className="mt-6">
-            <div className="flex justify-center items-center h-64 bg-gray-50 rounded-lg border">
-              <p className="text-gray-500">Coming soon: Attendance management features</p>
-            </div>
+            <AttendanceModule />
           </TabsContent>
           
           <TabsContent value="fees" className="mt-6">
