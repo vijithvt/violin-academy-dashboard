@@ -124,7 +124,7 @@ export function StudentRegistrationForm() {
       });
 
       // Navigate back to students page
-      navigate("/dashboard/students");
+      navigate("/students");
     } catch (error) {
       console.error("Error creating student profile:", error);
       toast({

@@ -13,7 +13,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   useEffect(() => {
     checkAdminStatus();
-  }, []);
+  }, [checkAdminStatus]);
 
   if (loading) {
     return (

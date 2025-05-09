@@ -1,11 +1,12 @@
+
 import { useState } from 'react';
-import { addMonths, subMonths, format, eachDayOfInterval, startOfMonth, endOfMonth } from 'date-fns';
+import { addMonths, subMonths, format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AttendanceFilters } from './AttendanceFilters';
-import { AttendanceCalendarView } from './AttendanceCalendarView';
-import { AttendanceTableView } from './AttendanceTableView';
+import AttendanceFilters from './AttendanceFilters';
+import AttendanceCalendarView from './AttendanceCalendarView';
+import AttendanceTableView from './AttendanceTableView';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const AttendanceModule = () => {

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStudents, useDeleteStudentProfile } from "@/api/adminService/profileService";
@@ -19,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { StudentRegistrationForm } from "@/components/admin/StudentRegistrationForm";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { 
   ChevronDown, 
   Search, 
@@ -55,7 +56,7 @@ const StudentProfilesTable = () => {
   const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { toast: showToast } = toast();
+  const { toast } = useToast();
   
   const { data: students, isLoading, error } = useStudents(searchTerm, courseFilter, levelFilter);
   const deleteStudentProfile = useDeleteStudentProfile();
@@ -89,13 +90,13 @@ const StudentProfilesTable = () => {
     if (studentToDelete) {
       try {
         await deleteStudentProfile.mutateAsync(studentToDelete);
-        showToast({
+        toast({
           title: "Success!",
           description: "Student profile deleted successfully.",
         });
       } catch (error) {
         console.error("Error deleting student profile:", error);
-        showToast({
+        toast({
           title: "Error",
           description: "Failed to delete student profile. Please try again.",
           variant: "destructive",
@@ -112,7 +113,7 @@ const StudentProfilesTable = () => {
   }
 
   if (error) {
-    return <div>Error: {error.message}</div>;
+    return <div>Error: {(error as Error).message}</div>;
   }
 
   return (

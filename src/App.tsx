@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { SupabaseProvider } from './providers/SupabaseProvider';
 import { AuthProvider } from './providers/AuthProvider';
@@ -15,7 +16,7 @@ import AdmissionForm from './pages/AdmissionForm';
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import StudentProtectedRoute from './components/auth/StudentProtectedRoute';
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/toaster";
 
 function App() {
   return (
@@ -30,18 +31,38 @@ function App() {
             <Route path="/beginner-guide" element={<BeginnerGuide />} />
             
             {/* Protected Student Routes */}
-            <Route element={<StudentProtectedRoute />}>
-              <Route path="/dashboard/student" element={<StudentDashboard />} />
-            </Route>
+            <Route path="/dashboard/student" element={
+              <StudentProtectedRoute>
+                <StudentDashboard />
+              </StudentProtectedRoute>
+            } />
             
             {/* Protected Admin Routes */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/students" element={<StudentsPage />} />
-              <Route path="/student/:id" element={<StudentDetails />} />
-              <Route path="/student/edit/:id" element={<EditStudent />} />
-              <Route path="/admission" element={<AdmissionForm />} />
-            </Route>
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/students" element={
+              <ProtectedRoute>
+                <StudentsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/student/:id" element={
+              <ProtectedRoute>
+                <StudentDetails />
+              </ProtectedRoute>
+            } />
+            <Route path="/student/edit/:id" element={
+              <ProtectedRoute>
+                <EditStudent />
+              </ProtectedRoute>
+            } />
+            <Route path="/admission" element={
+              <ProtectedRoute>
+                <AdmissionForm />
+              </ProtectedRoute>
+            } />
             
             <Route path="*" element={<NotFound />} />
           </Routes>

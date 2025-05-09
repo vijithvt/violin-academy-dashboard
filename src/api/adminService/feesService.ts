@@ -13,59 +13,61 @@ export const useFeeRecords = (
   return useQuery({
     queryKey: ["feeRecords", month, level, status, searchTerm],
     queryFn: async () => {
-      // Start with base query
-      let query = supabase.from("fees").select(`
-        *,
-        profiles:user_id (name, level)
-      `);
-      
-      // Apply filters
-      if (month) {
-        // Extract year and month
-        const [year, monthNum] = month.split('-');
-        const monthStr = `${year}-${monthNum}`;
-        query = query.eq('month', monthStr);
+      try {
+        // Start with base query
+        let query = supabase.from("fees").select("*, profiles:user_id(name)");
+        
+        // Apply filters
+        if (month) {
+          // Extract year and month
+          const [year, monthNum] = month.split('-');
+          const monthStr = `${year}-${monthNum}`;
+          query = query.eq('month', monthStr);
+        }
+        
+        // Apply level filter if not "all"
+        if (level && level !== "all") {
+          query = query.eq('level', level);
+        }
+        
+        // Apply status filter if not "all"
+        if (status && status !== "all") {
+          query = query.eq('status', status);
+        }
+        
+        // Apply search term filter
+        if (searchTerm) {
+          // We need to join with profiles to search by student name
+          query = query.textSearch('student_name', searchTerm);
+        }
+        
+        const { data, error } = await query;
+        
+        if (error) {
+          throw new Error(error.message);
+        }
+        
+        // Transform the data to match our FeeRecord type
+        const feeRecords = data.map(record => ({
+          id: record.id,
+          user_id: record.user_id,
+          student_name: record.profiles?.name || record.student_name || "Unknown",
+          level: record.level || "Unknown",
+          month: record.month || "", // YYYY-MM format
+          amount: record.amount,
+          status: record.status,
+          payment_date: record.payment_date,
+          payment_method: record.payment_method,
+          payment_reference: record.payment_reference,
+          created_at: record.created_at,
+          updated_at: record.updated_at || record.created_at
+        })) as FeeRecord[];
+        
+        return feeRecords;
+      } catch (error) {
+        console.error("Error fetching fee records:", error);
+        return [] as FeeRecord[];
       }
-      
-      // Apply level filter if not "all"
-      if (level && level !== "all") {
-        query = query.eq('level', level);
-      }
-      
-      // Apply status filter if not "all"
-      if (status && status !== "all") {
-        query = query.eq('status', status);
-      }
-      
-      // Apply search term filter
-      if (searchTerm) {
-        // We need to join with profiles to search by student name
-        query = query.textSearch('student_name', searchTerm);
-      }
-      
-      const { data, error } = await query;
-      
-      if (error) {
-        throw new Error(error.message);
-      }
-      
-      // Transform the data to match our FeeRecord type
-      const feeRecords = data.map(record => ({
-        id: record.id,
-        user_id: record.user_id,
-        student_name: record.profiles?.name || "Unknown",
-        level: record.level || "Unknown",
-        month: record.month || "", // YYYY-MM format
-        amount: record.amount,
-        status: record.status,
-        payment_date: record.payment_date,
-        payment_method: record.payment_method,
-        payment_reference: record.payment_reference,
-        created_at: record.created_at,
-        updated_at: record.updated_at || record.created_at
-      })) as FeeRecord[];
-      
-      return feeRecords;
     }
   });
 };
@@ -119,7 +121,7 @@ export const useGenerateFeeReceipt = () => {
         .from("fees")
         .select(`
           *,
-          profiles:user_id (name, email, phone)
+          profiles:user_id(name, email, phone)
         `)
         .eq("id", feeId)
         .single();
@@ -144,13 +146,23 @@ export const useCreateFeeRecord = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (fee: Omit<FeeRecord, 'id' | 'created_at' | 'updated_at'>) => {
+    mutationFn: async (fee: {
+      user_id: string;
+      student_name: string;
+      level: string;
+      month: string;
+      amount: number;
+      status: string;
+      payment_date?: string;
+      payment_method?: string;
+      payment_reference?: string;
+    }) => {
       const { data, error } = await supabase
         .from("fees")
         .insert({
           user_id: fee.user_id,
-          level: fee.level,
           student_name: fee.student_name,
+          level: fee.level,
           month: fee.month,
           amount: fee.amount,
           status: fee.status,
