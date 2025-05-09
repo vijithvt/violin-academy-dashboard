@@ -2,8 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Music, Book, Award, Sparkles, Users, Calendar, Compass, BeakerIcon } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Music, Book, Award, Sparkles, Users, Calendar, Compass } from "lucide-react";
 
 const FeatureCard = ({ icon, title, description, delay }: { 
   icon: React.ReactNode, 
@@ -104,72 +103,9 @@ const InstrumentSection = () => {
     }
   ];
   
-  // Teaching Approach section
-  const teachingApproachContent = {
-    title: "Teaching Approach",
-    description: "A proven methodology combining tradition with modern educational practices",
-    features: [
-      {
-        icon: <Award className="h-5 w-5 text-maroon-600" />,
-        title: "Monthly Student Assessments",
-        description: "Regular evaluations in partnership with acclaimed music academies"
-      },
-      {
-        icon: <Book className="h-5 w-5 text-maroon-600" />,
-        title: "Structured Curriculum",
-        description: "University-level standards with clear learning pathways"
-      },
-      {
-        icon: <Sparkles className="h-5 w-5 text-maroon-600" />,
-        title: "Custom Student Dashboard",
-        description: "Track progress & practice with personalized analytics"
-      },
-      {
-        icon: <Music className="h-5 w-5 text-maroon-600" />,
-        title: "Educational Resources",
-        description: "Comprehensive materials covering technique and theory"
-      }
-    ]
-  };
-
   return (
     <section id="instrument" className="py-20 bg-gradient-to-b from-white to-amber-50 relative">
       <div className="container mx-auto px-4" id="instrument-section">
-        {/* Teaching Approach Section */}
-        <div className={cn(
-          "mb-16 transition-all duration-1000 transform",
-          isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-        )}>
-          <div className="text-center max-w-3xl mx-auto mb-8">
-            <h2 className="text-4xl font-serif font-bold text-maroon-900 mb-3">
-              {teachingApproachContent.title}
-            </h2>
-            <p className="text-lg text-gray-600">{teachingApproachContent.description}</p>
-            <div className="h-1 w-24 bg-amber-400 mx-auto mt-4"></div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-            {teachingApproachContent.features.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 20 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className={`bg-white rounded-lg p-6 shadow-md border border-maroon-100 
-                  ${index % 2 === 0 ? 'bg-gradient-to-br from-white to-maroon-50' : 'bg-gradient-to-br from-white to-amber-50'}`}
-              >
-                <div className="flex flex-col items-center text-center">
-                  <div className="rounded-full bg-white p-3 shadow-md mb-4">
-                    {feature.icon}
-                  </div>
-                  <h3 className="text-lg font-serif font-bold mb-2">{feature.title}</h3>
-                  <p className="text-gray-600 text-sm">{feature.description}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-        
         {/* Learn Carnatic Classical Violin Section */}
         <div className={cn(
           "mb-8 transition-all duration-1000 transform",

@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useStudentProfiles, StudentProfile, useDeleteStudentProfile } from "@/api/adminService";
+import { useStudentProfiles, useDeleteStudentProfile } from "@/api/adminService";
 import { 
   Table, 
   TableBody, 
@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Search, Eye, Filter, Edit, Trash2, AlertCircle } from "lucide-react";
+import { Loader2, Search, Eye, Filter, Edit, Trash2, AlertCircle, RefreshCw } from "lucide-react";
 import StudentProfileDetails from "./StudentProfileDetails";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -36,44 +36,62 @@ import { Badge } from "@/components/ui/badge";
 const StudentProfilesTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
-  const [selectedProfile, setSelectedProfile] = useState<StudentProfile | null>(null);
+  const [selectedProfile, setSelectedProfile] = useState(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [profileToDelete, setProfileToDelete] = useState<StudentProfile | null>(null);
+  const [profileToDelete, setProfileToDelete] = useState(null);
   
   const { toast } = useToast();
   const deleteMutation = useDeleteStudentProfile();
 
-  // Fix: Pass the roleFilter directly as a string instead of an object
-  const { data: profiles, isLoading, isError } = useStudentProfiles(
-    searchTerm,
-    roleFilter
-  );
+  // Get student profiles with search term and role filter
+  const { data: profiles, isLoading, isError, error, refetch } = useStudentProfiles(roleFilter);
 
-  const handleViewDetails = (profile: StudentProfile) => {
+  const handleViewDetails = (profile) => {
     setSelectedProfile(profile);
     setDetailsOpen(true);
   };
 
-  const handleEditProfile = (profile: StudentProfile) => {
+  const handleEditProfile = (profile) => {
     setSelectedProfile(profile);
     setDetailsOpen(true);
   };
 
-  const handleDeleteClick = (profile: StudentProfile) => {
+  const handleDeleteClick = (profile) => {
     setProfileToDelete(profile);
     setDeleteDialogOpen(true);
   };
 
   const handleConfirmDelete = async () => {
     if (profileToDelete) {
-      deleteMutation.mutate(profileToDelete.id);
-      setDeleteDialogOpen(false);
-      setProfileToDelete(null);
+      try {
+        await deleteMutation.mutateAsync(profileToDelete.id);
+        toast({
+          title: "Profile deleted",
+          description: "The student profile has been deleted successfully."
+        });
+        setDeleteDialogOpen(false);
+        setProfileToDelete(null);
+      } catch (err) {
+        toast({
+          variant: "destructive",
+          title: "Error deleting profile",
+          description: err.message
+        });
+      }
     }
   };
 
-  const formatDate = (dateString: string) => {
+  const handleRefresh = () => {
+    refetch();
+  };
+
+  // Filter profiles based on search term
+  const filteredProfiles = profiles?.filter(profile => 
+    profile.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       year: "numeric",
@@ -82,7 +100,7 @@ const StudentProfilesTable = () => {
     });
   };
 
-  const getRoleBadgeStyles = (role: string) => {
+  const getRoleBadgeStyles = (role) => {
     switch (role) {
       case 'admin':
         return 'bg-purple-100 text-purple-800';
@@ -94,24 +112,6 @@ const StudentProfilesTable = () => {
         return 'bg-gray-100 text-gray-800';
     }
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <span className="ml-2">Loading student profiles...</span>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="bg-red-50 text-red-800 p-4 rounded-md flex items-center">
-        <AlertCircle className="h-5 w-5 mr-2" />
-        An error occurred while loading student profiles. Please try again.
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-4">
@@ -139,70 +139,95 @@ const StudentProfilesTable = () => {
               <SelectItem value="teacher">Teacher</SelectItem>
             </SelectContent>
           </Select>
+          <Button 
+            variant="outline" 
+            size="icon"
+            onClick={handleRefresh}
+            title="Refresh"
+          >
+            <RefreshCw className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
       {/* Student Profiles Table */}
       <div className="border rounded-md overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Joined Date</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {profiles && profiles.length > 0 ? (
-              profiles.map((profile) => (
-                <TableRow key={profile.id}>
-                  <TableCell className="font-medium">{profile.name}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={`${getRoleBadgeStyles(profile.role)}`}>
-                      {profile.role.charAt(0).toUpperCase() + profile.role.slice(1)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{formatDate(profile.created_at)}</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleViewDetails(profile)}
-                        title="View Details"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEditProfile(profile)}
-                        title="Edit Profile"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteClick(profile)}
-                        title="Delete Profile"
-                      >
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      </Button>
-                    </div>
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mr-2" />
+            <span>Loading student profiles...</span>
+          </div>
+        ) : isError ? (
+          <div className="flex flex-col items-center justify-center h-64 gap-4">
+            <div className="bg-red-50 text-red-800 p-4 rounded-md flex items-center">
+              <AlertCircle className="h-5 w-5 mr-2" />
+              An error occurred while loading student profiles: {error.message}
+            </div>
+            <Button variant="outline" onClick={handleRefresh}>
+              <RefreshCw className="h-4 w-4 mr-2" /> Try again
+            </Button>
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Joined Date</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredProfiles && filteredProfiles.length > 0 ? (
+                filteredProfiles.map((profile) => (
+                  <TableRow key={profile.id}>
+                    <TableCell className="font-medium">{profile.name}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={`${getRoleBadgeStyles(profile.role)}`}>
+                        {profile.role.charAt(0).toUpperCase() + profile.role.slice(1)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{formatDate(profile.created_at)}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleViewDetails(profile)}
+                          title="View Details"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEditProfile(profile)}
+                          title="Edit Profile"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDeleteClick(profile)}
+                          title="Delete Profile"
+                        >
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center py-6 text-gray-500">
+                    No student profiles found
                   </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={4} className="text-center py-6 text-gray-500">
-                  No student profiles found
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              )}
+            </TableBody>
+          </Table>
+        )}
       </div>
 
       {/* Student Profile Details Dialog */}

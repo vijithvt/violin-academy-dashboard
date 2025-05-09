@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { StudentProfile } from "./types";
@@ -10,21 +9,23 @@ export const useStudentProfiles = (roleFilter: string = "all") => {
     queryFn: async () => {
       let query = supabase
         .from("profiles")
-        .select("*")
-        .order("created_at", { ascending: false });
+        .select("*");
 
       if (roleFilter !== "all") {
         query = query.eq("role", roleFilter);
       }
 
-      const { data, error } = await query;
+      const { data, error } = await query.order("created_at", { ascending: false });
 
       if (error) {
+        console.error("Error fetching profiles:", error);
         throw new Error(error.message);
       }
 
       return data as StudentProfile[];
-    }
+    },
+    retry: 2,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 
@@ -44,12 +45,14 @@ export const useStudentProfile = (id?: string) => {
         .single();
 
       if (error) {
+        console.error("Error fetching profile:", error);
         throw new Error(error.message);
       }
 
       return data as StudentProfile;
     },
-    enabled: !!id
+    enabled: !!id,
+    retry: 2,
   });
 };
 

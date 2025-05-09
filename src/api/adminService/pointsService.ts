@@ -20,12 +20,15 @@ export const useStudentPoints = (userId?: string) => {
         .order("created_at", { ascending: false });
 
       if (error) {
+        console.error("Error fetching student points:", error);
         throw new Error(error.message);
       }
 
       return data as StudentPoints[];
     },
-    enabled: !!userId
+    enabled: !!userId,
+    retry: 3,
+    staleTime: 2 * 60 * 1000, // 2 minutes
   });
 };
 
@@ -40,12 +43,14 @@ export const useTotalStudentPoints = (userId?: string) => {
         .rpc("get_total_points", { user_id_param: userId });
 
       if (error) {
+        console.error("Error fetching total points:", error);
         throw new Error(error.message);
       }
 
       return data as number;
     },
-    enabled: !!userId
+    enabled: !!userId,
+    retry: 3,
   });
 };
 
@@ -56,6 +61,8 @@ export const addPointsToStudent = async (
   activity: string
 ) => {
   try {
+    console.log("Adding points:", { userId, points, activity });
+    
     const { data, error } = await supabase
       .from("student_points")
       .insert({
@@ -65,6 +72,7 @@ export const addPointsToStudent = async (
       });
 
     if (error) {
+      console.error("Error adding points:", error);
       throw new Error(error.message);
     }
 
@@ -84,10 +92,36 @@ export const useTopStudents = (limit: number = 5) => {
         .rpc("get_top_students", { limit_param: limit });
 
       if (error) {
+        console.error("Error fetching top students:", error);
         throw new Error(error.message);
       }
 
       return data as TopStudent[];
-    }
+    },
+    retry: 2,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+// Hook to fetch all students (for points management)
+export const useStudents = () => {
+  return useQuery({
+    queryKey: ["students"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("role", "student")
+        .order("name");
+        
+      if (error) {
+        console.error("Error fetching students:", error);
+        throw new Error(error.message);
+      }
+      
+      return data;
+    },
+    retry: 3,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };

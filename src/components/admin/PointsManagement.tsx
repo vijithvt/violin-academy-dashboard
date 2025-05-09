@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -55,7 +56,7 @@ const formSchema = z.object({
   activity: z.string().min(2, {
     message: "Activity must be at least 2 characters.",
   }),
-  points: z.number().int().min(-1000, {
+  points: z.coerce.number().int().min(-1000, {
     message: "Points must be at least -1000.",
   }).max(1000, {
     message: "Points must be at most 1000.",
@@ -65,13 +66,13 @@ const formSchema = z.object({
 const PointsManagement = () => {
   const [showAddPoints, setShowAddPoints] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { data: students, isLoading: isLoadingStudents } = useStudents();
+  const { data: students, isLoading: isLoadingStudents, error: studentsError, refetch: refetchStudents } = useStudents();
   const { toast } = useToast();
   const [selectedStudentId, setSelectedStudentId] = useState<string | undefined>(
     undefined
   );
 
-  const { data: studentPoints, isLoading: isLoadingPoints } = useStudentPoints(
+  const { data: studentPoints, isLoading: isLoadingPoints, error: pointsError, refetch: refetchPoints } = useStudentPoints(
     selectedStudentId
   );
 
@@ -85,11 +86,34 @@ const PointsManagement = () => {
   });
 
   useEffect(() => {
+    if (studentsError) {
+      toast({
+        variant: "destructive",
+        title: "Error loading students",
+        description: studentsError.message,
+      });
+    }
+    
+    if (pointsError) {
+      toast({
+        variant: "destructive",
+        title: "Error loading points",
+        description: pointsError.message,
+      });
+    }
+  }, [studentsError, pointsError, toast]);
+
+  useEffect(() => {
     if (students && students.length > 0) {
       form.setValue("studentId", students[0].id);
       setSelectedStudentId(students[0].id);
     }
   }, [students, form]);
+
+  const handleRefresh = () => {
+    refetchStudents();
+    refetchPoints();
+  };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
@@ -105,6 +129,7 @@ const PointsManagement = () => {
       });
       form.reset();
       setShowAddPoints(false);
+      refetchPoints();
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -116,13 +141,26 @@ const PointsManagement = () => {
     }
   };
 
+  const totalPoints = studentPoints
+    ? studentPoints.reduce((acc, point) => acc + point.points_change, 0)
+    : 0;
+    
+  const avgPointsPerStudent = students && students.length > 0
+    ? (totalPoints / students.length).toFixed(2)
+    : "0.00";
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold tracking-tight">Points Management</h2>
-        <Button onClick={() => setShowAddPoints(true)}>
-          <Plus className="mr-2 h-4 w-4" /> Add Points
-        </Button>
+        <div className="space-x-2">
+          <Button onClick={handleRefresh} variant="outline">
+            Refresh Data
+          </Button>
+          <Button onClick={() => setShowAddPoints(true)}>
+            <Plus className="mr-2 h-4 w-4" /> Add Points
+          </Button>
+        </div>
       </div>
 
       {/* Points Dashboard */}
@@ -130,33 +168,39 @@ const PointsManagement = () => {
         <div className="bg-white rounded-md p-4 shadow-sm">
           <h3 className="text-lg font-semibold">Total Students:</h3>
           <p className="text-2xl font-bold text-gray-800">
-            {students ? students.length : "Loading..."}
+            {isLoadingStudents ? (
+              <span className="flex items-center"><Spinner className="mr-2" /> Loading...</span>
+            ) : studentsError ? (
+              <span className="text-red-500">Error loading data</span>
+            ) : (
+              students ? students.length : "0"
+            )}
           </p>
         </div>
 
         <div className="bg-white rounded-md p-4 shadow-sm">
           <h3 className="text-lg font-semibold">Total Points Awarded:</h3>
           <p className="text-2xl font-bold text-gray-800">
-            {studentPoints
-              ? studentPoints.reduce(
-                  (acc, point) => acc + point.points_change,
-                  0
-                )
-              : "Loading..."}
+            {isLoadingPoints ? (
+              <span className="flex items-center"><Spinner className="mr-2" /> Loading...</span>
+            ) : pointsError ? (
+              <span className="text-red-500">Error loading data</span>
+            ) : (
+              totalPoints
+            )}
           </p>
         </div>
 
         <div className="bg-white rounded-md p-4 shadow-sm">
           <h3 className="text-lg font-semibold">Average Points per Student:</h3>
           <p className="text-2xl font-bold text-gray-800">
-            {students && studentPoints
-              ? (
-                  studentPoints.reduce(
-                    (acc, point) => acc + point.points_change,
-                    0
-                  ) / students.length
-                ).toFixed(2)
-              : "Loading..."}
+            {isLoadingStudents || isLoadingPoints ? (
+              <span className="flex items-center"><Spinner className="mr-2" /> Loading...</span>
+            ) : studentsError || pointsError ? (
+              <span className="text-red-500">Error loading data</span>
+            ) : (
+              avgPointsPerStudent
+            )}
           </p>
         </div>
       </div>
@@ -191,14 +235,19 @@ const PointsManagement = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="" disabled className="text-gray-400">
-                          Select a student
-                        </SelectItem>
-                        {students?.map((student) => (
-                          <SelectItem key={student.id} value={student.id}>
-                            {student.name}
-                          </SelectItem>
-                        ))}
+                        {isLoadingStudents ? (
+                          <SelectItem value="loading" disabled>Loading students...</SelectItem>
+                        ) : studentsError ? (
+                          <SelectItem value="error" disabled>Error loading students</SelectItem>
+                        ) : students?.length === 0 ? (
+                          <SelectItem value="none" disabled>No students found</SelectItem>
+                        ) : (
+                          students?.map((student) => (
+                            <SelectItem key={student.id} value={student.id}>
+                              {student.name}
+                            </SelectItem>
+                          ))
+                        )}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -221,9 +270,6 @@ const PointsManagement = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="" disabled className="text-gray-400">
-                          Select an activity
-                        </SelectItem>
                         <SelectItem value="Weekly Practice Completed">
                           Weekly Practice Completed
                         </SelectItem>
@@ -293,7 +339,7 @@ const PointsManagement = () => {
         <Table>
           <TableCaption>
             Student Points History -{" "}
-            {students?.find((student) => student.id === selectedStudentId)?.name}
+            {students?.find((student) => student.id === selectedStudentId)?.name || "Select a student"}
           </TableCaption>
           <TableHeader>
             <TableRow>
@@ -305,19 +351,33 @@ const PointsManagement = () => {
           <TableBody>
             {isLoadingPoints && (
               <TableRow>
-                <TableCell colSpan={3} className="text-center">
-                  Loading...
+                <TableCell colSpan={3} className="text-center py-8">
+                  <div className="flex flex-col items-center justify-center">
+                    <Spinner className="h-8 w-8 mb-2" />
+                    <span>Loading points data...</span>
+                  </div>
                 </TableCell>
               </TableRow>
             )}
-            {!isLoadingPoints && studentPoints && studentPoints.length === 0 && (
+            {!isLoadingPoints && pointsError && (
               <TableRow>
-                <TableCell colSpan={3} className="text-center">
-                  No points history found.
+                <TableCell colSpan={3} className="text-center py-8">
+                  <div className="text-red-500 flex flex-col items-center">
+                    <span className="font-bold mb-2">Error loading points data</span>
+                    <Button variant="outline" onClick={handleRefresh}>Try Again</Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
+            {!isLoadingPoints && !pointsError && studentPoints && studentPoints.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center py-8">
+                  <span className="text-gray-500">No points history found for this student.</span>
                 </TableCell>
               </TableRow>
             )}
             {!isLoadingPoints &&
+              !pointsError &&
               studentPoints &&
               studentPoints.map((point) => (
                 <TableRow key={point.id}>
