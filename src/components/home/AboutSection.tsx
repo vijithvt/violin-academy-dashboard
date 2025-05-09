@@ -1,7 +1,7 @@
+
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import Image from 'next/image';
 
 const AboutSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -63,12 +63,10 @@ const AboutSection = () => {
             "md:order-2 transition-all duration-1000 transform",
             isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
           )}>
-            <Image
+            <img
               src="/images/teacher-profile.jpg"
               alt="Teacher Profile"
-              width={500}
-              height={500}
-              className="rounded-xl shadow-lg"
+              className="rounded-xl shadow-lg w-full h-auto"
             />
           </div>
         </div>
