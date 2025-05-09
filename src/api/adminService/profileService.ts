@@ -214,7 +214,7 @@ export const useDashboardStats = () => {
         if (trialsError) throw new Error(trialsError.message);
         
         // Format the data
-        const roleCounts = roleData ? roleData.reduce((acc: Record<string, number>, item: any) => {
+        const roleCounts = roleData && Array.isArray(roleData) ? roleData.reduce((acc: Record<string, number>, item: any) => {
           if (item && item.role && item.count) {
             acc[item.role.toLowerCase()] = Number(item.count);
           }
@@ -227,7 +227,7 @@ export const useDashboardStats = () => {
           admins: roleCounts.admin || 0,
           newRegistrations: newRegistrations || 0,
           newTrials: newTrials || 0,
-          totalUsers: Object.values(roleCounts).reduce((sum, count) => sum + Number(count), 0)
+          totalUsers: Object.values(roleCounts).reduce((sum: number, count: number) => sum + count, 0)
         };
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);

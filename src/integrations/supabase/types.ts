@@ -375,6 +375,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      count_profiles_by_role: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          role: string
+          count: number
+        }[]
+      }
       get_top_students: {
         Args: { limit_param: number }
         Returns: {
