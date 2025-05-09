@@ -3,6 +3,7 @@
 export * from './profileService';
 export * from './pointsService';
 export * from './trialService';
+export * from './feesService';
 
 // Admin check function
 import { useState } from 'react';
@@ -16,9 +17,9 @@ export const useAdminCheck = () => {
     setLoading(true);
     try {
       // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (!user) {
+      if (!session) {
         setIsAdmin(false);
         return;
       }

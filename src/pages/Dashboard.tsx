@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StudentProfilesTable from "@/components/admin/StudentProfilesTable";
 import PointsManagement from "@/components/admin/PointsManagement";
 import AttendanceModule from "@/components/admin/attendance/AttendanceModule";
+import FeesModule from "@/components/admin/fees/FeesModule";
 
 const Dashboard = () => {
   const { isAdmin, loading, checkAdminStatus } = useAdminCheck();
@@ -37,7 +38,7 @@ const Dashboard = () => {
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
           <p className="text-muted-foreground">
-            Manage trial requests, student profiles, attendance, and more.
+            Manage trial requests, student profiles, attendance, fees, and more.
           </p>
         </div>
         
@@ -69,9 +70,7 @@ const Dashboard = () => {
           </TabsContent>
           
           <TabsContent value="fees" className="mt-6">
-            <div className="flex justify-center items-center h-64 bg-gray-50 rounded-lg border">
-              <p className="text-gray-500">Coming soon: Fee management features</p>
-            </div>
+            <FeesModule />
           </TabsContent>
           
           <TabsContent value="schedule" className="mt-6">

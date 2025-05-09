@@ -1,78 +1,68 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import { v4 as uuidv4 } from 'uuid';
 
-// Create a storage bucket for student photos if it doesn't exist
-export async function createStorageBucketIfNeeded() {
+/**
+ * Upload a student's photo to Supabase storage
+ * @param file File to upload
+ * @returns URL of the uploaded file
+ */
+export const uploadStudentPhoto = async (file: File): Promise<string | null> => {
   try {
-    // Check if the bucket exists
-    const { data: existingBuckets } = await supabase.storage.listBuckets();
-    const bucketExists = existingBuckets?.some(bucket => bucket.name === 'student-photos');
-    
-    if (!bucketExists) {
-      // Create the bucket if it doesn't exist
-      await supabase.storage.createBucket('student-photos', {
-        public: true,
-        fileSizeLimit: 1024 * 1024, // 1MB
-        allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
-      });
-      
-      console.log("Created student-photos bucket");
-    }
-  } catch (error) {
-    console.error("Error checking/creating storage bucket:", error);
-  }
-}
+    // Generate a unique filename
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${uuidv4()}.${fileExt}`;
+    const filePath = `student_photos/${fileName}`;
 
-// Upload a student photo
-export async function uploadStudentPhoto(file: File, studentId: string) {
-  try {
-    // Ensure the bucket exists
-    await createStorageBucketIfNeeded();
-    
-    // Create a unique filename
-    const fileName = `${studentId}/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
-    
-    // Upload the file
+    // Upload file to Supabase
     const { data, error } = await supabase.storage
-      .from('student-photos')
-      .upload(fileName, file, {
+      .from('student_photos')
+      .upload(filePath, file, {
         cacheControl: '3600',
         upsert: false
       });
-      
-    if (error) throw error;
-    
-    // Get the public URL
-    const { data: publicUrlData } = supabase.storage
-      .from('student-photos')
-      .getPublicUrl(fileName);
-      
-    return publicUrlData.publicUrl;
-  } catch (error) {
-    console.error("Error uploading photo:", error);
-    throw error;
-  }
-}
 
-// Delete a student photo
-export async function deleteStudentPhoto(url: string) {
+    if (error) {
+      console.error('Error uploading file:', error);
+      throw error;
+    }
+
+    // Get public URL
+    const { data: urlData } = supabase.storage
+      .from('student_photos')
+      .getPublicUrl(filePath);
+
+    return urlData.publicUrl;
+  } catch (error) {
+    console.error('Error in uploadStudentPhoto:', error);
+    return null;
+  }
+};
+
+/**
+ * Delete a student's photo from Supabase storage
+ * @param url URL of the file to delete
+ * @returns boolean indicating success
+ */
+export const deleteStudentPhoto = async (url: string): Promise<boolean> => {
   try {
-    // Extract the path from the URL
-    const urlObj = new URL(url);
-    const pathParts = urlObj.pathname.split('/');
-    const filePath = pathParts.slice(pathParts.indexOf('student-photos') + 1).join('/');
+    // Extract the file path from the URL
+    const urlParts = url.split('/');
+    const filePath = urlParts.slice(urlParts.indexOf('student_photos')).join('/');
     
-    if (!filePath) throw new Error("Invalid photo URL");
-    
+    // Delete the file
     const { error } = await supabase.storage
-      .from('student-photos')
+      .from('student_photos')
       .remove([filePath]);
-      
-    if (error) throw error;
+    
+    if (error) {
+      console.error('Error deleting file:', error);
+      return false;
+    }
     
     return true;
   } catch (error) {
-    console.error("Error deleting photo:", error);
-    throw error;
+    console.error('Error in deleteStudentPhoto:', error);
+    return false;
   }
-}
+};

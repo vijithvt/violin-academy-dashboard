@@ -67,3 +67,29 @@ export interface AttendanceRecord {
 }
 
 export type AttendanceStatus = "present" | "absent" | "late";
+
+// Fee Types
+export interface FeeRecord {
+  id: string;
+  user_id: string;
+  student_name: string;
+  level: string;
+  month: string; // "YYYY-MM" format
+  amount: number;
+  status: FeeStatus;
+  payment_date?: string;
+  payment_method?: string;
+  payment_reference?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export type FeeStatus = "paid" | "pending" | "overdue";
+
+export interface Task {
+  id: string;
+  title: string;
+  description: string;
+  status: "completed" | "pending" | "overdue";
+  due_date?: string;
+}
