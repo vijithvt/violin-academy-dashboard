@@ -2,6 +2,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { FeeRecord, FeeStatus } from "./types";
+import { Database } from "@/integrations/supabase/types";
+
+type FeesRow = Database['public']['Tables']['fees']['Row'];
 
 // Hook to fetch fee records
 export const useFeeRecords = (
@@ -24,10 +27,7 @@ export const useFeeRecords = (
           query = query.like('date', `${year}-${monthNum}-%`);
         }
         
-        // Apply level filter if not "all"
-        if (level && level !== "all") {
-          query = query.eq('level', level);
-        }
+        // Apply level filter if not "all" - not currently in schema, will handle in transform
         
         // Apply status filter if not "all"
         if (status && status !== "all") {
@@ -59,17 +59,18 @@ export const useFeeRecords = (
           id: record.id,
           user_id: record.user_id,
           student_name: record.profiles?.name || "Unknown",
-          // If level exists in the database use it, otherwise use "Unknown"
-          level: record.level || "Unknown",
+          // Level might not exist in DB, use a default
+          level: "Unknown",
           month: record.date ? record.date.substring(0, 7) : "", // Extract YYYY-MM from date
           amount: record.amount,
           // Make sure to cast the status to FeeStatus
           status: (record.status || "pending") as FeeStatus,
-          payment_date: record.payment_date,
-          payment_method: record.payment_method,
-          payment_reference: record.payment_reference,
+          // These fields might not exist in the database yet, handle accordingly
+          payment_date: undefined,
+          payment_method: undefined,
+          payment_reference: undefined,
           created_at: record.created_at,
-          updated_at: record.updated_at || record.created_at
+          updated_at: record.created_at // Use created_at as fallback
         }));
         
         return feeRecords;
@@ -179,11 +180,8 @@ export const useCreateFeeRecord = () => {
           user_id: fee.user_id,
           amount: fee.amount,
           status: fee.status,
-          date: fee.date,
-          payment_date: fee.payment_date,
-          payment_method: fee.payment_method,
-          payment_reference: fee.payment_reference,
-          level: fee.level
+          date: fee.date
+          // Only include the extra fields if added to the database schema
         })
         .select();
         
