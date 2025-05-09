@@ -5,77 +5,90 @@ import { TrialRequest } from "./types";
 
 // Hook to fetch all trial requests
 export const useTrialRequests = (
-  searchTerm: string = "",
-  filters: { status?: string; course?: string } = {},
-  sortOrder: "asc" | "desc" = "desc"
+  filterStatus: string = "all",
+  searchQuery: string = ""
 ) => {
   return useQuery({
-    queryKey: ["trialRequests", searchTerm, filters, sortOrder],
+    queryKey: ["trialRequests", filterStatus, searchQuery],
     queryFn: async () => {
       let query = supabase
         .from("free_trial_requests")
-        .select("*");
-      
-      // Apply search filter
-      if (searchTerm) {
-        query = query.or(`name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`);
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (filterStatus !== "all") {
+        query = query.eq("status", filterStatus);
       }
-      
-      // Apply status filter
-      if (filters.status && filters.status !== "all") {
-        query = query.eq("status", filters.status);
+
+      if (searchQuery) {
+        query = query.or(`name.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%`);
       }
-      
-      // Apply course filter
-      if (filters.course && filters.course !== "all") {
-        query = query.eq("course", filters.course);
-      }
-      
-      // Apply sorting
-      query = query.order("created_at", { ascending: sortOrder === "asc" });
-      
+
       const { data, error } = await query;
-      
+
       if (error) {
         throw new Error(error.message);
       }
-      
+
       return data as TrialRequest[];
     }
   });
 };
 
-// Hook to update trial request
+// Hook to fetch a single trial request
+export const useTrialRequest = (id?: string) => {
+  return useQuery({
+    queryKey: ["trialRequest", id],
+    queryFn: async () => {
+      if (!id) {
+        return null;
+      }
+
+      const { data, error } = await supabase
+        .from("free_trial_requests")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data as TrialRequest;
+    },
+    enabled: !!id
+  });
+};
+
+// Hook to update a trial request
 export const useUpdateTrialRequest = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ 
-      id, 
-      updates 
-    }: { 
-      id: string; 
-      updates: Partial<TrialRequest> 
-    }) => {
+    mutationFn: async (params: { id: string; updates: Partial<TrialRequest> }) => {
+      const { id, updates } = params;
+      
       const { data, error } = await supabase
         .from("free_trial_requests")
         .update(updates)
         .eq("id", id)
-        .select();
-        
+        .select()
+        .single();
+      
       if (error) {
         throw new Error(error.message);
       }
       
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["trialRequest", variables.id] });
       queryClient.invalidateQueries({ queryKey: ["trialRequests"] });
     }
   });
 };
 
-// Hook to delete trial request
+// Hook to delete a trial request
 export const useDeleteTrialRequest = () => {
   const queryClient = useQueryClient();
   
@@ -85,10 +98,12 @@ export const useDeleteTrialRequest = () => {
         .from("free_trial_requests")
         .delete()
         .eq("id", id);
-        
+      
       if (error) {
         throw new Error(error.message);
       }
+      
+      return id;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trialRequests"] });
