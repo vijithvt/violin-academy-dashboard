@@ -233,15 +233,17 @@ export const useAdminCheck = () => {
 
   const checkAdminStatus = async () => {
     try {
+      // Use the is_admin stored function for reliable admin checking
       const { data, error } = await supabase.rpc('is_admin');
       
       if (error) {
+        console.error("Error checking admin status:", error);
         throw error;
       }
       
-      setIsAdmin(data);
+      setIsAdmin(!!data); // Ensure boolean result
     } catch (error) {
-      console.error("Error checking admin status:", error);
+      console.error("Admin check error:", error);
       setIsAdmin(false);
     } finally {
       setLoading(false);

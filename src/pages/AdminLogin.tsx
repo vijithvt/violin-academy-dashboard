@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -73,7 +72,8 @@ const AdminLogin = () => {
     setError(null);
 
     try {
-      const { data, error: loginError } = await supabase.auth.signInWithPassword({
+      // Step 1: Sign in with provided credentials
+      const { data: authData, error: loginError } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password
       });
@@ -85,38 +85,52 @@ const AdminLogin = () => {
           description: loginError.message,
           variant: "destructive",
         });
-      } else {
-        // Check if user has admin role
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', data.user?.id)
-          .single();
+        setIsLoading(false);
+        return;
+      }
+      
+      // Step 2: Check if user exists and has admin role
+      if (authData.user) {
+        try {
+          // Using RPC function instead of direct select to avoid recursive policy issues
+          const { data: isAdmin, error: rpcError } = await supabase.rpc('is_admin');
           
-        if (profileError) {
-          console.error("Error fetching profile:", profileError);
-          setError("Unable to validate admin privileges. Please try again.");
+          if (rpcError) {
+            console.error("Error checking admin status:", rpcError);
+            // Sign out user if we can't verify their admin status
+            await supabase.auth.signOut();
+            setError("Unable to verify admin status. Please contact support.");
+            toast({
+              title: "Authentication error",
+              description: "Failed to verify admin status",
+              variant: "destructive",
+            });
+          } else if (isAdmin === true) {
+            // User is verified as an admin
+            toast({
+              title: "Login successful",
+              description: "Welcome to admin dashboard!",
+            });
+            navigate("/dashboard");
+          } else {
+            // User is authenticated but not an admin
+            await supabase.auth.signOut();
+            setError("You do not have admin privileges. Access denied.");
+            toast({
+              title: "Access denied",
+              description: "You do not have admin privileges.",
+              variant: "destructive",
+            });
+          }
+        } catch (err) {
+          console.error("Admin check error:", err);
+          await supabase.auth.signOut();
+          setError("An error occurred during admin verification.");
           toast({
-            title: "Authentication error",
-            description: "Failed to verify admin status",
+            title: "Verification error",
+            description: "An error occurred verifying your admin status",
             variant: "destructive",
           });
-          await supabase.auth.signOut();
-        } else if (profileData?.role !== 'admin') {
-          // Sign out if not admin
-          await supabase.auth.signOut();
-          setError("You do not have admin privileges. Access denied.");
-          toast({
-            title: "Access denied",
-            description: "You do not have admin privileges.",
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "Login successful",
-            description: "Welcome to admin dashboard!",
-          });
-          navigate("/dashboard");
         }
       }
     } catch (err) {
