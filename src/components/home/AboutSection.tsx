@@ -121,9 +121,8 @@ const AboutSection = () => {
                 <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-maroon-100 h-full transition-all duration-300 hover:shadow-xl hover:border-maroon-200">
                   <h3 className="text-xl font-serif font-bold text-maroon-800 mb-3 flex items-center">
                     <Globe className="w-6 h-6 text-amber-500 mr-3" />
-                    🌍 Academic Collaborations
+                    🌍 Faculty Collaborator at leading music academies:
                   </h3>
-                  <p className="mb-2 text-gray-700">Faculty Collaborator at leading music academies:</p>
                   <ul className="list-disc pl-5 space-y-2 text-gray-700">
                     <li>Jovens Academy, USA</li>
                     <li>Bharathakala Dance & Cultural Society, Peyad, Trivandrum</li>
