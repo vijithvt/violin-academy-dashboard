@@ -44,9 +44,10 @@ const StudentProfilesTable = () => {
   const { toast } = useToast();
   const deleteMutation = useDeleteStudentProfile();
 
+  // Fix: Pass the roleFilter directly as a string instead of an object
   const { data: profiles, isLoading, isError } = useStudentProfiles(
     searchTerm,
-    { role: roleFilter }
+    roleFilter
   );
 
   const handleViewDetails = (profile: StudentProfile) => {
