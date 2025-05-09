@@ -15,7 +15,6 @@ const StudentProgress = () => {
   const [studentData, setStudentData] = useState<{
     id: string;
     name: string;
-    email?: string;
   } | null>(null);
   const [progressData, setProgressData] = useState<{
     level: number;
@@ -56,8 +55,6 @@ const StudentProgress = () => {
           setStudentData({
             id: profileData.id,
             name: profileData.name,
-            // Only set email if it exists in the profile data
-            ...(profileData.email && { email: profileData.email })
           });
         }
 
