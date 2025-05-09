@@ -1,225 +1,186 @@
 
 import { useState } from "react";
-import { 
-  format, 
-  startOfMonth, 
-  endOfMonth, 
-  eachDayOfInterval, 
-  isSameMonth, 
-  isSameDay,
-  addMonths,
-  subMonths,
-  getDay
-} from "date-fns";
-import { ChevronLeft, ChevronRight, Calendar, HelpCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { format, isSameDay } from "date-fns";
+import {
+  Calendar as CalendarIcon,
+  CheckCircle2,
+  Clock,
+  X,
+  Users,
+} from "lucide-react";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Badge } from "@/components/ui/badge";
-import { AttendanceStatus } from "@/api/adminService/types";
+import { cn } from "@/lib/utils";
 
-// Mock data for student attendance - will be replaced with API data
-interface StudentAttendance {
-  id: string;
-  name: string;
-  status: AttendanceStatus;
-}
-
-interface DateAttendanceSummary {
-  present: number;
-  absent: number;
-  late: number;
-  total: number;
-}
-
-// Function to get mock attendance for a specific day
-const getMockAttendanceForDay = (date: Date): StudentAttendance[] => {
-  // This would be replaced by real data from API
-  const statuses: AttendanceStatus[] = ["present", "absent", "late"];
-  const students = [
-    { id: "1", name: "Arjun Kumar" },
-    { id: "2", name: "Priya Sharma" },
-    { id: "3", name: "Vikram Singh" },
-    { id: "4", name: "Neha Patel" },
-    { id: "5", name: "Rahul Gupta" }
-  ];
-
-  return students.map(student => {
-    const dateNum = date.getDate();
-    const studentNum = parseInt(student.id);
-    const statusIndex = (dateNum + studentNum) % 3;
-    
-    return {
-      id: student.id,
-      name: student.name,
-      status: statuses[statusIndex]
-    };
-  });
-};
-
-// Function to get attendance summary for a day
-const getAttendanceSummary = (attendanceList: StudentAttendance[]): DateAttendanceSummary => {
-  return attendanceList.reduce((summary, student) => {
-    summary[student.status]++;
-    summary.total++;
-    return summary;
-  }, { present: 0, absent: 0, late: 0, total: 0 });
-};
-
-// Get emoji for attendance status
-const getStatusEmoji = (status: AttendanceStatus): string => {
-  switch (status) {
-    case "present": return "✅";
-    case "absent": return "❌";
-    case "late": return "🕒";
-    default: return "";
-  }
-};
-
-// Get badge color for attendance status
-const getStatusBadgeColor = (status: AttendanceStatus): string => {
-  switch (status) {
-    case "present": return "bg-green-100 text-green-800";
-    case "absent": return "bg-red-100 text-red-800";
-    case "late": return "bg-amber-100 text-amber-800";
-    default: return "bg-gray-100 text-gray-800";
-  }
-};
-
-interface AttendanceCalendarViewProps {
+export interface AttendanceCalendarViewProps {
+  currentMonth: Date;
   filters: {
     level: string;
     student: string;
   };
+  days: Date[];
 }
 
-const AttendanceCalendarView = ({ filters }: AttendanceCalendarViewProps) => {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  
-  // Calculate calendar days for current month
-  const firstDayCurrentMonth = startOfMonth(currentDate);
-  const lastDayCurrentMonth = endOfMonth(currentDate);
-  const days = eachDayOfInterval({ start: firstDayCurrentMonth, end: lastDayCurrentMonth });
-  
-  const previousMonth = () => setCurrentDate(subMonths(currentDate, 1));
-  const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
-  
+// Helper function for getting attendance summary for a day
+const getSummary = (date: Date) => {
+  // This would normally be fetched from a backend
+  // Mock data for demonstration purposes
+  if (date.getDay() === 1) return { present: 12, absent: 2, late: 1 };
+  if (date.getDay() === 3) return { present: 10, absent: 4, late: 1 };
+  if (date.getDay() === 5) return { present: 11, absent: 1, late: 3 };
+  return { present: 0, absent: 0, late: 0 };
+};
+
+// Mock function to get student attendance for a specific day
+const getStudentsForDay = (date: Date) => {
+  // This would normally be fetched from a backend
+  return [
+    { id: "1", name: "Alice Johnson", status: "present" },
+    { id: "2", name: "Bob Smith", status: "absent" },
+    { id: "3", name: "Charlie Brown", status: "late" },
+    { id: "4", name: "Diana Prince", status: "present" },
+  ];
+};
+
+const AttendanceCalendarView = ({
+  days,
+  currentMonth,
+  filters
+}: AttendanceCalendarViewProps) => {
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  const handleDateClick = (day: Date) => {
+    setSelectedDate(day);
+  };
+
+  // Function to get status badge style
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "present":
+        return (
+          <div className="inline-flex items-center bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded">
+            <CheckCircle2 className="h-3 w-3 mr-1" />
+            Present
+          </div>
+        );
+      case "absent":
+        return (
+          <div className="inline-flex items-center bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded">
+            <X className="h-3 w-3 mr-1" />
+            Absent
+          </div>
+        );
+      case "late":
+        return (
+          <div className="inline-flex items-center bg-yellow-100 text-yellow-800 text-xs px-2 py-0.5 rounded">
+            <Clock className="h-3 w-3 mr-1" />
+            Late
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="border rounded-md p-4 bg-white">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-white rounded-lg shadow">
+      <div className="p-4 border-b flex items-center">
+        <CalendarIcon className="h-5 w-5 text-gray-500 mr-2" />
         <h3 className="text-lg font-medium">
-          {format(currentDate, "MMMM yyyy")}
+          Attendance Calendar: {format(currentMonth, "MMMM yyyy")}
         </h3>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={previousMonth}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setCurrentDate(new Date())}
-          >
-            <Calendar className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={nextMonth}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
       </div>
-      
-      <div className="grid grid-cols-7 gap-2 mb-2">
+
+      <div className="grid grid-cols-7 gap-px bg-gray-200">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-          <div key={day} className="text-center text-sm font-medium text-gray-500">
+          <div
+            key={day}
+            className="bg-gray-50 py-2 text-center text-sm font-medium text-gray-500"
+          >
             {day}
           </div>
         ))}
-      </div>
-      
-      <div className="grid grid-cols-7 gap-2">
-        {/* Empty cells before the first day of the month */}
-        {Array.from({ length: getDay(firstDayCurrentMonth) }).map((_, index) => (
-          <div key={`empty-${index}`} className="h-24 border rounded-md bg-gray-50"></div>
-        ))}
-        
-        {/* Calendar days */}
-        {days.map((day) => {
-          // Get mock attendance data for this day
-          const attendanceList = getMockAttendanceForDay(day);
-          const summary = getAttendanceSummary(attendanceList);
-          
+
+        {days.map((day, dayIdx) => {
+          const summary = getSummary(day);
+          const isToday = isSameDay(day, new Date());
+          const hasAttendance = summary.present > 0 || summary.absent > 0 || summary.late > 0;
+
           return (
-            <HoverCard key={day.toString()} openDelay={300}>
+            <HoverCard key={dayIdx} openDelay={200}>
               <HoverCardTrigger asChild>
-                <div 
+                <div
+                  onClick={() => handleDateClick(day)}
                   className={cn(
-                    "h-24 border rounded-md p-1 overflow-hidden hover:bg-gray-50 transition-colors",
-                    isSameMonth(day, currentDate) ? "bg-white" : "bg-gray-50 text-gray-400"
+                    "h-24 p-2 bg-white border border-transparent hover:border-blue-200 hover:bg-blue-50 transition-colors cursor-pointer",
+                    isToday && "bg-blue-50",
+                    selectedDate && isSameDay(day, selectedDate) && "ring-2 ring-blue-500"
                   )}
                 >
-                  <div className="flex justify-between items-start">
-                    <span className={cn(
-                      "text-sm font-medium",
-                      isSameDay(day, new Date()) && "bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center"
-                    )}>
+                  <div className="flex justify-between">
+                    <span
+                      className={cn(
+                        "text-sm font-medium",
+                        isToday ? "text-blue-600" : "text-gray-700"
+                      )}
+                    >
                       {format(day, "d")}
                     </span>
-                    <HelpCircle className="h-3 w-3 text-gray-300" />
-                  </div>
-                  
-                  {/* Attendance summary */}
-                  <div className="mt-2">
-                    {summary.total > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {summary.present > 0 && (
-                          <Badge variant="outline" className="bg-green-50 text-xs">
-                            ✅ {summary.present}
-                          </Badge>
-                        )}
-                        {summary.absent > 0 && (
-                          <Badge variant="outline" className="bg-red-50 text-xs">
-                            ❌ {summary.absent}
-                          </Badge>
-                        )}
-                        {summary.late > 0 && (
-                          <Badge variant="outline" className="bg-amber-50 text-xs">
-                            🕒 {summary.late}
-                          </Badge>
-                        )}
+                    {hasAttendance && (
+                      <div className="flex items-center">
+                        <Users className="h-3 w-3 text-gray-400" />
+                        <span className="text-xs ml-1 text-gray-500">
+                          {summary.present + summary.absent + summary.late}
+                        </span>
                       </div>
                     )}
                   </div>
+
+                  {/* Attendance indicators */}
+                  {hasAttendance && (
+                    <div className="mt-2 flex gap-1 flex-wrap">
+                      {summary.present > 0 && (
+                        <div className="bg-green-400 h-2 w-2 rounded-full" title={`${summary.present} present`} />
+                      )}
+                      {summary.absent > 0 && (
+                        <div className="bg-red-400 h-2 w-2 rounded-full" title={`${summary.absent} absent`} />
+                      )}
+                      {summary.late > 0 && (
+                        <div className="bg-yellow-400 h-2 w-2 rounded-full" title={`${summary.late} late`} />
+                      )}
+                    </div>
+                  )}
                 </div>
               </HoverCardTrigger>
-              <HoverCardContent className="w-80 p-0">
-                <div className="p-2 border-b">
-                  <h4 className="font-semibold">{format(day, "EEEE, MMMM d, yyyy")}</h4>
-                  <div className="flex gap-2 mt-1">
-                    <Badge variant="outline" className="bg-green-50">✅ {summary.present}</Badge>
-                    <Badge variant="outline" className="bg-red-50">❌ {summary.absent}</Badge>
-                    <Badge variant="outline" className="bg-amber-50">🕒 {summary.late}</Badge>
-                  </div>
+              <HoverCardContent
+                className="w-80 p-0"
+                align="start"
+                sideOffset={5}
+                side="right"
+              >
+                <div className="p-3 border-b bg-gray-50">
+                  <h4 className="font-medium">
+                    Attendance for {format(day, "MMM d, yyyy")}
+                  </h4>
                 </div>
-                <div className="p-2 max-h-60 overflow-auto space-y-1">
-                  {attendanceList.map((attendance) => (
-                    <div key={attendance.id} className="flex items-center justify-between py-1">
-                      <span>{attendance.name}</span>
-                      <Badge variant="outline" className={getStatusBadgeColor(attendance.status)}>
-                        {getStatusEmoji(attendance.status)}
-                      </Badge>
-                    </div>
-                  ))}
+                <div className="p-3 max-h-80 overflow-y-auto">
+                  <h5 className="text-sm font-medium text-gray-500 mb-2">
+                    Students: {summary.present + summary.absent + summary.late}
+                  </h5>
+                  <div className="space-y-2">
+                    {getStudentsForDay(day).map((student) => (
+                      <div
+                        key={student.id}
+                        className="flex items-center justify-between"
+                      >
+                        <span className="text-sm">{student.name}</span>
+                        {getStatusBadge(student.status)}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </HoverCardContent>
             </HoverCard>

@@ -34,6 +34,7 @@ import { Loader2, Upload, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useUpdateStudentProfile, useCreateStudentProfile } from "@/api/adminService";
+import { uploadStudentPhoto } from "@/lib/storage";
 
 // Define the form schema
 const studentSchema = z.object({
@@ -149,19 +150,8 @@ const StudentRegistrationForm = ({
       // Upload photo if exists
       if (photo) {
         try {
-          const fileName = `${Date.now()}_${photo.name}`;
-          const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('student-photos')
-            .upload(fileName, photo);
-            
-          if (uploadError) throw uploadError;
-          
-          // Get the public URL
-          const { data: publicUrl } = supabase.storage
-            .from('student-photos')
-            .getPublicUrl(fileName);
-            
-          photoUrl = publicUrl.publicUrl;
+          const userId = existingProfile?.id || crypto.randomUUID();
+          photoUrl = await uploadStudentPhoto(photo, userId);
         } catch (error: any) {
           console.error("Error uploading photo:", error);
           toast({
@@ -531,10 +521,10 @@ const StudentRegistrationForm = ({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="novice">Novice</SelectItem>
-                          <SelectItem value="beginner">Beginner (Varisas - Alankara)</SelectItem>
-                          <SelectItem value="intermediate">Intermediate (Geetham - Swarajathy)</SelectItem>
-                          <SelectItem value="advanced">Advanced (Varnams - Krithies)</SelectItem>
+                          <SelectItem value="aarambha">AARAMBHA (Beginner)</SelectItem>
+                          <SelectItem value="madhyama">MADHYAMA (Intermediate)</SelectItem>
+                          <SelectItem value="utthama">UTTHAMA (Advanced)</SelectItem>
+                          <SelectItem value="vidhwath">VIDHWATH (Professional)</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />

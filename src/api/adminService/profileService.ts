@@ -146,8 +146,23 @@ export const useCreateStudentProfile = () => {
 
       // Generate a UUID for id if not provided
       const insertData = {
-        ...profileData,
-        id: profileData.id || crypto.randomUUID(), // Ensure we have an ID
+        id: profileData.id || crypto.randomUUID(),
+        name: profileData.name,
+        role: profileData.role,
+        email: profileData.email,
+        created_at: profileData.created_at,
+        // Optional fields
+        phone: profileData.phone,
+        address: profileData.address,
+        dob: profileData.dob,
+        gender: profileData.gender,
+        course: profileData.course,
+        level: profileData.level,
+        preferred_timing: profileData.preferred_timing,
+        profession: profileData.profession,
+        referred_by: profileData.referred_by,
+        hear_about: profileData.hear_about,
+        photo_url: profileData.photo_url
       };
       
       const { data, error } = await supabase

@@ -15,7 +15,7 @@ const FloatingButtons = () => {
         href={`tel:${phoneNumber}`}
         className="w-12 h-12 flex items-center justify-center rounded-full bg-maroon-700 text-white shadow-lg hover:bg-maroon-800 transition-colors"
         aria-label="Call Us"
-        title={`Call us: ${phoneNumber}`}
+        title="Call Us"
       >
         <Phone className="w-5 h-5" />
       </a>
@@ -27,7 +27,7 @@ const FloatingButtons = () => {
         rel="noopener noreferrer"
         className="w-12 h-12 flex items-center justify-center rounded-full bg-green-600 text-white shadow-lg hover:bg-green-700 transition-colors"
         aria-label="Chat on WhatsApp"
-        title={`WhatsApp: ${whatsappNumber}`}
+        title="Chat on WhatsApp"
       >
         <MessageCircle className="w-5 h-5" />
       </a>
