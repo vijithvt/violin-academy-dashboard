@@ -5,7 +5,7 @@ export * from './pointsService';
 export * from './trialService';
 export { default as useTotalStudentPoints } from './useTotalStudentPoints';
 
-// Import and re-export profile hooks
+// Import hooks
 import useStudentProfiles from './hooks/useStudentProfiles';
 import useStudentProfile from './hooks/useStudentProfile';
 import useStudentExtendedProfile from './hooks/useStudentExtendedProfile';
@@ -15,7 +15,7 @@ import useDeleteStudentProfile from './hooks/useDeleteStudentProfile';
 import useDashboardStats from './hooks/useDashboardStats';
 import useAdminCheck from './hooks/useAdminCheck';
 
-// Export all profile hooks
+// Export all hooks
 export { 
   useStudentProfiles,
   useStudentProfile,

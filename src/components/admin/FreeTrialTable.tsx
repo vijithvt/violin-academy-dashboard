@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useTrialRequests, useUpdateTrialRequest, useDeleteTrialRequest } from "@/api/adminService";
 import type { TrialRequest } from "@/api/adminService";
@@ -173,7 +174,10 @@ const FreeTrialTable = () => {
               <SelectItem value="home_tuition">Home Tuition</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={sortOrder} onValueChange={setSortOrder}>
+          <Select 
+            value={sortOrder} 
+            onValueChange={(value: "asc" | "desc") => setSortOrder(value)}
+          >
             <SelectTrigger className="w-[120px]">
               <SelectValue placeholder="Sort" />
             </SelectTrigger>
