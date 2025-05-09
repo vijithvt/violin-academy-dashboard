@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -30,17 +30,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2 } from "lucide-react";
+import { Loader2, Upload, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useUpdateStudentProfile } from "@/api/adminService";
+import { useUpdateStudentProfile, useCreateStudentProfile } from "@/api/adminService";
 
 // Define the form schema
 const studentSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
   email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-  phone: z.string().min(10, { message: "Please enter a valid phone number" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters" }).optional().or(z.literal('')),
+  phone: z.string().min(10, { message: "Please enter a valid phone number" }).optional(),
   address: z.string().optional(),
   dob: z.string().optional(),
   gender: z.string().optional(),
@@ -69,8 +69,12 @@ const StudentRegistrationForm = ({
   onSuccess
 }: StudentRegistrationFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoError, setPhotoError] = useState<string | null>(null);
   const { toast } = useToast();
   const updateProfile = useUpdateStudentProfile();
+  const createProfile = useCreateStudentProfile();
   
   const isEditMode = !!existingProfile;
 
@@ -95,10 +99,79 @@ const StudentRegistrationForm = ({
     },
   });
 
+  // Load the existing photo if available
+  useEffect(() => {
+    if (existingProfile?.photo_url) {
+      setPhotoPreview(existingProfile.photo_url);
+    }
+  }, [existingProfile]);
+
+  // Handle photo upload
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhotoError(null);
+    const file = e.target.files && e.target.files[0];
+    
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith("image/")) {
+        setPhotoError("Please upload an image file");
+        return;
+      }
+
+      // Validate file size (max 1MB)
+      if (file.size > 1 * 1024 * 1024) {
+        setPhotoError("Image size should be less than 1MB");
+        return;
+      }
+
+      setPhoto(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const clearPhoto = () => {
+    setPhoto(null);
+    setPhotoPreview(null);
+  };
+
   const onSubmit = async (values: StudentFormValues) => {
     setIsLoading(true);
     
     try {
+      let photoUrl = existingProfile?.photo_url || null;
+      
+      // Upload photo if exists
+      if (photo) {
+        try {
+          const fileName = `${Date.now()}_${photo.name}`;
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('student-photos')
+            .upload(fileName, photo);
+            
+          if (uploadError) throw uploadError;
+          
+          // Get the public URL
+          const { data: publicUrl } = supabase.storage
+            .from('student-photos')
+            .getPublicUrl(fileName);
+            
+          photoUrl = publicUrl.publicUrl;
+        } catch (error: any) {
+          console.error("Error uploading photo:", error);
+          toast({
+            variant: "destructive",
+            title: "Photo Upload Failed",
+            description: "Could not upload the photo, but will proceed with profile creation."
+          });
+        }
+      }
+      
       if (isEditMode) {
         // Update existing profile
         await updateProfile.mutateAsync({
@@ -107,7 +180,17 @@ const StudentRegistrationForm = ({
             name: values.name,
             email: values.email,
             role: values.role,
-            // Add other fields here
+            phone: values.phone,
+            address: values.address,
+            dob: values.dob,
+            gender: values.gender,
+            course: values.course,
+            level: values.level,
+            preferred_timing: values.preferredTiming,
+            profession: values.profession,
+            referred_by: values.referredBy,
+            hear_about: values.hearAbout,
+            photo_url: photoUrl
           }
         });
         
@@ -116,13 +199,29 @@ const StudentRegistrationForm = ({
           description: "Student profile has been updated successfully",
         });
       } else {
-        // Create new user account with Supabase Auth
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-          email: values.email,
-          password: values.password,
-          options: {
-            data: {
+        // First, create new user account with Supabase Auth if password is provided
+        if (values.password) {
+          const { data: authData, error: authError } = await supabase.auth.signUp({
+            email: values.email,
+            password: values.password,
+            options: {
+              data: {
+                name: values.name,
+              }
+            }
+          });
+          
+          if (authError) {
+            throw new Error(authError.message);
+          }
+          
+          // If user was created, use that ID
+          if (authData.user) {
+            await createProfile.mutateAsync({
+              id: authData.user.id,
               name: values.name,
+              email: values.email,
+              role: values.role,
               phone: values.phone,
               address: values.address,
               dob: values.dob,
@@ -133,12 +232,27 @@ const StudentRegistrationForm = ({
               profession: values.profession,
               referred_by: values.referredBy,
               hear_about: values.hearAbout,
-            }
+              photo_url: photoUrl
+            });
           }
-        });
-        
-        if (authError) {
-          throw new Error(authError.message);
+        } else {
+          // Create profile directly without auth
+          await createProfile.mutateAsync({
+            name: values.name,
+            email: values.email,
+            role: values.role,
+            phone: values.phone,
+            address: values.address,
+            dob: values.dob,
+            gender: values.gender,
+            course: values.course,
+            level: values.level,
+            preferred_timing: values.preferredTiming,
+            profession: values.profession,
+            referred_by: values.referredBy,
+            hear_about: values.hearAbout,
+            photo_url: photoUrl
+          });
         }
         
         toast({
@@ -177,6 +291,47 @@ const StudentRegistrationForm = ({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Photo Upload Section */}
+            <div className="space-y-2">
+              <FormLabel>Student Photo</FormLabel>
+              <div className="flex items-center gap-4">
+                <div className="w-24 h-24 border rounded-md flex items-center justify-center bg-gray-50 overflow-hidden relative">
+                  {photoPreview ? (
+                    <>
+                      <img 
+                        src={photoPreview} 
+                        alt="Student preview"
+                        className="w-full h-full object-cover" 
+                      />
+                      <button
+                        type="button"
+                        onClick={clearPhoto}
+                        className="absolute top-1 right-1 bg-white/80 rounded-full p-1"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </>
+                  ) : (
+                    <Upload className="h-8 w-8 text-gray-300" />
+                  )}
+                </div>
+                <div className="flex-1 space-y-2">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoChange}
+                    className="text-sm"
+                  />
+                  {photoError && (
+                    <p className="text-xs text-red-500">{photoError}</p>
+                  )}
+                  <p className="text-xs text-gray-500">
+                    Upload a clear photo of the student. Max size: 1MB.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Personal Details */}
             <div className="space-y-4">
               <h3 className="font-medium text-sm text-gray-500">Personal Details</h3>

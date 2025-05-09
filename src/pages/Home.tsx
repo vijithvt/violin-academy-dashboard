@@ -1,74 +1,40 @@
 
-import { useEffect } from "react";
 import NavigationBar from "@/components/home/NavigationBar";
 import HeroSection from "@/components/home/HeroSection";
+import AboutSection from "@/components/home/AboutSection";
+import TeacherSection from "@/components/home/TeacherSection";
 import CoursesSection from "@/components/home/CoursesSection";
 import RequirementsSection from "@/components/home/RequirementsSection";
-import RecognitionSection from "@/components/home/RecognitionSection";
+import LearningProcessSection from "@/components/home/LearningProcessSection";
 import FAQSection from "@/components/home/FAQSection";
+import ContactSection from "@/components/home/ContactSection";
 import FooterSection from "@/components/home/FooterSection";
 import FloatingButtons from "@/components/home/FloatingButtons";
-import InstrumentSection from "@/components/home/InstrumentSection";
-import AboutSection from "@/components/home/AboutSection";
-import LearningProcessSection from "@/components/home/LearningProcessSection";
 import FloatingTrialButton from "@/components/home/FloatingTrialButton";
+import PaymentSection from "@/components/home/PaymentSection";
+import RecognitionSection from "@/components/home/RecognitionSection";
+import VideoSection from "@/components/home/VideoSection";
+import InstrumentSection from "@/components/home/InstrumentSection";
 
 const Home = () => {
-  useEffect(() => {
-    // Scroll to top on mount
-    window.scrollTo(0, 0);
-    
-    // Add smooth scrolling for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth'
-          });
-        }
-      });
-    });
-    
-    // Add animation classes when elements come into view
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("animate-fade-in");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-    
-    document.querySelectorAll(".animate-on-scroll").forEach((el) => {
-      observer.observe(el);
-    });
-    
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-  
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white overflow-hidden">
+    <div>
       <NavigationBar />
       <HeroSection />
-      <InstrumentSection />
-      {/* VideoSection temporarily hidden */}
-      {/* <VideoSection /> */}
+      <AboutSection />
+      <TeacherSection />
       <CoursesSection />
-      <LearningProcessSection />
       <RequirementsSection />
+      <InstrumentSection />
+      <LearningProcessSection />
+      <VideoSection />
       <RecognitionSection />
+      <PaymentSection />
       <FAQSection />
-      <AboutSection /> {/* Moved from end */}
+      <ContactSection />
       <FooterSection />
-      <FloatingTrialButton />
       <FloatingButtons />
+      <FloatingTrialButton />
     </div>
   );
 };

@@ -16,6 +16,7 @@ export interface StudentProfile {
   profession?: string;
   referred_by?: string;
   hear_about?: string;
+  photo_url?: string;
 }
 
 // Student Points Types
