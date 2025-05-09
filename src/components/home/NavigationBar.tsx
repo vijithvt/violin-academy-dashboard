@@ -3,12 +3,12 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/providers/AuthProvider";
 
 const NavigationBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   // Handle scroll event to add shadow when scrolled
@@ -48,9 +48,9 @@ const NavigationBar = () => {
             
             {/* Login/Dashboard Buttons */}
             <div className="flex gap-2 items-center">
-              {currentUser ? (
+              {user ? (
                 <Button 
-                  onClick={() => navigate(currentUser ? "/dashboard" : "/admin-login")}
+                  onClick={() => navigate(user ? "/dashboard" : "/admin-login")}
                 >
                   Dashboard
                 </Button>
@@ -100,7 +100,7 @@ const NavigationBar = () => {
                 Blog
               </Link>
               
-              {currentUser ? (
+              {user ? (
                 <Button 
                   onClick={() => {
                     navigate("/dashboard");
