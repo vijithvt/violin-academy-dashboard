@@ -1,18 +1,15 @@
 
-import { useState } from "react";
-import { useUpdateTrialRequest, TrialRequest } from "@/api/adminService";
+import React, { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -22,180 +19,228 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
-import { useMediaQuery } from "@/hooks/use-mobile";
+import { Label } from "@/components/ui/label";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Loader2, Copy, Check, Link as LinkIcon } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 interface TrialRequestDetailsProps {
-  request: TrialRequest;
+  trial: any;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onUpdateStatus: (id: string, status: string, notes: string) => void;
 }
 
 const TrialRequestDetails = ({
-  request,
+  trial,
   open,
   onOpenChange,
+  onUpdateStatus,
 }: TrialRequestDetailsProps) => {
-  const [status, setStatus] = useState(request.status);
-  const [notes, setNotes] = useState(request.notes || "");
-  const updateMutation = useUpdateTrialRequest();
-  const isMobile = useMediaQuery("(max-width: 640px)");
+  const [status, setStatus] = useState(trial?.status || "new");
+  const [notes, setNotes] = useState(trial?.notes || "");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
+  const [showLinkDialog, setShowLinkDialog] = useState(false);
+  const [registrationLink, setRegistrationLink] = useState("");
+  const [linkCopied, setLinkCopied] = useState(false);
+  const { toast } = useToast();
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const handleSave = async () => {
-    updateMutation.mutate({
-      id: request.id,
-      updates: {
-        status,
-        notes,
-      },
-    });
-    
-    // Close the dialog after saving
-    if (!updateMutation.isPending) {
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      await onUpdateStatus(trial.id, status, notes);
       onOpenChange(false);
+    } catch (error) {
+      console.error("Error updating trial:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const DetailItem = ({ label, value }: { label: string; value: string | null }) => (
-    <div className="mb-4">
-      <p className="text-sm font-medium text-gray-500 mb-1">{label}</p>
-      <p className="text-base">{value || "—"}</p>
-    </div>
-  );
+  const handleGenerateLink = () => {
+    if (status !== "completed") {
+      toast({
+        title: "Trial not completed",
+        description: "Only completed trials can have registration links generated",
+        variant: "destructive"
+      });
+      return;
+    }
 
-  const Content = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
-      <div className="space-y-4 md:col-span-2">
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold">{request.student_name}</h3>
-          <span className={`inline-block px-2 py-1 text-xs rounded-full ${
-            status === 'new' ? 'bg-blue-100 text-blue-800' :
-            status === 'contacted' ? 'bg-yellow-100 text-yellow-800' :
-            status === 'scheduled' ? 'bg-purple-100 text-purple-800' :
-            status === 'completed' ? 'bg-green-100 text-green-800' :
-            status === 'rejected' ? 'bg-red-100 text-red-800' :
-            'bg-gray-100 text-gray-800'
-          }`}>
-            {status.charAt(0).toUpperCase() + status.slice(1)}
-          </span>
-        </div>
+    setIsGeneratingLink(true);
+    // Generate the registration link
+    const link = `${window.location.origin}/register/${trial.id}`;
+    setRegistrationLink(link);
+    setShowLinkDialog(true);
+    setIsGeneratingLink(false);
+  };
 
-        <div className="border-t pt-4 mt-2">
-          <h4 className="font-medium mb-2">Contact Information</h4>
-          <DetailItem label="Name" value={request.name} />
-          <DetailItem label="Email" value={request.email} />
-          <DetailItem label="Mobile Number" value={request.mobile_number} />
-          <DetailItem label="WhatsApp Number" value={request.whatsapp_number} />
-        </div>
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(registrationLink);
+    setLinkCopied(true);
+    toast({
+      title: "Link copied to clipboard",
+      description: "You can now share this link with the student"
+    });
+    setTimeout(() => setLinkCopied(false), 2000);
+  };
 
-        <div className="border-t pt-4 mt-2">
-          <h4 className="font-medium mb-2">Student Information</h4>
-          <DetailItem label="Student Name" value={request.student_name} />
-          <DetailItem label="Age" value={request.age} />
-          <DetailItem label="Location" 
-            value={`${request.city}, ${request.state}, ${request.country}`} 
-          />
-          <DetailItem label="Timezone" value={request.timezone} />
-        </div>
+  return (
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Trial Request Details</DialogTitle>
+            <DialogDescription>
+              Review and update the trial request status
+            </DialogDescription>
+          </DialogHeader>
 
-        <div className="border-t pt-4 mt-2">
-          <h4 className="font-medium mb-2">Course Information</h4>
-          <DetailItem label="Course" value={request.course} />
-          <DetailItem label="Level" value={request.level} />
-          <DetailItem label="Preferred Time" value={request.preferred_time} />
-          <DetailItem label="Submission Date" value={formatDate(request.created_at)} />
-        </div>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-1">
+              <Label className="font-medium">Student Name</Label>
+              <p className="text-sm">{trial?.student_name}</p>
+            </div>
 
-        <div className="border-t pt-4 mt-2">
-          <h4 className="font-medium mb-2">Admin Actions</h4>
-          <div className="mb-4">
-            <label htmlFor="status" className="block text-sm font-medium text-gray-500 mb-1">
-              Status
-            </label>
-            <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="new">New</SelectItem>
-                <SelectItem value="contacted">Contacted</SelectItem>
-                <SelectItem value="scheduled">Scheduled</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="rejected">Rejected</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="grid gap-1">
+              <Label className="font-medium">Guardian Name</Label>
+              <p className="text-sm">{trial?.name}</p>
+            </div>
+
+            <div className="grid gap-1">
+              <Label className="font-medium">Contact</Label>
+              <p className="text-sm">{trial?.mobile_number}</p>
+              <p className="text-sm">{trial?.email}</p>
+            </div>
+
+            <div className="grid gap-1">
+              <Label className="font-medium">Course</Label>
+              <p className="text-sm">
+                {trial?.course === "one_to_one"
+                  ? "1-to-1 Online Course"
+                  : trial?.course === "batch_class"
+                  ? "Online Batch Class"
+                  : "Home Tuition"}
+              </p>
+            </div>
+            
+            <div className="grid gap-1">
+              <Label className="font-medium">Level</Label>
+              <p className="text-sm">
+                {trial?.level || "Not specified"}
+              </p>
+            </div>
+
+            <div className="grid gap-1">
+              <Label htmlFor="status">Status</Label>
+              <Select
+                value={status}
+                onValueChange={(value) => setStatus(value)}
+              >
+                <SelectTrigger id="status">
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="new">New</SelectItem>
+                  <SelectItem value="contacted">Contacted</SelectItem>
+                  <SelectItem value="scheduled">Scheduled</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="converted">Converted to Student</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-1">
+              <Label htmlFor="notes">Notes</Label>
+              <Textarea
+                id="notes"
+                placeholder="Add notes about this trial request"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={4}
+              />
+            </div>
           </div>
 
-          <div className="mb-4">
-            <label htmlFor="notes" className="block text-sm font-medium text-gray-500 mb-1">
-              Admin Notes
-            </label>
-            <Textarea
-              id="notes"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Add notes about this trial request"
-              className="min-h-[100px]"
+          <DialogFooter className="flex flex-col space-y-2 sm:flex-row sm:justify-between sm:space-y-0">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleGenerateLink}
+              disabled={status !== "completed" || isGeneratingLink}
+              className="gap-2 order-2 sm:order-1"
+            >
+              {isGeneratingLink ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <LinkIcon className="h-4 w-4" />
+              )}
+              Generate Registration Link
+            </Button>
+            <div className="flex space-x-2 order-1 sm:order-2">
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSubmit} disabled={isSubmitting}>
+                {isSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Save
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={showLinkDialog} onOpenChange={setShowLinkDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Registration Link Generated</AlertDialogTitle>
+            <AlertDialogDescription>
+              Share this link with the student to complete their registration
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="flex items-center gap-2 mt-4">
+            <Input 
+              value={registrationLink}
+              readOnly
+              className="bg-muted"
             />
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={copyToClipboard}
+              className="flex-shrink-0"
+            >
+              {linkCopied ? (
+                <Check className="h-4 w-4 text-green-500" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+            </Button>
           </div>
-        </div>
-      </div>
-
-      <div className="md:col-span-2 border-t pt-4 mt-2 flex justify-end gap-2">
-        <Button
-          variant="outline"
-          onClick={() => onOpenChange(false)}
-        >
-          Cancel
-        </Button>
-        <Button 
-          onClick={handleSave}
-          disabled={updateMutation.isPending}
-        >
-          {updateMutation.isPending ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            "Save Changes"
-          )}
-        </Button>
-      </div>
-    </div>
-  );
-
-  return isMobile ? (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-md overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle>Trial Request Details</SheetTitle>
-        </SheetHeader>
-        <div className="mt-6">
-          <Content />
-        </div>
-      </SheetContent>
-    </Sheet>
-  ) : (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[800px] overflow-y-auto max-h-[90vh]">
-        <DialogHeader>
-          <DialogTitle>Trial Request Details</DialogTitle>
-        </DialogHeader>
-        <Content />
-      </DialogContent>
-    </Dialog>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Close</AlertDialogCancel>
+            <AlertDialogAction asChild>
+              <Button onClick={copyToClipboard}>
+                Copy Link
+              </Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
 

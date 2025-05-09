@@ -21,8 +21,9 @@ import Blogs from "./pages/Blogs";
 import Login from "./pages/Login";
 import StudentDashboard from "./pages/StudentDashboard";
 import StudentsPage from "./pages/StudentsPage";
-import StudentRegistration from "./pages/StudentRegistration"; // Add the new page
-import StudentProgress from "./pages/StudentProgress"; // Add the new page
+import StudentRegistration from "./pages/StudentRegistration"; 
+import StudentProgress from "./pages/StudentProgress";
+import PublicStudentRegistration from "./pages/PublicStudentRegistration";
 
 const queryClient = new QueryClient();
 
@@ -35,13 +36,14 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              {/* Home page is now the root route */}
+              {/* Home page is the root route */}
               <Route path="/" element={<Home />} />
               
               {/* Public routes */}
               <Route path="/admin-login" element={<AdminLogin />} />
               <Route path="/blogs" element={<Blogs />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/register/:trialId" element={<PublicStudentRegistration />} />
               
               {/* Protected routes for admin */}
               <Route element={<ProtectedRoute />}>

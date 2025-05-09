@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -65,15 +64,34 @@ const studentFormSchema = z.object({
   learningLevel: z.enum(["novice", "beginner", "intermediate", "advanced"]),
   
   // Referral Information
-  heardFrom: z.enum(["friend", "youtube", "website", "other"]),
+  heardFrom: z.enum(["friend", "youtube", "website", "other", "trial"]),
   referralDetails: z.string().optional(),
   
   // The photo will be handled separately
-  password: z.string().min(6, "Password must be at least 6 characters")
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  
+  // Trial request ID if coming from a trial
+  trialRequestId: z.string().optional()
 });
 
 // Type for form data
 type StudentFormData = z.infer<typeof studentFormSchema>;
+
+type PrefilledData = {
+  studentName?: string;
+  parentName?: string;
+  email?: string;
+  mobileNumber?: string;
+  whatsappNumber?: string;
+  preferredCourse?: string;
+  learningLevel?: string;
+  trialRequestId?: string;
+};
+
+interface StudentRegistrationFormProps {
+  prefilledData?: PrefilledData;
+  isPublic?: boolean;
+}
 
 // Available time slots
 const TIME_SLOTS = [
@@ -86,7 +104,7 @@ const DAYS_OF_WEEK = [
   "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
 ];
 
-export const StudentRegistrationForm = () => {
+export const StudentRegistrationForm = ({ prefilledData, isPublic }: StudentRegistrationFormProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -112,20 +130,21 @@ export const StudentRegistrationForm = () => {
   const form = useForm<StudentFormData>({
     resolver: zodResolver(studentFormSchema),
     defaultValues: {
-      parentName: "",
-      mobileNumber: "",
-      email: "",
+      parentName: prefilledData?.parentName || "",
+      mobileNumber: prefilledData?.mobileNumber || "",
+      email: prefilledData?.email || "",
       address: "",
-      preferredCourse: "onlineOneToOne",
+      preferredCourse: (prefilledData?.preferredCourse as any) || "onlineOneToOne",
       preferredTimings: [],
       preferredDays: [],
-      studentName: "",
+      studentName: prefilledData?.studentName || "",
       gender: "male",
       profession: "",
-      learningLevel: "novice",
-      heardFrom: "website",
+      learningLevel: (prefilledData?.learningLevel as any) || "novice",
+      heardFrom: prefilledData?.trialRequestId ? "trial" : "website",
       referralDetails: "",
-      password: ""
+      password: "",
+      trialRequestId: prefilledData?.trialRequestId
     },
   });
 
@@ -226,7 +245,8 @@ export const StudentRegistrationForm = () => {
           photo_url: photoPath,
           heard_from: data.heardFrom,
           referral_details: data.referralDetails || null,
-          day_specific_timings: useDaySpecificTimings ? daySpecificTimings : null
+          day_specific_timings: useDaySpecificTimings ? daySpecificTimings : null,
+          trial_request_id: data.trialRequestId || null
         });
         
       if (profileError) throw new Error(profileError.message);
@@ -244,12 +264,30 @@ export const StudentRegistrationForm = () => {
         
       if (progressError) throw new Error(progressError.message);
       
+      // Step 5: If this was a trial conversion, update the trial status
+      if (data.trialRequestId) {
+        const { error: trialUpdateError } = await supabase
+          .from('free_trial_requests')
+          .update({ status: 'converted', notes: `Converted to student on ${new Date().toISOString()}` })
+          .eq('id', data.trialRequestId);
+          
+        if (trialUpdateError) {
+          console.error("Error updating trial status:", trialUpdateError);
+          // Don't throw error here, as the student registration is complete
+        }
+      }
+      
       toast({
         title: "Student registered successfully",
         description: `${data.studentName} has been added to the system.`,
       });
       
-      navigate("/dashboard/students");
+      // Navigate based on whether this is a public or admin form
+      if (isPublic) {
+        navigate("/");
+      } else {
+        navigate("/dashboard/students");
+      }
     } catch (error) {
       toast({
         title: "Registration failed",
@@ -734,6 +772,7 @@ export const StudentRegistrationForm = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
+                      <SelectItem value="trial">After Trial Class</SelectItem>
                       <SelectItem value="friend">Friend / Referral</SelectItem>
                       <SelectItem value="youtube">YouTube</SelectItem>
                       <SelectItem value="website">Website</SelectItem>
@@ -745,20 +784,27 @@ export const StudentRegistrationForm = () => {
               )}
             />
             
-            <FormField
-              control={form.control}
-              name="referralDetails"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Referral (if any)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Name of existing student who referred you" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {form.watch('heardFrom') !== 'trial' && (
+              <FormField
+                control={form.control}
+                name="referralDetails"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Referral (if any)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Name of existing student who referred you" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
+          
+          {/* Hidden field for trial request ID */}
+          {prefilledData?.trialRequestId && (
+            <input type="hidden" name="trialRequestId" value={prefilledData.trialRequestId} />
+          )}
         </div>
         
         <Button type="submit" className="w-full md:w-auto" disabled={isSubmitting}>
