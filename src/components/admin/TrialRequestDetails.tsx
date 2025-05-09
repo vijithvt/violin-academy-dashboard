@@ -32,19 +32,18 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Loader2, Copy, Check, Link as LinkIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { TrialRequest } from "@/api/adminService/types";
 
 interface TrialRequestDetailsProps {
-  trial: any;
+  trial: TrialRequest;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onUpdateStatus: (id: string, status: string, notes: string) => void;
 }
 
 const TrialRequestDetails = ({
   trial,
   open,
   onOpenChange,
-  onUpdateStatus,
 }: TrialRequestDetailsProps) => {
   const [status, setStatus] = useState(trial?.status || "new");
   const [notes, setNotes] = useState(trial?.notes || "");
@@ -58,10 +57,32 @@ const TrialRequestDetails = ({
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      await onUpdateStatus(trial.id, status, notes);
+      const { data, error } = await supabase
+        .from("free_trial_requests")
+        .update({
+          status,
+          notes
+        })
+        .eq("id", trial.id)
+        .select();
+        
+      if (error) {
+        throw error;
+      }
+      
+      toast({
+        title: "Trial request updated",
+        description: "The trial request has been successfully updated.",
+      });
+      
       onOpenChange(false);
     } catch (error) {
       console.error("Error updating trial:", error);
+      toast({
+        title: "Update failed",
+        description: "Failed to update the trial request.",
+        variant: "destructive"
+      });
     } finally {
       setIsSubmitting(false);
     }

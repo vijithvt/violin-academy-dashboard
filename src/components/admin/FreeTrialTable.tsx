@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useTrialRequests, useDeleteTrialRequest, TrialRequest } from "@/api/adminService";
 import { 
@@ -245,7 +244,7 @@ const FreeTrialTable = () => {
       {/* Trial Request Details Dialog */}
       {selectedRequest && (
         <TrialRequestDetails
-          request={selectedRequest}
+          trial={selectedRequest}
           open={detailsOpen}
           onOpenChange={setDetailsOpen}
         />
