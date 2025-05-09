@@ -1,10 +1,9 @@
-
 import { useEffect, useState } from "react";
 import AdminDashboardLayout from "@/components/admin/AdminDashboardLayout";
 import StudentProfilesTable from "@/components/admin/StudentProfilesTable";
 import NotAuthorized from "@/components/admin/NotAuthorized";
-import { useAdminCheck } from "@/api/adminService";
-import { useStudentProfiles } from "@/api/adminService/profileService";
+import { useAdminCheck } from "@/api/adminService/hooks/useAdminCheck";
+import { useStudentProfiles } from "@/api/adminService";
 import { Loader2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";

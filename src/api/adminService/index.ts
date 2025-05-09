@@ -13,7 +13,7 @@ import useUpdateStudentExtendedProfile from './hooks/useUpdateStudentExtendedPro
 import useUpdateStudentProfile from './hooks/useUpdateStudentProfile';
 import useDeleteStudentProfile from './hooks/useDeleteStudentProfile';
 import useDashboardStats from './hooks/useDashboardStats';
-import { useState } from "react";
+import useAdminCheck from './hooks/useAdminCheck';
 
 // Export all profile hooks
 export { 
@@ -23,45 +23,6 @@ export {
   useUpdateStudentExtendedProfile,
   useUpdateStudentProfile,
   useDeleteStudentProfile,
-  useDashboardStats
+  useDashboardStats,
+  useAdminCheck
 };
-
-// Hook to check if user is admin
-export const useAdminCheck = () => {
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const checkAdminStatus = async () => {
-    setLoading(true);
-    try {
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError) {
-        throw sessionError;
-      }
-
-      if (!sessionData.session) {
-        setIsAdmin(false);
-        return;
-      }
-
-      const { data, error } = await supabase.rpc('is_admin');
-      
-      if (error) {
-        throw error;
-      }
-      
-      setIsAdmin(data);
-    } catch (error) {
-      console.error("Error checking admin status:", error);
-      setIsAdmin(false);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { isAdmin, loading, checkAdminStatus };
-};
-
-// Import supabase client for useAdminCheck
-import { supabase } from "@/integrations/supabase/client";
