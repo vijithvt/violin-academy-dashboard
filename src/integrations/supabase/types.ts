@@ -285,6 +285,7 @@ export type Database = {
           address: string
           created_at: string
           date_of_birth: string
+          day_specific_timings: Json | null
           gender: string
           heard_from: string
           id: string
@@ -303,6 +304,7 @@ export type Database = {
           address: string
           created_at?: string
           date_of_birth: string
+          day_specific_timings?: Json | null
           gender: string
           heard_from: string
           id?: string
@@ -321,6 +323,7 @@ export type Database = {
           address?: string
           created_at?: string
           date_of_birth?: string
+          day_specific_timings?: Json | null
           gender?: string
           heard_from?: string
           id?: string

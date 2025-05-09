@@ -35,6 +35,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 
 // Define the form schema with validation
 const studentFormSchema = z.object({
@@ -86,6 +92,21 @@ export const StudentRegistrationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoError, setPhotoError] = useState("");
+  const [activeTab, setActiveTab] = useState<string>("general");
+  
+  // State for day-specific timings
+  const [daySpecificTimings, setDaySpecificTimings] = useState<Record<string, string[]>>({
+    Monday: [],
+    Tuesday: [],
+    Wednesday: [],
+    Thursday: [],
+    Friday: [],
+    Saturday: [],
+    Sunday: []
+  });
+  
+  // State for whether to use day-specific timings
+  const [useDaySpecificTimings, setUseDaySpecificTimings] = useState(false);
   
   // Initialize the form
   const form = useForm<StudentFormData>({
@@ -130,6 +151,24 @@ export const StudentRegistrationForm = () => {
     }
     
     setPhotoFile(file);
+  };
+  
+  // Handle timings change for a specific day
+  const handleDayTimingsChange = (day: string, timeSlot: string) => {
+    setDaySpecificTimings(prev => {
+      const currentTimings = [...(prev[day] || [])];
+      if (currentTimings.includes(timeSlot)) {
+        return {
+          ...prev,
+          [day]: currentTimings.filter(slot => slot !== timeSlot)
+        };
+      } else {
+        return {
+          ...prev,
+          [day]: [...currentTimings, timeSlot]
+        };
+      }
+    });
   };
   
   // Handle form submission
@@ -186,7 +225,8 @@ export const StudentRegistrationForm = () => {
           learning_level: data.learningLevel,
           photo_url: photoPath,
           heard_from: data.heardFrom,
-          referral_details: data.referralDetails || null
+          referral_details: data.referralDetails || null,
+          day_specific_timings: useDaySpecificTimings ? daySpecificTimings : null
         });
         
       if (profileError) throw new Error(profileError.message);
@@ -391,40 +431,101 @@ export const StudentRegistrationForm = () => {
             )}
           />
           
-          <FormField
-            control={form.control}
-            name="preferredTimings"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Preferred Timings *</FormLabel>
-                <FormControl>
-                  <div className="flex flex-wrap gap-2">
-                    {TIME_SLOTS.map((slot) => {
-                      const isSelected = field.value.includes(slot);
-                      return (
-                        <Button
-                          key={slot}
-                          type="button"
-                          variant={isSelected ? "default" : "outline"}
-                          onClick={() => {
-                            if (isSelected) {
-                              field.onChange(field.value.filter(item => item !== slot));
-                            } else {
-                              field.onChange([...field.value, slot]);
-                            }
-                          }}
-                          className="h-8"
-                        >
-                          {slot}
-                        </Button>
-                      );
-                    })}
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="use-day-specific" 
+                checked={useDaySpecificTimings}
+                onCheckedChange={(checked) => setUseDaySpecificTimings(!!checked)}
+              />
+              <label 
+                htmlFor="use-day-specific" 
+                className="text-sm font-medium leading-none cursor-pointer"
+              >
+                Use different timings for each day
+              </label>
+            </div>
+            
+            {!useDaySpecificTimings ? (
+              <FormField
+                control={form.control}
+                name="preferredTimings"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Preferred Timings *</FormLabel>
+                    <FormControl>
+                      <div className="flex flex-wrap gap-2">
+                        {TIME_SLOTS.map((slot) => {
+                          const isSelected = field.value.includes(slot);
+                          return (
+                            <Button
+                              key={slot}
+                              type="button"
+                              variant={isSelected ? "default" : "outline"}
+                              onClick={() => {
+                                if (isSelected) {
+                                  field.onChange(field.value.filter(item => item !== slot));
+                                } else {
+                                  field.onChange([...field.value, slot]);
+                                }
+                              }}
+                              className="h-8"
+                            >
+                              {slot}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : (
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium">Day-Specific Timings</h3>
+                
+                <Tabs defaultValue="Monday">
+                  <TabsList className="mb-4 flex flex-wrap">
+                    {DAYS_OF_WEEK.map(day => (
+                      <TabsTrigger key={day} value={day} className="text-xs sm:text-sm">
+                        {day}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                  
+                  {DAYS_OF_WEEK.map(day => (
+                    <TabsContent key={day} value={day}>
+                      <div className="space-y-2">
+                        <h4 className="text-sm font-medium">{day} Time Slots</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {TIME_SLOTS.map((slot) => {
+                            const isSelected = daySpecificTimings[day]?.includes(slot);
+                            return (
+                              <Button
+                                key={`${day}-${slot}`}
+                                type="button"
+                                variant={isSelected ? "default" : "outline"}
+                                onClick={() => handleDayTimingsChange(day, slot)}
+                                className="h-8"
+                              >
+                                {slot}
+                              </Button>
+                            );
+                          })}
+                        </div>
+                        {daySpecificTimings[day]?.length === 0 && (
+                          <p className="text-xs text-amber-600">
+                            Please select at least one time slot for {day}
+                          </p>
+                        )}
+                      </div>
+                    </TabsContent>
+                  ))}
+                </Tabs>
+              </div>
             )}
-          />
+          </div>
         </div>
         
         <div className="bg-white rounded-lg shadow-sm p-6 space-y-6">

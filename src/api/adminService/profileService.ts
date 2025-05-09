@@ -70,6 +70,66 @@ export const useStudentProfile = (id?: string) => {
   });
 };
 
+// Hook to fetch student extended profile with day-specific timings
+export const useStudentExtendedProfile = (userId?: string) => {
+  return useQuery({
+    queryKey: ["studentExtendedProfile", userId],
+    queryFn: async () => {
+      if (!userId) {
+        return null;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from("student_profiles")
+          .select("*")
+          .eq("user_id", userId)
+          .maybeSingle();
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        return data;
+      } catch (error) {
+        console.error("Error fetching student extended profile:", error);
+        throw new Error(error instanceof Error ? error.message : "Failed to load student extended profile");
+      }
+    },
+    enabled: !!userId
+  });
+};
+
+// Hook to update student extended profile
+export const useUpdateStudentExtendedProfile = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ 
+      userId, 
+      updates 
+    }: { 
+      userId: string; 
+      updates: Record<string, any> 
+    }) => {
+      const { data, error } = await supabase
+        .from("student_profiles")
+        .update(updates)
+        .eq("user_id", userId)
+        .select();
+        
+      if (error) {
+        throw new Error(error.message);
+      }
+      
+      return data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["studentExtendedProfile", variables.userId] });
+    }
+  });
+};
+
 // Hook to update a student profile
 export const useUpdateStudentProfile = () => {
   const queryClient = useQueryClient();
@@ -117,6 +177,62 @@ export const useDeleteStudentProfile = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["studentProfiles"] });
+    }
+  });
+};
+
+// Hook to get dashboard statistics
+export const useDashboardStats = () => {
+  return useQuery({
+    queryKey: ["dashboardStats"],
+    queryFn: async () => {
+      try {
+        // Get counts by role
+        const { data: roleData, error: roleError } = await supabase
+          .from("profiles")
+          .select("role, count", { count: "exact" })
+          .group("role");
+          
+        if (roleError) throw new Error(roleError.message);
+        
+        // Get new registrations this month
+        const startOfMonth = new Date();
+        startOfMonth.setDate(1);
+        startOfMonth.setHours(0, 0, 0, 0);
+        
+        const { count: newRegistrations, error: newRegError } = await supabase
+          .from("profiles")
+          .select("*", { count: "exact" })
+          .gte("created_at", startOfMonth.toISOString());
+          
+        if (newRegError) throw new Error(newRegError.message);
+        
+        // Get trial requests this month
+        const { count: newTrials, error: trialsError } = await supabase
+          .from("free_trial_requests")
+          .select("*", { count: "exact" })
+          .gte("created_at", startOfMonth.toISOString());
+          
+        if (trialsError) throw new Error(trialsError.message);
+        
+        // Format the data
+        const roleCounts = roleData.reduce((acc, item) => {
+          acc[item.role.toLowerCase()] = parseInt(item.count);
+          return acc;
+        }, {} as Record<string, number>);
+        
+        return {
+          students: roleCounts.student || 0,
+          teachers: roleCounts.teacher || 0,
+          admins: roleCounts.admin || 0,
+          newRegistrations: newRegistrations || 0,
+          newTrials: newTrials || 0,
+          totalUsers: Object.values(roleCounts).reduce((sum, count) => sum + count, 0)
+        };
+      } catch (error) {
+        console.error("Error fetching dashboard stats:", error);
+        throw new Error(error instanceof Error ? error.message : "Failed to load dashboard statistics");
+      }
     }
   });
 };
