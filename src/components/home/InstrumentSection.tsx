@@ -1,5 +1,5 @@
 
-import { ChevronRight, Music, Award, Clock } from "lucide-react";
+import { ChevronRight, Music, Award, Clock, BookOpen, Star, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -45,6 +45,24 @@ const InstrumentSection = () => {
       icon: <Clock className="w-8 h-8 text-purple-600" />,
       title: "Structured Learning",
       description: "Progress through a systematic curriculum designed for all skill levels"
+    }
+  ];
+  
+  const teachingApproaches = [
+    {
+      icon: <Star className="w-7 h-7 text-amber-500" />,
+      title: "Monthly Assessments",
+      description: "Regular student evaluations conducted in partnership with leading music academies to track and enhance progress"
+    },
+    {
+      icon: <BookOpen className="w-7 h-7 text-purple-600" />,
+      title: "Structured Curriculum",
+      description: "Comprehensive learning path aligned with university-level standards covering theory, technique, and performance"
+    },
+    {
+      icon: <Users className="w-7 h-7 text-amber-500" />,
+      title: "Custom Dashboard",
+      description: "Personalized student portal for tracking progress, accessing practice materials, and setting learning goals"
     }
   ];
 
@@ -95,6 +113,41 @@ const InstrumentSection = () => {
               </div>
               <h3 className="text-xl font-serif font-bold text-purple-800 mb-2 text-center">{feature.title}</h3>
               <p className="text-gray-600 text-center">{feature.description}</p>
+            </div>
+          ))}
+        </div>
+        
+        {/* Teaching Approach Section */}
+        <div className={cn(
+          "text-center max-w-3xl mx-auto mt-20 mb-12 transition-all duration-1000 transform",
+          isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0",
+          "delay-300"
+        )}>
+          <div className="h-1 w-24 bg-amber-500 mx-auto mb-8 rounded-full"></div>
+          <h2 className="text-3xl font-serif font-bold text-purple-900 mb-4">
+            Teaching Approach
+          </h2>
+          <p className="text-lg text-gray-700">
+            A proven methodology combining tradition with modern educational practices
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          {teachingApproaches.map((approach, index) => (
+            <div 
+              key={`approach-${index}`} 
+              className={cn(
+                "bg-gradient-to-br from-purple-50 to-amber-50 rounded-xl p-6 shadow-lg border border-amber-100 transition-all duration-500",
+                isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0",
+                "hover:shadow-xl hover:border-amber-200"
+              )}
+              style={{ transitionDelay: `${(index + 3) * 200}ms` }}
+            >
+              <div className="rounded-full bg-white w-16 h-16 flex items-center justify-center mb-4 mx-auto shadow-md transition-all duration-300 hover:scale-110">
+                {approach.icon}
+              </div>
+              <h3 className="text-xl font-serif font-bold text-purple-800 mb-3 text-center">{approach.title}</h3>
+              <p className="text-gray-700 text-center">{approach.description}</p>
             </div>
           ))}
         </div>

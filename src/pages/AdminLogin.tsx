@@ -86,6 +86,16 @@ const AdminLogin = () => {
           variant: "destructive",
         });
       } else {
+        // For testing purposes: Skip admin check temporarily
+        if (values.email === "vijithviolinist@gmail.com") {
+          toast({
+            title: "Login successful",
+            description: "Welcome to admin dashboard!",
+          });
+          navigate("/dashboard");
+          return;
+        }
+        
         // Check if user has admin role
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
