@@ -189,9 +189,7 @@ export const useDashboardStats = () => {
       try {
         // Get counts by role
         const { data: roleData, error: roleError } = await supabase
-          .from("profiles")
-          .select("role, count", { count: "exact" })
-          .group("role");
+          .rpc('count_profiles_by_role');
           
         if (roleError) throw new Error(roleError.message);
         
@@ -216,10 +214,12 @@ export const useDashboardStats = () => {
         if (trialsError) throw new Error(trialsError.message);
         
         // Format the data
-        const roleCounts = roleData.reduce((acc, item) => {
-          acc[item.role.toLowerCase()] = parseInt(item.count);
+        const roleCounts = roleData ? roleData.reduce((acc: Record<string, number>, item: any) => {
+          if (item && item.role && item.count) {
+            acc[item.role.toLowerCase()] = Number(item.count);
+          }
           return acc;
-        }, {} as Record<string, number>);
+        }, {} as Record<string, number>) : {};
         
         return {
           students: roleCounts.student || 0,
@@ -227,7 +227,7 @@ export const useDashboardStats = () => {
           admins: roleCounts.admin || 0,
           newRegistrations: newRegistrations || 0,
           newTrials: newTrials || 0,
-          totalUsers: Object.values(roleCounts).reduce((sum, count) => sum + count, 0)
+          totalUsers: Object.values(roleCounts).reduce((sum, count) => sum + Number(count), 0)
         };
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);
