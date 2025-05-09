@@ -1,47 +1,48 @@
 
-import * as React from "react"
-
-const MOBILE_BREAKPOINT = 768
+import { useState, useEffect } from 'react';
 
 export function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
+  const [isMobile, setIsMobile] = useState(false);
 
-  React.useEffect(() => {
-    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
-    const onChange = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
-    }
-    mql.addEventListener("change", onChange)
-    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
-    return () => mql.removeEventListener("change", onChange)
-  }, [])
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Initial check
+    checkMobile();
+    
+    // Add listener for window resize
+    window.addEventListener('resize', checkMobile);
+    
+    // Clean up
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
-  return !!isMobile
+  return isMobile;
 }
 
-// Add the useMediaQuery hook to serve as a more flexible version of useIsMobile
-export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = React.useState<boolean>(false)
+// New hook that takes a media query string
+export function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(false);
 
-  React.useEffect(() => {
-    const mediaQuery = window.matchMedia(query)
+  useEffect(() => {
+    const media = window.matchMedia(query);
     
-    // Set the initial value
-    setMatches(mediaQuery.matches)
+    // Update the state initially
+    setMatches(media.matches);
     
-    // Define a callback function to handle changes
-    const handler = (event: MediaQueryListEvent) => {
-      setMatches(event.matches)
-    }
+    // Define callback for media query change
+    const listener = (e: MediaQueryListEvent) => {
+      setMatches(e.matches);
+    };
     
-    // Add the callback as a listener for changes to the media query
-    mediaQuery.addEventListener("change", handler)
+    // Add listener
+    media.addEventListener('change', listener);
     
-    // Remove the listener when the component is unmounted
-    return () => {
-      mediaQuery.removeEventListener("change", handler)
-    }
-  }, [query])
+    // Clean up
+    return () => media.removeEventListener('change', listener);
+  }, [query]);
 
-  return matches
+  return matches;
 }
