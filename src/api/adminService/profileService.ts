@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { StudentProfile } from "./types";
@@ -8,23 +7,29 @@ export const useStudentProfiles = (roleFilter: string = "all") => {
   return useQuery({
     queryKey: ["studentProfiles", roleFilter],
     queryFn: async () => {
-      let query = supabase
-        .from("profiles")
-        .select("*")
-        .order("created_at", { ascending: false });
+      try {
+        let query = supabase
+          .from("profiles")
+          .select("*")
+          .order("created_at", { ascending: false });
 
-      if (roleFilter !== "all") {
-        query = query.eq("role", roleFilter);
+        if (roleFilter !== "all") {
+          query = query.eq("role", roleFilter);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        return data as StudentProfile[];
+      } catch (error) {
+        console.error("Error fetching student profiles:", error);
+        throw error;
       }
-
-      const { data, error } = await query;
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      return data as StudentProfile[];
-    }
+    },
+    retry: 2, // Retry failed queries 2 times
   });
 };
 

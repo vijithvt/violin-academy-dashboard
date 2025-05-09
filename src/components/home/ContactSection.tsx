@@ -95,7 +95,7 @@ const ContactSection = () => {
                 </a>
                 
                 <a 
-                  href="http://wa.me/918301815324" 
+                  href="https://wa.me/918301815324" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="block"
@@ -116,21 +116,21 @@ const ContactSection = () => {
                   <MessageCircle className="h-6 w-6 text-maroon-600 mr-3" />
                   <div>
                     <p className="font-medium text-maroon-800">WhatsApp</p>
-                    <p className="text-gray-700">8301815324</p>
+                    <a href="https://wa.me/918301815324" className="text-gray-700 hover:text-blue-600 hover:underline">8301815324</a>
                   </div>
                 </li>
                 <li className="flex items-start">
                   <Phone className="h-6 w-6 text-maroon-600 mr-3" />
                   <div>
                     <p className="font-medium text-maroon-800">Phone</p>
-                    <p className="text-gray-700">9496315903</p>
+                    <a href="tel:+919496315903" className="text-gray-700 hover:text-blue-600 hover:underline">9496315903</a>
                   </div>
                 </li>
                 <li className="flex items-start">
                   <Mail className="h-6 w-6 text-maroon-600 mr-3" />
                   <div>
                     <p className="font-medium text-maroon-800">Email</p>
-                    <p className="text-gray-700">vijithviolinist@gmail.com</p>
+                    <a href="mailto:vijithviolinist@gmail.com" className="text-gray-700 hover:text-blue-600 hover:underline">vijithviolinist@gmail.com</a>
                   </div>
                 </li>
               </ul>

@@ -1,5 +1,6 @@
 
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import NavigationBar from "@/components/home/NavigationBar";
 import HeroSection from "@/components/home/HeroSection";
 import CoursesSection from "@/components/home/CoursesSection";
@@ -12,6 +13,8 @@ import InstrumentSection from "@/components/home/InstrumentSection";
 import AboutSection from "@/components/home/AboutSection";
 import LearningProcessSection from "@/components/home/LearningProcessSection";
 import FloatingTrialButton from "@/components/home/FloatingTrialButton";
+import { Button } from "@/components/ui/button";
+import { BookOpen } from "lucide-react";
 
 const Home = () => {
   useEffect(() => {
@@ -57,6 +60,14 @@ const Home = () => {
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white overflow-hidden">
       <NavigationBar />
       <HeroSection />
+      <div className="container mx-auto mt-8 mb-12 flex justify-center">
+        <Link to="/beginner-guide">
+          <Button variant="outline" className="flex items-center gap-2 text-lg">
+            <BookOpen className="h-5 w-5" />
+            Explore Lessons
+          </Button>
+        </Link>
+      </div>
       <InstrumentSection />
       {/* VideoSection temporarily hidden */}
       {/* <VideoSection /> */}
@@ -65,7 +76,7 @@ const Home = () => {
       <RequirementsSection />
       <RecognitionSection />
       <FAQSection />
-      <AboutSection /> {/* Moved from end */}
+      <AboutSection />
       <FooterSection />
       <FloatingTrialButton />
       <FloatingButtons />

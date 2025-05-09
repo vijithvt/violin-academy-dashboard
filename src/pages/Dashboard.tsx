@@ -1,13 +1,15 @@
 
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import AdminDashboardLayout from "@/components/admin/AdminDashboardLayout";
 import FreeTrialTable from "@/components/admin/FreeTrialTable";
 import NotAuthorized from "@/components/admin/NotAuthorized";
 import { useAdminCheck } from "@/api/adminService";
-import { Loader2 } from "lucide-react";
+import { Loader2, BookOpen, UserPlus } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StudentProfilesTable from "@/components/admin/StudentProfilesTable";
 import PointsManagement from "@/components/admin/PointsManagement";
+import { Button } from "@/components/ui/button";
 
 const Dashboard = () => {
   const { isAdmin, loading, checkAdminStatus } = useAdminCheck();
@@ -15,7 +17,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     checkAdminStatus();
-  }, []);
+  }, [checkAdminStatus]);
 
   if (loading) {
     return (
@@ -40,8 +42,23 @@ const Dashboard = () => {
           </p>
         </div>
         
+        <div className="flex flex-wrap gap-3 mb-4">
+          <Link to="/student-registration">
+            <Button variant="outline" className="flex items-center gap-2">
+              <UserPlus className="h-4 w-4" />
+              Register New Student
+            </Button>
+          </Link>
+          <Link to="/dashboard/students">
+            <Button variant="outline" className="flex items-center gap-2">
+              <BookOpen className="h-4 w-4" />
+              Manage Student Progress
+            </Button>
+          </Link>
+        </div>
+        
         <Tabs defaultValue="trials" value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
+          <TabsList className="overflow-x-auto flex w-full">
             <TabsTrigger value="trials">Trial Requests</TabsTrigger>
             <TabsTrigger value="students">Students</TabsTrigger>
             <TabsTrigger value="points">Points</TabsTrigger>

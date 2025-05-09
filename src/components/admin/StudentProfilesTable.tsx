@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useStudentProfiles, StudentProfile, useDeleteStudentProfile } from "@/api/adminService";
+import { useStudentProfiles, useDeleteStudentProfile } from "@/api/adminService";
 import { 
   Table, 
   TableBody, 
@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Search, Eye, Filter, Edit, Trash2, AlertCircle, Plus, BookOpen } from "lucide-react";
+import { Loader2, Search, Eye, Filter, Edit, Trash2, AlertCircle, UserPlus, BookOpen } from "lucide-react";
 import StudentProfileDetails from "./StudentProfileDetails";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -37,44 +37,53 @@ import { Badge } from "@/components/ui/badge";
 const StudentProfilesTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
-  const [selectedProfile, setSelectedProfile] = useState<StudentProfile | null>(null);
+  const [selectedProfile, setSelectedProfile] = useState(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [profileToDelete, setProfileToDelete] = useState<StudentProfile | null>(null);
+  const [profileToDelete, setProfileToDelete] = useState(null);
   
   const { toast } = useToast();
   const deleteMutation = useDeleteStudentProfile();
 
-  // Fix: Pass the roleFilter directly as a string instead of an object
-  const { data: profiles, isLoading, isError } = useStudentProfiles(
-    searchTerm,
-    roleFilter
-  );
+  // Pass only the roleFilter as a string
+  const { data: profiles, isLoading, isError, refetch } = useStudentProfiles(roleFilter);
 
-  const handleViewDetails = (profile: StudentProfile) => {
+  const handleViewDetails = (profile) => {
     setSelectedProfile(profile);
     setDetailsOpen(true);
   };
 
-  const handleEditProfile = (profile: StudentProfile) => {
+  const handleEditProfile = (profile) => {
     setSelectedProfile(profile);
     setDetailsOpen(true);
   };
 
-  const handleDeleteClick = (profile: StudentProfile) => {
+  const handleDeleteClick = (profile) => {
     setProfileToDelete(profile);
     setDeleteDialogOpen(true);
   };
 
   const handleConfirmDelete = async () => {
     if (profileToDelete) {
-      deleteMutation.mutate(profileToDelete.id);
-      setDeleteDialogOpen(false);
-      setProfileToDelete(null);
+      try {
+        await deleteMutation.mutateAsync(profileToDelete.id);
+        toast({
+          title: "Profile deleted",
+          description: "The profile has been successfully deleted",
+        });
+        setDeleteDialogOpen(false);
+        setProfileToDelete(null);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to delete profile. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       year: "numeric",
@@ -83,7 +92,7 @@ const StudentProfilesTable = () => {
     });
   };
 
-  const getRoleBadgeStyles = (role: string) => {
+  const getRoleBadgeStyles = (role) => {
     switch (role) {
       case 'admin':
         return 'bg-purple-100 text-purple-800';
@@ -96,6 +105,11 @@ const StudentProfilesTable = () => {
     }
   };
 
+  // Filter profiles based on search term
+  const filteredProfiles = profiles?.filter(profile => 
+    profile.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -107,9 +121,16 @@ const StudentProfilesTable = () => {
 
   if (isError) {
     return (
-      <div className="bg-red-50 text-red-800 p-4 rounded-md flex items-center">
-        <AlertCircle className="h-5 w-5 mr-2" />
-        An error occurred while loading student profiles. Please try again.
+      <div className="bg-red-50 text-red-800 p-6 rounded-md flex flex-col items-center">
+        <div className="flex items-center mb-4">
+          <AlertCircle className="h-6 w-6 mr-2" />
+          <span className="text-lg font-medium">Error loading student profiles</span>
+        </div>
+        <p className="mb-4">There was a problem retrieving the student profiles. Please try again.</p>
+        <Button onClick={() => refetch()} variant="outline" className="flex items-center gap-2">
+          <Loader2 className="h-4 w-4" />
+          Retry
+        </Button>
       </div>
     );
   }
@@ -118,12 +139,14 @@ const StudentProfilesTable = () => {
     <div className="space-y-4">
       {/* Action Button and Search Row */}
       <div className="flex flex-col md:flex-row md:justify-between gap-4">
-        <Link to="/student-registration">
-          <Button className="w-full md:w-auto">
-            <Plus className="h-4 w-4 mr-1" />
-            Register New Student
-          </Button>
-        </Link>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Link to="/student-registration">
+            <Button className="w-full md:w-auto">
+              <UserPlus className="h-4 w-4 mr-1" />
+              Register New Student
+            </Button>
+          </Link>
+        </div>
         
         <div className="flex flex-col md:flex-row gap-4 md:w-3/4">
           <div className="relative flex-1">
@@ -164,8 +187,8 @@ const StudentProfilesTable = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {profiles && profiles.length > 0 ? (
-              profiles.map((profile) => (
+            {filteredProfiles && filteredProfiles.length > 0 ? (
+              filteredProfiles.map((profile) => (
                 <TableRow key={profile.id}>
                   <TableCell className="font-medium">{profile.name}</TableCell>
                   <TableCell>
@@ -218,7 +241,7 @@ const StudentProfilesTable = () => {
             ) : (
               <TableRow>
                 <TableCell colSpan={4} className="text-center py-6 text-gray-500">
-                  No student profiles found
+                  {searchTerm ? "No matching student profiles found" : "No student profiles found"}
                 </TableCell>
               </TableRow>
             )}
