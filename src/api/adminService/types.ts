@@ -68,7 +68,7 @@ export interface AttendanceRecord {
 
 export type AttendanceStatus = "present" | "absent" | "late";
 
-// Fee Types
+// Fee Types - Updated to match our implementation
 export interface FeeRecord {
   id: string;
   user_id: string;

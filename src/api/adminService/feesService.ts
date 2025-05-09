@@ -19,10 +19,9 @@ export const useFeeRecords = (
         
         // Apply filters
         if (month) {
-          // Extract year and month
+          // In our database, we store date in "YYYY-MM-DD" format, so we need to filter by month
           const [year, monthNum] = month.split('-');
-          const monthStr = `${year}-${monthNum}`;
-          query = query.eq('month', monthStr);
+          query = query.like('date', `${year}-${monthNum}-%`);
         }
         
         // Apply level filter if not "all"
@@ -35,10 +34,18 @@ export const useFeeRecords = (
           query = query.eq('status', status);
         }
         
-        // Apply search term filter
+        // Apply search term filter - for demonstration, using if user_id exists in profiles with name like searchTerm
         if (searchTerm) {
-          // We need to join with profiles to search by student name
-          query = query.textSearch('student_name', searchTerm);
+          // This is a simplification, ideally would use a more sophisticated text search
+          const { data: profileIds } = await supabase
+            .from('profiles')
+            .select('id')
+            .ilike('name', `%${searchTerm}%`);
+            
+          if (profileIds && profileIds.length > 0) {
+            const ids = profileIds.map(p => p.id);
+            query = query.in('user_id', ids);
+          }
         }
         
         const { data, error } = await query;
@@ -48,12 +55,12 @@ export const useFeeRecords = (
         }
         
         // Transform the data to match our FeeRecord type
-        const feeRecords = data.map(record => ({
+        const feeRecords: FeeRecord[] = (data || []).map(record => ({
           id: record.id,
           user_id: record.user_id,
-          student_name: record.profiles?.name || record.student_name || "Unknown",
+          student_name: record.profiles?.name || "Unknown",
           level: record.level || "Unknown",
-          month: record.month || "", // YYYY-MM format
+          month: record.date ? record.date.substring(0, 7) : "", // Extract YYYY-MM from date
           amount: record.amount,
           status: record.status,
           payment_date: record.payment_date,
@@ -61,7 +68,7 @@ export const useFeeRecords = (
           payment_reference: record.payment_reference,
           created_at: record.created_at,
           updated_at: record.updated_at || record.created_at
-        })) as FeeRecord[];
+        }));
         
         return feeRecords;
       } catch (error) {
@@ -90,13 +97,21 @@ export const useUpdateFeeStatus = () => {
         payment_reference?: string;
       }
     }) => {
+      const updateFields: any = {
+        status,
+        updated_at: new Date().toISOString()
+      };
+      
+      // Add payment details if provided
+      if (paymentDetails) {
+        if (paymentDetails.payment_date) updateFields.payment_date = paymentDetails.payment_date;
+        if (paymentDetails.payment_method) updateFields.payment_method = paymentDetails.payment_method;
+        if (paymentDetails.payment_reference) updateFields.payment_reference = paymentDetails.payment_reference;
+      }
+      
       const { data, error } = await supabase
         .from("fees")
-        .update({
-          status,
-          ...paymentDetails,
-          updated_at: new Date().toISOString()
-        })
+        .update(updateFields)
         .eq("id", id)
         .select();
         
@@ -148,27 +163,25 @@ export const useCreateFeeRecord = () => {
   return useMutation({
     mutationFn: async (fee: {
       user_id: string;
-      student_name: string;
-      level: string;
-      month: string;
       amount: number;
       status: string;
+      date: string; // Use date instead of month
       payment_date?: string;
       payment_method?: string;
       payment_reference?: string;
+      level?: string;
     }) => {
       const { data, error } = await supabase
         .from("fees")
         .insert({
           user_id: fee.user_id,
-          student_name: fee.student_name,
-          level: fee.level,
-          month: fee.month,
           amount: fee.amount,
           status: fee.status,
+          date: fee.date,
           payment_date: fee.payment_date,
           payment_method: fee.payment_method,
-          payment_reference: fee.payment_reference
+          payment_reference: fee.payment_reference,
+          level: fee.level
         })
         .select();
         

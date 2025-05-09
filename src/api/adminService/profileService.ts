@@ -76,12 +76,20 @@ export const useUpdateStudentProfile = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (profile: Partial<StudentProfile>) => {
+    mutationFn: async (profile: Partial<StudentProfile> & { id: string }) => {
       try {
+        // Only include fields that are in the profiles table
+        const updateData: Record<string, any> = {};
+        
+        // Add fields that exist in our database schema
+        if (profile.name !== undefined) updateData.name = profile.name;
+        if (profile.role !== undefined) updateData.role = profile.role;
+        // Add other fields as needed based on your actual schema
+        
         const { data, error } = await supabase
           .from("profiles")
-          .update(profile)
-          .eq("id", profile.id!)
+          .update(updateData)
+          .eq("id", profile.id)
           .select();
         
         if (error) {
@@ -107,65 +115,23 @@ export const useCreateStudentProfile = () => {
   
   return useMutation({
     mutationFn: async (newProfile: {
+      id: string; // UUID for the new profile
       name: string;
       role?: string;
-      email?: string;
-      phone?: string;
-      address?: string;
-      dob?: string;
-      gender?: string;
-      course?: string;
-      level?: string;
-      preferred_timing?: string;
-      profession?: string;
-      referred_by?: string;
-      hear_about?: string;
-      photo_url?: string;
     }) => {
       try {
-        // Generate a UUID for the new profile
+        // Create the basic profile with required fields
         const { data, error } = await supabase
           .from("profiles")
           .insert({
+            id: newProfile.id,
             name: newProfile.name,
             role: newProfile.role || "student",
-            email: newProfile.email,
-            // Add other fields as needed
           })
           .select();
         
         if (error) {
           throw error;
-        }
-        
-        // Update with additional fields
-        if (data && data.length > 0) {
-          const profileId = data[0].id;
-          
-          const updateData: any = {};
-          
-          if (newProfile.phone) updateData.phone = newProfile.phone;
-          if (newProfile.address) updateData.address = newProfile.address;
-          if (newProfile.dob) updateData.dob = newProfile.dob;
-          if (newProfile.gender) updateData.gender = newProfile.gender;
-          if (newProfile.course) updateData.course = newProfile.course;
-          if (newProfile.level) updateData.level = newProfile.level;
-          if (newProfile.preferred_timing) updateData.preferred_timing = newProfile.preferred_timing;
-          if (newProfile.profession) updateData.profession = newProfile.profession;
-          if (newProfile.referred_by) updateData.referred_by = newProfile.referred_by;
-          if (newProfile.hear_about) updateData.hear_about = newProfile.hear_about;
-          if (newProfile.photo_url) updateData.photo_url = newProfile.photo_url;
-          
-          if (Object.keys(updateData).length > 0) {
-            const { error: updateError } = await supabase
-              .from("profiles")
-              .update(updateData)
-              .eq("id", profileId);
-            
-            if (updateError) {
-              throw updateError;
-            }
-          }
         }
         
         return data && data.length > 0 ? data[0] as StudentProfile : null;
