@@ -12,7 +12,7 @@ import { Loader2 } from "lucide-react";
 
 const StudentStats = () => {
   const { user } = useSupabase();
-  const { data: totalPoints, loading, error } = useTotalStudentPoints(user?.id);
+  const { data: totalPoints, isLoading, error } = useTotalStudentPoints(user?.id);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -35,7 +35,7 @@ const StudentStats = () => {
           </svg>
         </CardHeader>
         <CardContent>
-          {loading ? (
+          {isLoading ? (
             <div className="flex items-center space-x-2">
               <Loader2 className="h-4 w-4 animate-spin" />
               <span>Loading...</span>

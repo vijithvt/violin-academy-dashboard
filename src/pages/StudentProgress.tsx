@@ -56,7 +56,8 @@ const StudentProgress = () => {
           setStudentData({
             id: profileData.id,
             name: profileData.name,
-            email: profileData.email
+            // Only set email if it exists in the profile data
+            ...(profileData.email && { email: profileData.email })
           });
         }
 

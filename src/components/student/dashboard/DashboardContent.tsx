@@ -69,6 +69,7 @@ const DashboardContent = ({ stats, syllabus, tasks }: DashboardContentProps) => 
             </TabsContent>
             
             <TabsContent value="points" className="space-y-4">
+              {/* Pass the correct prop name that matches the PointsHistory component */}
               <PointsHistory userId={user?.id} />
             </TabsContent>
           </Tabs>
@@ -77,7 +78,7 @@ const DashboardContent = ({ stats, syllabus, tasks }: DashboardContentProps) => 
         {/* Right Sidebar - Top Students */}
         <div>
           <TopStudents />
-          <StudentStats userId={user?.id} />
+          <StudentStats />
         </div>
       </div>
     </>
