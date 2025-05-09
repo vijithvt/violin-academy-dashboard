@@ -23,10 +23,9 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { useCreateStudentProfile } from "@/api/adminService/profileService";
+import { useToast } from "@/hooks/use-toast";
 import { uploadStudentPhoto } from "@/lib/storage";
+import { useCreateStudentProfile } from "@/api/adminService/profileService";
 import { Loader2, Upload } from "lucide-react";
 
 const formSchema = z.object({
@@ -35,18 +34,18 @@ const formSchema = z.object({
   }),
   email: z.string().email({
     message: "Please enter a valid email address.",
-  }).optional(),
+  }).optional().nullable(),
   role: z.string().default("student"),
-  phone: z.string().optional(),
-  address: z.string().optional(),
-  gender: z.string().optional(),
-  dob: z.string().optional(),
-  course: z.string().optional(),
-  level: z.string().optional(),
-  preferred_timing: z.string().optional(),
-  profession: z.string().optional(),
-  referred_by: z.string().optional(),
-  hear_about: z.string().optional(),
+  phone: z.string().optional().nullable(),
+  address: z.string().optional().nullable(),
+  gender: z.string().optional().nullable(),
+  dob: z.string().optional().nullable(),
+  course: z.string().optional().nullable(),
+  level: z.string().optional().nullable(),
+  preferred_timing: z.string().optional().nullable(),
+  profession: z.string().optional().nullable(),
+  referred_by: z.string().optional().nullable(),
+  hear_about: z.string().optional().nullable(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -56,7 +55,7 @@ export function StudentRegistrationForm() {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { toast: showToast } = toast();
+  const { toast } = useToast();
   const createStudentProfile = useCreateStudentProfile();
 
   const form = useForm<FormValues>({
@@ -103,11 +102,23 @@ export function StudentRegistrationForm() {
       
       // Create student profile with photo URL if available
       await createStudentProfile.mutateAsync({
-        ...values,
-        photo_url: photoUrl || undefined,
+        name: values.name,
+        role: "student",
+        email: values.email || undefined,
+        phone: values.phone || undefined,
+        address: values.address || undefined,
+        dob: values.dob || undefined,
+        gender: values.gender || undefined,
+        course: values.course || undefined,
+        level: values.level || undefined,
+        preferred_timing: values.preferred_timing || undefined,
+        profession: values.profession || undefined,
+        referred_by: values.referred_by || undefined,
+        hear_about: values.hear_about || undefined,
+        photo_url: photoUrl || undefined
       });
 
-      showToast({
+      toast({
         title: "Success!",
         description: "Student profile created successfully.",
       });
@@ -116,7 +127,7 @@ export function StudentRegistrationForm() {
       navigate("/dashboard/students");
     } catch (error) {
       console.error("Error creating student profile:", error);
-      showToast({
+      toast({
         title: "Error",
         description: "Failed to create student profile. Please try again.",
         variant: "destructive",
@@ -175,7 +186,7 @@ export function StudentRegistrationForm() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="student@example.com" {...field} />
+                    <Input placeholder="student@example.com" {...field} value={field.value || ""} />
                   </FormControl>
                   <FormDescription>
                     Optional for younger students
@@ -192,7 +203,7 @@ export function StudentRegistrationForm() {
                 <FormItem>
                   <FormLabel>Phone</FormLabel>
                   <FormControl>
-                    <Input placeholder="Phone number" {...field} />
+                    <Input placeholder="Phone number" {...field} value={field.value || ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -206,7 +217,7 @@ export function StudentRegistrationForm() {
                 <FormItem>
                   <FormLabel>Date of Birth</FormLabel>
                   <FormControl>
-                    <Input type="date" {...field} />
+                    <Input type="date" {...field} value={field.value || ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -219,7 +230,7 @@ export function StudentRegistrationForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Gender</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || ""}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select gender" />
@@ -243,7 +254,7 @@ export function StudentRegistrationForm() {
                 <FormItem>
                   <FormLabel>Address</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Student's address" {...field} />
+                    <Textarea placeholder="Student's address" {...field} value={field.value || ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -259,7 +270,7 @@ export function StudentRegistrationForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Course</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || ""}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select course" />
@@ -283,7 +294,7 @@ export function StudentRegistrationForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Level</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || ""}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select level" />
@@ -308,7 +319,7 @@ export function StudentRegistrationForm() {
                 <FormItem>
                   <FormLabel>Preferred Timing</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Weekdays evening, Weekend mornings" {...field} />
+                    <Input placeholder="e.g., Weekdays evening, Weekend mornings" {...field} value={field.value || ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -322,7 +333,7 @@ export function StudentRegistrationForm() {
                 <FormItem>
                   <FormLabel>Profession</FormLabel>
                   <FormControl>
-                    <Input placeholder="For adult students" {...field} />
+                    <Input placeholder="For adult students" {...field} value={field.value || ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -336,7 +347,7 @@ export function StudentRegistrationForm() {
                 <FormItem>
                   <FormLabel>Referred By</FormLabel>
                   <FormControl>
-                    <Input placeholder="Name of referrer" {...field} />
+                    <Input placeholder="Name of referrer" {...field} value={field.value || ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -350,7 +361,7 @@ export function StudentRegistrationForm() {
                 <FormItem>
                   <FormLabel>How did you hear about us?</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Google, Friend, Social Media" {...field} />
+                    <Input placeholder="e.g., Google, Friend, Social Media" {...field} value={field.value || ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -1,21 +1,21 @@
 
-import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '@/providers/AuthProvider';
-import { Loader2 } from 'lucide-react';
-import { useAdminCheck } from '@/api/adminService';
-import { useEffect } from 'react';
+import { Navigate } from "react-router-dom";
+import { useAdminCheck } from "@/api/adminService";
+import { useEffect } from "react";
+import { Loader2 } from "lucide-react";
 
-const ProtectedRoute = () => {
-  const { isAuthenticated, isLoading } = useAuth();
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
+const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { isAdmin, loading, checkAdminStatus } = useAdminCheck();
 
   useEffect(() => {
-    if (isAuthenticated) {
-      checkAdminStatus();
-    }
-  }, [isAuthenticated]);
+    checkAdminStatus();
+  }, []);
 
-  if (isLoading || (isAuthenticated && loading)) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -24,15 +24,11 @@ const ProtectedRoute = () => {
     );
   }
 
-  if (!isAuthenticated) {
+  if (isAdmin === false) {
     return <Navigate to="/admin-login" replace />;
   }
 
-  if (isAdmin === false) {
-    return <Navigate to="/" replace />;
-  }
-
-  return <Outlet />;
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;

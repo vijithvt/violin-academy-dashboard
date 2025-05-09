@@ -54,8 +54,8 @@ export const useFeeRecords = (
         id: record.id,
         user_id: record.user_id,
         student_name: record.profiles?.name || "Unknown",
-        level: record.profiles?.level || "Unknown",
-        month: record.date.substring(0, 7), // YYYY-MM format
+        level: record.level || "Unknown",
+        month: record.month || "", // YYYY-MM format
         amount: record.amount,
         status: record.status,
         payment_date: record.payment_date,
@@ -149,9 +149,14 @@ export const useCreateFeeRecord = () => {
         .from("fees")
         .insert({
           user_id: fee.user_id,
-          date: `${fee.month}-01`, // Convert YYYY-MM to YYYY-MM-DD format for the database
+          level: fee.level,
+          student_name: fee.student_name,
+          month: fee.month,
           amount: fee.amount,
-          status: fee.status
+          status: fee.status,
+          payment_date: fee.payment_date,
+          payment_method: fee.payment_method,
+          payment_reference: fee.payment_reference
         })
         .select();
         

@@ -1,9 +1,15 @@
 
-// Re-export all services for easier imports
-export * from './profileService';
-export * from './pointsService';
-export * from './trialService';
-export * from './feesService';
+// Export each service from its own file
+import * as profileService from './profileService';
+import * as pointsService from './pointsService';
+import * as trialService from './trialService';
+import * as feesService from './feesService';
+
+// Re-export each service
+export { profileService };
+export { pointsService };
+export { trialService };
+export { feesService };
 
 // Admin check function
 import { useState } from 'react';

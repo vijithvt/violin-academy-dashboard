@@ -1,5 +1,5 @@
 
-import { ReactNode, createContext, useContext } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 type SupabaseContextType = {
@@ -8,22 +8,22 @@ type SupabaseContextType = {
 
 const SupabaseContext = createContext<SupabaseContextType | undefined>(undefined);
 
-export function useSupabase() {
+export const useSupabase = () => {
   const context = useContext(SupabaseContext);
-  if (context === undefined) {
+  
+  if (!context) {
     throw new Error('useSupabase must be used within a SupabaseProvider');
   }
+  
   return context;
-}
+};
 
-export function SupabaseProvider({ children }: { children: ReactNode }) {
-  const value = {
-    supabaseClient: supabase,
-  };
-
+export const SupabaseProvider = ({ children }: { children: React.ReactNode }) => {
+  const [supabaseClient] = useState(() => supabase);
+  
   return (
-    <SupabaseContext.Provider value={value}>
+    <SupabaseContext.Provider value={{ supabaseClient }}>
       {children}
     </SupabaseContext.Provider>
   );
-}
+};

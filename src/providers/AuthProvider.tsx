@@ -1,113 +1,83 @@
 
-import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
-import { Session, User } from '@supabase/supabase-js';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { Session, User } from '@supabase/supabase-js';
 
 type AuthContextType = {
-  session: Session | null;
   user: User | null;
+  session: Session | null;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
-  isAuthenticated: boolean;
-  refreshSession: () => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  
+  if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
+  
   return context;
-}
+};
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user || null);
+    const setData = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error(error);
+        setSession(null);
+        setUser(null);
+      } else {
+        setSession(session);
+        setUser(session?.user ?? null);
+      }
       setIsLoading(false);
-    });
+    };
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user || null);
-      setIsLoading(false);
-    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setIsLoading(false);
+      }
+    );
 
-    return () => subscription.unsubscribe();
+    setData();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
+  const signUp = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) throw error;
+  };
+
   const signIn = async (email: string, password: string) => {
-    try {
-      setIsLoading(true);
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        throw error;
-      }
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Login failed",
-        description: error.message || "Unable to log in",
-      });
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
   };
 
   const signOut = async () => {
-    try {
-      setIsLoading(true);
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        throw error;
-      }
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Sign out failed",
-        description: error.message || "Unable to sign out",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const refreshSession = async () => {
-    try {
-      const { data } = await supabase.auth.refreshSession();
-      setSession(data.session);
-      setUser(data.session?.user || null);
-    } catch (error) {
-      console.error('Error refreshing session:', error);
-    }
-  };
-
-  const value = {
-    session,
-    user,
-    isLoading,
-    signIn,
-    signOut,
-    isAuthenticated: !!session,
-    refreshSession,
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider
+      value={{ user, session, isLoading, signIn, signUp, signOut }}
+    >
       {children}
     </AuthContext.Provider>
   );
-}
+};

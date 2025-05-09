@@ -1,132 +1,66 @@
-
-import { useState } from "react";
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths } from "date-fns";
-import { Calendar, Table } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import AttendanceCalendarView from "./AttendanceCalendarView";
-import AttendanceTableView from "./AttendanceTableView";
-import AttendanceFilters from "./AttendanceFilters";
-import { useToast } from "@/hooks/use-toast";
-
-const VIEW_TYPES = {
-  CALENDAR: "calendar",
-  TABLE: "table",
-};
+import { useState } from 'react';
+import { addMonths, subMonths, format, eachDayOfInterval, startOfMonth, endOfMonth } from 'date-fns';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AttendanceFilters } from './AttendanceFilters';
+import { AttendanceCalendarView } from './AttendanceCalendarView';
+import { AttendanceTableView } from './AttendanceTableView';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const AttendanceModule = () => {
-  const [viewType, setViewType] = useState(VIEW_TYPES.CALENDAR);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [view, setView] = useState<'calendar' | 'table'>('calendar');
   const [filters, setFilters] = useState({
-    level: "all",
-    student: "all",
+    level: 'all',
+    course: 'all',
+    status: 'all',
   });
-  
-  const { toast } = useToast();
-  
-  const dateRange = {
-    start: startOfMonth(currentMonth),
-    end: endOfMonth(currentMonth),
+
+  const nextMonth = () => {
+    setCurrentMonth(addMonths(currentMonth, 1));
   };
-  
-  const daysInMonth = eachDayOfInterval({
-    start: dateRange.start,
-    end: dateRange.end,
-  });
-  
-  const handlePreviousMonth = () => {
-    setCurrentMonth(prevMonth => subMonths(prevMonth, 1));
+
+  const prevMonth = () => {
+    setCurrentMonth(subMonths(currentMonth, 1));
   };
-  
-  const handleNextMonth = () => {
-    setCurrentMonth(prevMonth => addMonths(prevMonth, 1));
-  };
-  
-  const handleExport = (format: 'pdf' | 'csv') => {
-    toast({
-      title: "Exporting Attendance Report",
-      description: `Your ${format.toUpperCase()} report is being prepared...`,
-    });
-    
-    // TODO: Implement actual export functionality
-    setTimeout(() => {
-      toast({
-        title: "Export Complete",
-        description: `Your ${format.toUpperCase()} report is ready to download.`,
-      });
-    }, 2000);
-  };
-  
+
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">
-          Attendance for {format(currentMonth, "MMMM yyyy")}
-        </h2>
-        
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={handlePreviousMonth}>
-            Previous
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleNextMonth}>
-            Next
-          </Button>
+    <Card>
+      <CardHeader>
+        <CardTitle>Attendance Management</CardTitle>
+        <CardDescription>Track and manage student attendance.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Button variant="outline" size="sm" onClick={prevMonth}>
+              <ChevronLeft className="w-4 h-4 mr-1" />
+              Prev
+            </Button>
+            <Button variant="outline" size="sm" onClick={nextMonth}>
+              Next
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+            <span>{format(currentMonth, 'MMMM yyyy')}</span>
+          </div>
+          <AttendanceFilters setFilters={setFilters} />
         </div>
-      </div>
-      
-      <div className="flex justify-between items-center flex-wrap gap-4">
-        <AttendanceFilters 
-          onFilterChange={(newFilters) => setFilters({ ...filters, ...newFilters })}
-        />
-        
-        <div className="flex gap-2">
-          <Button
-            variant={viewType === VIEW_TYPES.CALENDAR ? "default" : "outline"}
-            size="sm"
-            onClick={() => setViewType(VIEW_TYPES.CALENDAR)}
-          >
-            <Calendar className="h-4 w-4 mr-1" />
-            Calendar
-          </Button>
-          <Button
-            variant={viewType === VIEW_TYPES.TABLE ? "default" : "outline"}
-            size="sm"
-            onClick={() => setViewType(VIEW_TYPES.TABLE)}
-          >
-            <Table className="h-4 w-4 mr-1" />
-            Table
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleExport('pdf')}
-          >
-            Export PDF
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleExport('csv')}
-          >
-            Export CSV
-          </Button>
-        </div>
-      </div>
-      
-      <div className="transition-opacity duration-300 ease-in-out">
-        {viewType === VIEW_TYPES.CALENDAR ? (
-          <AttendanceCalendarView 
-            days={daysInMonth}
-            currentMonth={currentMonth}
-            filters={filters}
-          />
-        ) : (
-          <AttendanceTableView
-            days={daysInMonth}
-            filters={filters}
-          />
-        )}
-      </div>
-    </div>
+
+        <Tabs defaultValue="calendar" className="space-y-4" onValueChange={(value) => setView(value as 'calendar' | 'table')}>
+          <TabsList>
+            <TabsTrigger value="calendar">Calendar View</TabsTrigger>
+            <TabsTrigger value="table">Table View</TabsTrigger>
+          </TabsList>
+          <TabsContent value="calendar">
+            <AttendanceCalendarView currentMonth={currentMonth} filters={filters} />
+          </TabsContent>
+          <TabsContent value="table">
+            <AttendanceTableView currentMonth={currentMonth} filters={filters} />
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
   );
 };
 
