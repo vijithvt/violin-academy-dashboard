@@ -5,7 +5,7 @@ import StudentProfilesTable from "@/components/admin/StudentProfilesTable";
 import NotAuthorized from "@/components/admin/NotAuthorized";
 import { useAdminCheck } from "@/api/adminService";
 import { useStudentProfiles } from "@/api/adminService/profileService";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -13,12 +13,13 @@ import { Link } from "react-router-dom";
 const StudentsPage = () => {
   const { isAdmin, loading: authLoading, checkAdminStatus } = useAdminCheck();
   const { toast } = useToast();
-  const { data: profiles, isLoading, isError, error } = useStudentProfiles();
+  const { data: profiles, isLoading, isError, error, refetch } = useStudentProfiles();
+  const [isRetrying, setIsRetrying] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     checkAdminStatus();
-  }, []);
+  }, [checkAdminStatus]);
 
   useEffect(() => {
     if (isError && error) {
@@ -30,9 +31,25 @@ const StudentsPage = () => {
     }
   }, [isError, error, toast]);
 
-  const handleRetry = () => {
+  const handleRetry = async () => {
+    setIsRetrying(true);
     setRetryCount(prev => prev + 1);
-    window.location.reload();
+    
+    try {
+      await refetch();
+      toast({
+        title: "Retry successful",
+        description: "Student profiles have been refreshed",
+      });
+    } catch (err) {
+      toast({
+        title: "Retry failed",
+        description: "Please try again or contact support",
+        variant: "destructive"
+      });
+    } finally {
+      setIsRetrying(false);
+    }
   };
 
   if (authLoading || isLoading) {
@@ -66,13 +83,28 @@ const StudentsPage = () => {
         </div>
         
         {isError ? (
-          <div className="bg-red-50 border border-red-200 rounded-md p-4 mt-4">
-            <h3 className="text-red-800 font-medium">Failed to load student profiles</h3>
-            <p className="text-red-600 mt-1">
-              {error instanceof Error ? error.message : "An error occurred while loading data"}
+          <div className="bg-red-50 border border-red-200 rounded-md p-6 mt-4">
+            <div className="flex items-center gap-2 mb-4">
+              <AlertCircle className="text-red-600 h-6 w-6" />
+              <h3 className="text-red-800 font-medium text-lg">Failed to load student profiles</h3>
+            </div>
+            <p className="text-red-600 mb-4">
+              {error instanceof Error ? error.message : "An error occurred while loading student data"}
             </p>
-            <Button onClick={handleRetry} variant="outline" className="mt-2">
-              Retry Loading
+            <Button 
+              onClick={handleRetry} 
+              variant="outline" 
+              className="bg-white border-red-300 hover:bg-red-50"
+              disabled={isRetrying}
+            >
+              {isRetrying ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Retrying...
+                </>
+              ) : (
+                `Retry Loading${retryCount > 0 ? ` (${retryCount})` : ''}`
+              )}
             </Button>
           </div>
         ) : (

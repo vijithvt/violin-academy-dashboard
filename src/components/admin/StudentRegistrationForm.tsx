@@ -1,10 +1,11 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Upload } from "lucide-react";
+import { Loader2, Upload, Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 
@@ -33,6 +34,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Define the form schema with validation
 const studentFormSchema = z.object({
@@ -45,6 +47,7 @@ const studentFormSchema = z.object({
   // Course Details
   preferredCourse: z.enum(["homeTuition", "onlineOneToOne", "onlineBatch"]),
   preferredTimings: z.array(z.string()).min(1, "Select at least one time slot"),
+  preferredDays: z.array(z.string()).min(1, "Select at least one day"),
   
   // Student Details
   studentName: z.string().min(2, "Student name must be at least 2 characters"),
@@ -72,6 +75,11 @@ const TIME_SLOTS = [
   "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM", "9 PM", "10 PM"
 ];
 
+// Available days
+const DAYS_OF_WEEK = [
+  "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+];
+
 export const StudentRegistrationForm = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -89,6 +97,7 @@ export const StudentRegistrationForm = () => {
       address: "",
       preferredCourse: "onlineOneToOne",
       preferredTimings: [],
+      preferredDays: [],
       studentName: "",
       gender: "male",
       profession: "",
@@ -170,6 +179,7 @@ export const StudentRegistrationForm = () => {
           address: data.address,
           preferred_course: data.preferredCourse,
           preferred_timings: data.preferredTimings,
+          preferred_days: data.preferredDays,
           date_of_birth: format(data.dateOfBirth, 'yyyy-MM-dd'),
           gender: data.gender,
           profession: data.profession,
@@ -345,6 +355,41 @@ export const StudentRegistrationForm = () => {
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="preferredDays"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Preferred Days *</FormLabel>
+                <FormControl>
+                  <div className="flex flex-wrap gap-2">
+                    {DAYS_OF_WEEK.map((day) => {
+                      const isSelected = field.value.includes(day);
+                      return (
+                        <Button
+                          key={day}
+                          type="button"
+                          variant={isSelected ? "default" : "outline"}
+                          onClick={() => {
+                            if (isSelected) {
+                              field.onChange(field.value.filter(item => item !== day));
+                            } else {
+                              field.onChange([...field.value, day]);
+                            }
+                          }}
+                          className="h-8"
+                        >
+                          {day}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           
           <FormField
             control={form.control}
@@ -411,17 +456,18 @@ export const StudentRegistrationForm = () => {
                       <FormControl>
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-left font-normal"
+                          className={`w-full justify-start text-left font-normal ${!field.value ? "text-muted-foreground" : ""}`}
                         >
                           {field.value ? (
                             format(field.value, "PPP")
                           ) : (
-                            <span>Pick a date</span>
+                            <span>Select date of birth</span>
                           )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
+                    <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
                         selected={field.value}
@@ -430,6 +476,10 @@ export const StudentRegistrationForm = () => {
                           date > new Date() || date < new Date("1900-01-01")
                         }
                         initialFocus
+                        captionLayout="dropdown-buttons"
+                        fromYear={1900}
+                        toYear={new Date().getFullYear()}
+                        className="rounded-md border shadow"
                       />
                     </PopoverContent>
                   </Popover>

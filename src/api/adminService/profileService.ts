@@ -21,7 +21,12 @@ export const useStudentProfiles = (roleFilter: string = "all") => {
         const { data, error } = await query;
 
         if (error) {
-          throw new Error(error.message);
+          console.error("Supabase error:", error);
+          throw new Error(`Error loading profiles: ${error.message}`);
+        }
+
+        if (!data) {
+          throw new Error("No profiles data returned");
         }
 
         return data as StudentProfile[];
@@ -30,8 +35,8 @@ export const useStudentProfiles = (roleFilter: string = "all") => {
         throw new Error(error instanceof Error ? error.message : "Failed to load student profiles");
       }
     },
-    retry: 1,
-    retryDelay: 1000
+    retry: 2,
+    retryDelay: 1500
   });
 };
 
