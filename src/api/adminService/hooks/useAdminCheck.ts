@@ -51,4 +51,5 @@ export const useAdminCheck = () => {
   return { isAdmin, loading, checkAdminStatus };
 };
 
+// Also export as default
 export default useAdminCheck;

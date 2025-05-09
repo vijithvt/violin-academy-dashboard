@@ -40,4 +40,5 @@ export const useStudentProfiles = (roleFilter: string = "all") => {
   });
 };
 
+// Also export as default
 export default useStudentProfiles;

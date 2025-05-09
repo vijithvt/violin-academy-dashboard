@@ -32,4 +32,5 @@ export const useStudentExtendedProfile = (userId?: string) => {
   });
 };
 
+// Also export as default
 export default useStudentExtendedProfile;

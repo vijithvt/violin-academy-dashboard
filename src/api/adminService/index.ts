@@ -5,15 +5,15 @@ export * from './pointsService';
 export * from './trialService';
 export { default as useTotalStudentPoints } from './useTotalStudentPoints';
 
-// Export all hooks directly
-export { default as useStudentProfiles } from './hooks/useStudentProfiles';
-export { default as useStudentProfile } from './hooks/useStudentProfile';
-export { default as useStudentExtendedProfile } from './hooks/useStudentExtendedProfile';
-export { default as useUpdateStudentExtendedProfile } from './hooks/useUpdateStudentExtendedProfile';
-export { default as useUpdateStudentProfile } from './hooks/useUpdateStudentProfile';
-export { default as useDeleteStudentProfile } from './hooks/useDeleteStudentProfile';
-export { default as useDashboardStats } from './hooks/useDashboardStats';
-export { default as useAdminCheck } from './hooks/useAdminCheck';
+// Export all hooks directly using named exports
+export { useStudentProfiles } from './hooks/useStudentProfiles';
+export { useStudentProfile } from './hooks/useStudentProfile';
+export { useStudentExtendedProfile } from './hooks/useStudentExtendedProfile';
+export { useUpdateStudentExtendedProfile } from './hooks/useUpdateStudentExtendedProfile';
+export { useUpdateStudentProfile } from './hooks/useUpdateStudentProfile';
+export { useDeleteStudentProfile } from './hooks/useDeleteStudentProfile';
+export { useDashboardStats } from './hooks/useDashboardStats';
+export { useAdminCheck } from './hooks/useAdminCheck';
 
 // Export student profile types
 export type { StudentProfile } from './types';

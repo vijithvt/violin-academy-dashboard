@@ -31,4 +31,5 @@ export const useUpdateStudentProfile = () => {
   });
 };
 
+// Also export as default
 export default useUpdateStudentProfile;

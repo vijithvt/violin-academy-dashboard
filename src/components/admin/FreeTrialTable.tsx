@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useTrialRequests, useUpdateTrialRequest, useDeleteTrialRequest } from "@/api/adminService";
 import type { TrialRequest } from "@/api/adminService";
@@ -147,6 +146,7 @@ const FreeTrialTable = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
+        
         <div className="flex items-center gap-2">
           <Filter className="h-4 w-4 text-gray-500" />
           <Select value={statusFilter} onValueChange={setStatusFilter}>

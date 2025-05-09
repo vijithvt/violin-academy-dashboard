@@ -25,4 +25,5 @@ export const useDeleteStudentProfile = () => {
   });
 };
 
+// Also export as default
 export default useDeleteStudentProfile;

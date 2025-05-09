@@ -58,4 +58,5 @@ export const useDashboardStats = () => {
   });
 };
 
+// Also export as default
 export default useDashboardStats;
