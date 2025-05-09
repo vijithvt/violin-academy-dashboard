@@ -40,7 +40,9 @@ export const useStudents = (searchTerm: string = "", courseFilter: string = "", 
         }
         
         // Transform data to match our StudentProfile type
-        return (data as ProfileRow[]).map(profile => {
+        const students: StudentProfile[] = [];
+        
+        (data as ProfileRow[]).forEach(profile => {
           const student: StudentProfile = {
             id: profile.id,
             name: profile.name,
@@ -60,8 +62,10 @@ export const useStudents = (searchTerm: string = "", courseFilter: string = "", 
             hear_about: undefined,
             photo_url: undefined
           };
-          return student;
+          students.push(student);
         });
+        
+        return students;
       } catch (error) {
         console.error("Error fetching students:", error);
         return [] as StudentProfile[];
@@ -156,14 +160,29 @@ export const useUpdateStudentProfile = () => {
 };
 
 // Create a new student profile
+export interface CreateStudentProfileData {
+  name: string;
+  role?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  dob?: string;
+  gender?: string;
+  course?: string;
+  level?: string;
+  preferred_timing?: string;
+  profession?: string;
+  referred_by?: string;
+  hear_about?: string;
+  photo_url?: string;
+}
+
+// Create a new student profile
 export const useCreateStudentProfile = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (newProfile: {
-      name: string;
-      role?: string;
-    }) => {
+    mutationFn: async (newProfile: CreateStudentProfileData) => {
       try {
         // Create the basic profile with required fields and a random UUID
         const id = uuidv4();
@@ -191,18 +210,18 @@ export const useCreateStudentProfile = () => {
             role: data[0].role,
             created_at: data[0].created_at,
             // Add other fields with defaults
-            email: undefined,
-            phone: undefined,
-            address: undefined,
-            dob: undefined,
-            gender: undefined,
-            course: undefined,
-            level: undefined,
-            preferred_timing: undefined,
-            profession: undefined,
-            referred_by: undefined,
-            hear_about: undefined,
-            photo_url: undefined
+            email: newProfile.email,
+            phone: newProfile.phone,
+            address: newProfile.address,
+            dob: newProfile.dob,
+            gender: newProfile.gender,
+            course: newProfile.course,
+            level: newProfile.level,
+            preferred_timing: newProfile.preferred_timing,
+            profession: newProfile.profession,
+            referred_by: newProfile.referred_by,
+            hear_about: newProfile.hear_about,
+            photo_url: newProfile.photo_url
           };
           return student;
         }

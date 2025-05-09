@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as z from "zod";
@@ -24,7 +25,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { uploadStudentPhoto } from "@/lib/storage";
-import { useCreateStudentProfile } from "@/api/adminService/profileService";
+import { useCreateStudentProfile, CreateStudentProfileData } from "@/api/adminService/profileService";
 import { Loader2, Upload } from "lucide-react";
 
 const formSchema = z.object({
@@ -100,7 +101,7 @@ export function StudentRegistrationForm() {
       }
       
       // Create student profile with photo URL if available
-      await createStudentProfile.mutateAsync({
+      const studentData: CreateStudentProfileData = {
         name: values.name,
         role: "student",
         email: values.email || undefined,
@@ -115,7 +116,9 @@ export function StudentRegistrationForm() {
         referred_by: values.referred_by || undefined,
         hear_about: values.hear_about || undefined,
         photo_url: photoUrl || undefined
-      });
+      };
+      
+      await createStudentProfile.mutateAsync(studentData);
 
       toast({
         title: "Success!",
