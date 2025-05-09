@@ -1,6 +1,6 @@
 
 import { Navigate } from "react-router-dom";
-import { useAdminCheck } from "@/api/adminService/index";
+import { useAdminCheck } from "@/api/adminService";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 

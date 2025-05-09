@@ -2,6 +2,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { StudentProfile } from "./types";
+import { v4 as uuidv4 } from "uuid";
 
 // Fetch all students
 export const useStudents = (searchTerm: string = "", courseFilter: string = "", levelFilter: string = "") => {
@@ -84,7 +85,18 @@ export const useUpdateStudentProfile = () => {
         // Add fields that exist in our database schema
         if (profile.name !== undefined) updateData.name = profile.name;
         if (profile.role !== undefined) updateData.role = profile.role;
-        // Add other fields as needed based on your actual schema
+        if (profile.email !== undefined) updateData.email = profile.email;
+        if (profile.phone !== undefined) updateData.phone = profile.phone;
+        if (profile.address !== undefined) updateData.address = profile.address;
+        if (profile.dob !== undefined) updateData.dob = profile.dob;
+        if (profile.gender !== undefined) updateData.gender = profile.gender;
+        if (profile.course !== undefined) updateData.course = profile.course;
+        if (profile.level !== undefined) updateData.level = profile.level;
+        if (profile.preferred_timing !== undefined) updateData.preferred_timing = profile.preferred_timing;
+        if (profile.profession !== undefined) updateData.profession = profile.profession;
+        if (profile.referred_by !== undefined) updateData.referred_by = profile.referred_by;
+        if (profile.hear_about !== undefined) updateData.hear_about = profile.hear_about;
+        if (profile.photo_url !== undefined) updateData.photo_url = profile.photo_url;
         
         const { data, error } = await supabase
           .from("profiles")
@@ -115,19 +127,34 @@ export const useCreateStudentProfile = () => {
   
   return useMutation({
     mutationFn: async (newProfile: {
-      id: string; // UUID for the new profile
       name: string;
       role?: string;
+      email?: string;
+      phone?: string;
+      address?: string;
+      dob?: string;
+      gender?: string;
+      course?: string;
+      level?: string;
+      preferred_timing?: string;
+      profession?: string;
+      referred_by?: string;
+      hear_about?: string;
+      photo_url?: string;
     }) => {
       try {
-        // Create the basic profile with required fields
+        // Create the basic profile with required fields and a random UUID
+        const id = uuidv4();
+        
+        const profileData = {
+          id,
+          name: newProfile.name,
+          role: newProfile.role || "student"
+        };
+        
         const { data, error } = await supabase
           .from("profiles")
-          .insert({
-            id: newProfile.id,
-            name: newProfile.name,
-            role: newProfile.role || "student",
-          })
+          .insert(profileData)
           .select();
         
         if (error) {

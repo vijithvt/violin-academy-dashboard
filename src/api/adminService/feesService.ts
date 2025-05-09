@@ -1,7 +1,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { FeeRecord } from "./types";
+import { FeeRecord, FeeStatus } from "./types";
 
 // Hook to fetch fee records
 export const useFeeRecords = (
@@ -59,10 +59,12 @@ export const useFeeRecords = (
           id: record.id,
           user_id: record.user_id,
           student_name: record.profiles?.name || "Unknown",
+          // If level exists in the database use it, otherwise use "Unknown"
           level: record.level || "Unknown",
           month: record.date ? record.date.substring(0, 7) : "", // Extract YYYY-MM from date
           amount: record.amount,
-          status: record.status,
+          // Make sure to cast the status to FeeStatus
+          status: (record.status || "pending") as FeeStatus,
           payment_date: record.payment_date,
           payment_method: record.payment_method,
           payment_reference: record.payment_reference,
@@ -90,7 +92,7 @@ export const useUpdateFeeStatus = () => {
       paymentDetails
     }: {
       id: string;
-      status: string;
+      status: FeeStatus;
       paymentDetails?: {
         payment_date?: string;
         payment_method?: string;
@@ -164,7 +166,7 @@ export const useCreateFeeRecord = () => {
     mutationFn: async (fee: {
       user_id: string;
       amount: number;
-      status: string;
+      status: FeeStatus;
       date: string; // Use date instead of month
       payment_date?: string;
       payment_method?: string;
