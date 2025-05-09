@@ -1,7 +1,6 @@
 
 import { Navigate } from "react-router-dom";
-import { useAdminCheck } from "@/api/adminService";
-import { useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
 import { Loader2 } from "lucide-react";
 
 interface ProtectedRouteProps {
@@ -9,11 +8,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isAdmin, loading, checkAdminStatus } = useAdminCheck();
-
-  useEffect(() => {
-    checkAdminStatus();
-  }, [checkAdminStatus]);
+  const { currentUser, loading, isAdmin } = useAuth();
 
   if (loading) {
     return (
@@ -22,6 +17,10 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         <span className="ml-2">Checking authorization...</span>
       </div>
     );
+  }
+
+  if (!currentUser) {
+    return <Navigate to="/admin-login" replace />;
   }
 
   if (isAdmin === false) {

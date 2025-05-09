@@ -1,7 +1,6 @@
 
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { SupabaseProvider } from './providers/SupabaseProvider';
-import { AuthProvider } from './providers/AuthProvider';
+import { AuthProvider } from './context/AuthContext';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import AdminLogin from './pages/AdminLogin';
@@ -20,56 +19,54 @@ import { Toaster } from "@/components/ui/toaster";
 
 function App() {
   return (
-    <SupabaseProvider>
-      <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/admin-login" element={<AdminLogin />} />
-            <Route path="/blogs" element={<Blogs />} />
-            <Route path="/beginner-guide" element={<BeginnerGuide />} />
-            
-            {/* Protected Student Routes */}
-            <Route path="/dashboard/student" element={
-              <StudentProtectedRoute>
-                <StudentDashboard />
-              </StudentProtectedRoute>
-            } />
-            
-            {/* Protected Admin Routes */}
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/students" element={
-              <ProtectedRoute>
-                <StudentsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/student/:id" element={
-              <ProtectedRoute>
-                <StudentDetails />
-              </ProtectedRoute>
-            } />
-            <Route path="/student/edit/:id" element={
-              <ProtectedRoute>
-                <EditStudent />
-              </ProtectedRoute>
-            } />
-            <Route path="/admission" element={
-              <ProtectedRoute>
-                <AdmissionForm />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <Toaster />
-        </Router>
-      </AuthProvider>
-    </SupabaseProvider>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/blogs" element={<Blogs />} />
+          <Route path="/beginner-guide" element={<BeginnerGuide />} />
+          
+          {/* Protected Student Routes */}
+          <Route path="/dashboard/student" element={
+            <StudentProtectedRoute>
+              <StudentDashboard />
+            </StudentProtectedRoute>
+          } />
+          
+          {/* Protected Admin Routes */}
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/students" element={
+            <ProtectedRoute>
+              <StudentsPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/student/:id" element={
+            <ProtectedRoute>
+              <StudentDetails />
+            </ProtectedRoute>
+          } />
+          <Route path="/student/edit/:id" element={
+            <ProtectedRoute>
+              <EditStudent />
+            </ProtectedRoute>
+          } />
+          <Route path="/admission" element={
+            <ProtectedRoute>
+              <AdmissionForm />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        <Toaster />
+      </Router>
+    </AuthProvider>
   );
 }
 

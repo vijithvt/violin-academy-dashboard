@@ -7,8 +7,10 @@ import { supabase } from "@/integrations/supabase/client";
 interface AuthContextType {
   currentUser: User | null;
   loading: boolean;
+  isAdmin: boolean | null;
   login: (email: string, password: string) => Promise<{ error: any }>;
   logout: () => Promise<void>;
+  checkAdminStatus: () => Promise<boolean>;
 }
 
 // Create the auth context
@@ -31,6 +33,7 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
   // Handle user login - now using Supabase
   const login = async (email: string, password: string) => {
@@ -41,6 +44,32 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Handle user logout - now using Supabase
   const logout = async () => {
     await supabase.auth.signOut();
+    setIsAdmin(null); // Reset admin status on logout
+  };
+
+  // Check if the user is an admin
+  const checkAdminStatus = async () => {
+    try {
+      if (!currentUser) {
+        setIsAdmin(false);
+        return false;
+      }
+      
+      const { data, error } = await supabase.rpc('is_admin');
+      
+      if (error) {
+        console.error("Error checking admin status:", error);
+        setIsAdmin(false);
+        return false;
+      }
+      
+      setIsAdmin(data);
+      return data;
+    } catch (error) {
+      console.error("Error in checkAdminStatus:", error);
+      setIsAdmin(false);
+      return false;
+    }
   };
 
   // Listen for auth state changes
@@ -49,6 +78,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setCurrentUser(user);
+      
+      if (user) {
+        // Check admin status if user exists
+        await checkAdminStatus();
+      } else {
+        setIsAdmin(null);
+      }
+      
       setLoading(false);
     };
 
@@ -56,8 +93,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // Listen for changes on auth state
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      async (event, session) => {
         setCurrentUser(session?.user ?? null);
+        
+        if (session?.user) {
+          // Check admin status when auth state changes
+          await checkAdminStatus();
+        } else {
+          setIsAdmin(null);
+        }
       }
     );
 
@@ -69,8 +113,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const value = {
     currentUser,
     loading,
+    isAdmin,
     login,
-    logout
+    logout,
+    checkAdminStatus
   };
 
   return (

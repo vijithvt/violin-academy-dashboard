@@ -1,9 +1,9 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuth } from "@/context/AuthContext";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +25,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Loader2, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import {
   Menubar,
   MenubarContent,
@@ -49,6 +48,7 @@ const AdminLogin = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
+  const { login, checkAdminStatus } = useAuth();
   
   // Get test credentials from location state if available
   const testEmail = location.state?.testEmail;
@@ -81,10 +81,7 @@ const AdminLogin = () => {
 
     try {
       // Step 1: Sign in with provided credentials
-      const { data: authData, error: loginError } = await supabase.auth.signInWithPassword({
-        email: values.email,
-        password: values.password
-      });
+      const { error: loginError } = await login(values.email, values.password);
       
       if (loginError) {
         setError("Invalid email or password. Please try again.");
@@ -97,49 +94,24 @@ const AdminLogin = () => {
         return;
       }
       
-      // Step 2: Check if user exists and has admin role
-      if (authData.user) {
-        try {
-          // Using RPC function instead of direct select to avoid recursive policy issues
-          const { data: isAdmin, error: rpcError } = await supabase.rpc('is_admin');
-          
-          if (rpcError) {
-            console.error("Error checking admin status:", rpcError);
-            // Sign out user if we can't verify their admin status
-            await supabase.auth.signOut();
-            setError("Unable to verify admin status. Please contact support.");
-            toast({
-              title: "Authentication error",
-              description: "Failed to verify admin status",
-              variant: "destructive",
-            });
-          } else if (isAdmin === true) {
-            // User is verified as an admin
-            toast({
-              title: "Login successful",
-              description: "Welcome to admin dashboard!",
-            });
-            navigate("/dashboard");
-          } else {
-            // User is authenticated but not an admin
-            await supabase.auth.signOut();
-            setError("You do not have admin privileges. Access denied.");
-            toast({
-              title: "Access denied",
-              description: "You do not have admin privileges.",
-              variant: "destructive",
-            });
-          }
-        } catch (err) {
-          console.error("Admin check error:", err);
-          await supabase.auth.signOut();
-          setError("An error occurred during admin verification.");
-          toast({
-            title: "Verification error",
-            description: "An error occurred verifying your admin status",
-            variant: "destructive",
-          });
-        }
+      // Step 2: Check if user is admin
+      const isAdmin = await checkAdminStatus();
+      
+      if (isAdmin) {
+        // User is verified as an admin
+        toast({
+          title: "Login successful",
+          description: "Welcome to admin dashboard!",
+        });
+        navigate("/dashboard");
+      } else {
+        // User is authenticated but not an admin
+        setError("You do not have admin privileges. Access denied.");
+        toast({
+          title: "Access denied",
+          description: "You do not have admin privileges.",
+          variant: "destructive",
+        });
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");

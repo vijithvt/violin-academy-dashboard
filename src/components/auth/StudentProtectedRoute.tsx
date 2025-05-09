@@ -1,7 +1,6 @@
 
 import { Navigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 import { Loader2 } from "lucide-react";
 
 interface StudentProtectedRouteProps {
@@ -9,18 +8,7 @@ interface StudentProtectedRouteProps {
 }
 
 const StudentProtectedRoute = ({ children }: StudentProtectedRouteProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsAuthenticated(!!session);
-      setLoading(false);
-    };
-
-    checkAuth();
-  }, []);
+  const { currentUser, loading } = useAuth();
 
   if (loading) {
     return (
@@ -31,7 +19,7 @@ const StudentProtectedRoute = ({ children }: StudentProtectedRouteProps) => {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!currentUser) {
     return <Navigate to="/login" replace />;
   }
 
