@@ -151,7 +151,7 @@ const PointsManagement = () => {
                   <SelectContent>
                     <SelectItem value="custom">Custom Activity</SelectItem>
                     
-                    <SelectItem disabled className="font-semibold text-green-600">
+                    <SelectItem value="positive-header" disabled className="font-semibold text-green-600">
                       --- Positive Points ---
                     </SelectItem>
                     {POINTS_ACTIVITIES
@@ -163,7 +163,7 @@ const PointsManagement = () => {
                       ))
                     }
                     
-                    <SelectItem disabled className="font-semibold text-red-600">
+                    <SelectItem value="negative-header" disabled className="font-semibold text-red-600">
                       --- Negative Points ---
                     </SelectItem>
                     {POINTS_ACTIVITIES

@@ -21,11 +21,8 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Get the total student points and top students
-    const { data: points, error } = await supabaseClient
-      .from("student_points")
-      .select("*")
-      .order("created_at", { ascending: false });
+    // Get student points using the database function we created
+    const { data: points, error } = await supabaseClient.rpc('get_top_students', { limit_param: 10 });
 
     if (error) throw error;
 

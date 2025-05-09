@@ -20,6 +20,7 @@ const StudentDashboard = () => {
   const [progressData, setProgressData] = useState<ProgressData[]>([]);
   const [activeTab, setActiveTab] = useState("dashboard");
   const { data: studentPoints } = useTotalStudentPoints(user?.id);
+  const points = studentPoints || 0; // Ensure it's a number
   
   // Stats for the dashboard - these would come from Supabase in a real implementation
   const [stats, setStats] = useState({
@@ -85,7 +86,7 @@ const StudentDashboard = () => {
             lessonsCompleted: completed,
             progressPercentage: progressPercent,
             practiceHours: 4, // Demo data
-            studentPoints: studentPoints || 0, // Use real points data
+            studentPoints: points, // Use real points data
             pendingTasks: 2 // Demo data
           });
         }
@@ -97,7 +98,7 @@ const StudentDashboard = () => {
     };
 
     fetchUserData();
-  }, [user, studentPoints]);
+  }, [user, points]);
 
   const handleLogout = async () => {
     await logout();
@@ -119,7 +120,7 @@ const StudentDashboard = () => {
       <main className="container mx-auto px-4 py-8">
         {activeTab === "dashboard" ? (
           <DashboardContent 
-            stats={{...stats, studentPoints: studentPoints || 0}} 
+            stats={{...stats, studentPoints: points}} 
             syllabus={fullSyllabus} 
             tasks={demoTasks}
           />

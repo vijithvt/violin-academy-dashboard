@@ -10,6 +10,7 @@ interface StudentStatsProps {
 
 const StudentStats = ({ userId }: StudentStatsProps) => {
   const { data: studentPoints, isLoading } = useTotalStudentPoints(userId);
+  const points = studentPoints || 0; // Ensure it's a number
 
   // Calculate level based on points
   const getLevel = (points: number) => {
@@ -56,19 +57,19 @@ const StudentStats = ({ userId }: StudentStatsProps) => {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Points:</span>
-              <span className="font-bold text-maroon-800">{studentPoints}</span>
+              <span className="font-bold text-maroon-800">{points}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Rank:</span>
-              <span className="font-bold text-maroon-800">{getRank(studentPoints || 0)}</span>
+              <span className="font-bold text-maroon-800">{getRank(points)}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Level:</span>
-              <span className="font-bold text-maroon-800">{getLevel(studentPoints || 0)}</span>
+              <span className="font-bold text-maroon-800">{getLevel(points)}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Next milestone:</span>
-              <span className="font-bold text-maroon-800">{getNextMilestone(studentPoints || 0)} pts</span>
+              <span className="font-bold text-maroon-800">{getNextMilestone(points)} pts</span>
             </div>
           </div>
         )}

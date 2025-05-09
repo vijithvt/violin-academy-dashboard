@@ -35,10 +35,16 @@ export interface StudentProfile {
 export interface StudentPoints {
   id: string;
   user_id: string;
-  points: number;
-  activity: string;
   points_change: number;
+  activity: string;
   created_at: string;
+}
+
+export interface TopStudent {
+  id: string;
+  name: string;
+  points: number;
+  rank: number;
 }
 
 // API Calls for Trial Requests
@@ -269,10 +275,8 @@ export const useStudentPoints = (userId?: string) => {
   return useQuery({
     queryKey: ["studentPoints", userId],
     queryFn: async () => {
-      let query = supabase
-        .from("student_points")
-        .select("*");
-
+      let query = supabase.from("student_points");
+      
       // Filter by user_id if provided
       if (userId) {
         query = query.eq("user_id", userId);
@@ -280,7 +284,7 @@ export const useStudentPoints = (userId?: string) => {
 
       query = query.order("created_at", { ascending: false });
 
-      const { data, error } = await query;
+      const { data, error } = await query.select();
 
       if (error) {
         throw new Error(error.message);
@@ -305,14 +309,13 @@ export const useTotalStudentPoints = (userId?: string) => {
         id = user.id;
       }
 
-      const { data, error } = await supabase
-        .rpc('get_total_points', { user_id_param: id });
+      const { data, error } = await supabase.rpc('get_total_points', { user_id_param: id });
 
       if (error) {
         throw new Error(error.message);
       }
 
-      return data || 0;
+      return data as number;
     },
     enabled: !!userId
   });
@@ -340,14 +343,13 @@ export const useAddStudentPoints = () => {
             points_change: points
           }
         ])
-        .select()
-        .single();
+        .select();
 
       if (error) {
         throw new Error(error.message);
       }
 
-      return data;
+      return data[0] as StudentPoints;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["studentPoints"] });
@@ -372,19 +374,13 @@ export const useTopStudents = (limit: number = 5) => {
   return useQuery({
     queryKey: ["topStudents", limit],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .rpc('get_top_students', { limit_param: limit });
+      const { data, error } = await supabase.rpc('get_top_students', { limit_param: limit });
 
       if (error) {
         throw new Error(error.message);
       }
 
-      return data as {
-        id: string;
-        name: string;
-        points: number;
-        rank: number;
-      }[];
+      return data as TopStudent[];
     }
   });
 };

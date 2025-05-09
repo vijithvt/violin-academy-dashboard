@@ -256,11 +256,48 @@ export type Database = {
           },
         ]
       }
+      student_points: {
+        Row: {
+          activity: string
+          created_at: string
+          id: string
+          points_change: number
+          user_id: string
+        }
+        Insert: {
+          activity: string
+          created_at?: string
+          id?: string
+          points_change: number
+          user_id: string
+        }
+        Update: {
+          activity?: string
+          created_at?: string
+          id?: string
+          points_change?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      get_top_students: {
+        Args: { limit_param: number }
+        Returns: {
+          id: string
+          name: string
+          points: number
+          rank: number
+        }[]
+      }
+      get_total_points: {
+        Args: { user_id_param: string }
+        Returns: number
+      }
       is_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
