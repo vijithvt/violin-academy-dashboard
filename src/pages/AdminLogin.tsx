@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -40,16 +40,32 @@ const AdminLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
+  
+  // Get test credentials from location state if available
+  const testEmail = location.state?.testEmail;
+  const isTestLogin = location.state?.isTestLogin;
 
   // Form initialization
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      email: testEmail || "",
       password: "",
     },
   });
+
+  // Pre-fill email field if test login
+  useEffect(() => {
+    if (testEmail && isTestLogin) {
+      form.setValue("email", testEmail);
+      toast({
+        title: "Test Login Mode",
+        description: "Email pre-filled for testing. Please enter the password.",
+      });
+    }
+  }, [testEmail, form, toast, isTestLogin]);
 
   // Handle form submission
   const onSubmit = async (values: LoginFormValues) => {

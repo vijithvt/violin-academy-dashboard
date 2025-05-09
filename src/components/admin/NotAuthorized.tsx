@@ -6,6 +6,15 @@ import { ShieldAlert } from "lucide-react";
 const NotAuthorized = () => {
   const navigate = useNavigate();
   
+  const handleTestLogin = () => {
+    navigate("/admin-login", { 
+      state: { 
+        testEmail: "vijithviolinist@gmail.com",
+        isTestLogin: true
+      }
+    });
+  };
+  
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8 text-center">
@@ -25,6 +34,16 @@ const NotAuthorized = () => {
             onClick={() => navigate("/admin-login")}
           >
             Login as Admin
+          </Button>
+        </div>
+        <div className="mt-6 pt-6 border-t border-gray-200">
+          <p className="text-sm text-gray-500 mb-3">Testing purposes only:</p>
+          <Button 
+            onClick={handleTestLogin}
+            variant="secondary"
+            size="sm"
+          >
+            Use Test Admin Login
           </Button>
         </div>
       </div>
