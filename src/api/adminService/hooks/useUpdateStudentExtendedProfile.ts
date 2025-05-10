@@ -97,4 +97,5 @@ export const useUpdateStudentExtendedProfile = () => {
   });
 };
 
+// Also export as default
 export default useUpdateStudentExtendedProfile;

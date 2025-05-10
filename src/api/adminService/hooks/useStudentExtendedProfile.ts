@@ -62,4 +62,5 @@ export const useStudentExtendedProfile = (id: string) => {
   });
 };
 
+// Also export as default
 export default useStudentExtendedProfile;

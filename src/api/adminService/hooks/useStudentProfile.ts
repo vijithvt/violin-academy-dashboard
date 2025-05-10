@@ -24,4 +24,5 @@ export const useStudentProfile = (id: string) => {
   });
 };
 
+// Also export as default
 export default useStudentProfile;
