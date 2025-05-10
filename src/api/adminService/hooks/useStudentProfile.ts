@@ -1,37 +1,27 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { StudentProfile } from "../types";
+import type { StudentProfile } from "../types";
 
-// Hook to fetch a single student profile
-export const useStudentProfile = (id?: string) => {
+// Hook to fetch a single student profile by ID
+export const useStudentProfile = (id: string) => {
   return useQuery({
     queryKey: ["studentProfile", id],
     queryFn: async () => {
-      if (!id) {
-        return null;
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", id)
+        .single();
+        
+      if (error) {
+        throw new Error(error.message);
       }
-
-      try {
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", id)
-          .maybeSingle();
-
-        if (error) {
-          throw new Error(error.message);
-        }
-
-        return data as StudentProfile;
-      } catch (error) {
-        console.error("Error fetching student profile:", error);
-        throw new Error(error instanceof Error ? error.message : "Failed to load student profile");
-      }
+      
+      return data as StudentProfile;
     },
     enabled: !!id
   });
 };
 
-// Also export as default
 export default useStudentProfile;
