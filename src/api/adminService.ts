@@ -2,10 +2,53 @@
 // Import types only
 import { StudentProfile, DashboardStats } from './adminService/types';
 import { StudentPoints, TopStudent, TrialRequest } from './adminService/types';
+import { 
+  useTrialRequests, 
+  useTrialRequest,
+  useUpdateTrialRequest, 
+  useDeleteTrialRequest 
+} from './adminService/trialService';
+import { 
+  useStudents,
+  useStudentPoints,
+  addPointsToStudent,
+  useTopStudents
+} from './adminService/pointsService';
+import { 
+  useStudentProfiles 
+} from './api/adminService/hooks/useStudentProfiles';
+import { 
+  useStudentProfile 
+} from './api/adminService/hooks/useStudentProfile';
+import { 
+  useUpdateStudentProfile 
+} from './api/adminService/hooks/useUpdateStudentProfile';
+import { 
+  useDeleteStudentProfile 
+} from './api/adminService/hooks/useDeleteStudentProfile';
+import { 
+  useStudentExtendedProfile,
+  type StudentExtendedProfile 
+} from './api/adminService/hooks/useStudentExtendedProfile';
+import {
+  useUpdateStudentExtendedProfile
+} from './api/adminService/hooks/useUpdateStudentExtendedProfile';
+import useTotalStudentPoints from './adminService/useTotalStudentPoints';
 
-// Export types only
-export type { StudentProfile, DashboardStats };
-export type { StudentPoints, TopStudent, TrialRequest };
+// Export all the hooks and types
+export type { StudentProfile, DashboardStats, StudentPoints, TopStudent, TrialRequest, StudentExtendedProfile };
 
-// Note: All actual functionality has been removed as requested.
-// Only type definitions are being kept for future implementation.
+// Export trial service hooks
+export { useTrialRequests, useTrialRequest, useUpdateTrialRequest, useDeleteTrialRequest };
+
+// Export points service hooks and functions
+export { useStudents, useStudentPoints, addPointsToStudent, useTopStudents };
+
+// Export student profile hooks
+export { useStudentProfiles, useStudentProfile, useUpdateStudentProfile, useDeleteStudentProfile };
+
+// Export extended profile hooks
+export { useStudentExtendedProfile, useUpdateStudentExtendedProfile };
+
+// Export other utilities
+export { useTotalStudentPoints };

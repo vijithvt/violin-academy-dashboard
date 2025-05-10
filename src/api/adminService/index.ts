@@ -1,30 +1,27 @@
 
-// Export all services from the refactored files
+// Export all types from types file
 export * from './types';
+
+// Export all services from the service files
 export * from './pointsService';
 export * from './trialService';
+
+// Export hooks directly
+export { useStudentProfiles } from '../api/adminService/hooks/useStudentProfiles';
+export { useStudentProfile } from '../api/adminService/hooks/useStudentProfile';
+export { useStudentExtendedProfile } from '../api/adminService/hooks/useStudentExtendedProfile';
+export type { StudentExtendedProfile } from '../api/adminService/hooks/useStudentExtendedProfile';
+export { useUpdateStudentExtendedProfile } from '../api/adminService/hooks/useUpdateStudentExtendedProfile';
+export { useUpdateStudentProfile } from '../api/adminService/hooks/useUpdateStudentProfile';
+export { useDeleteStudentProfile } from '../api/adminService/hooks/useDeleteStudentProfile';
+
+// Export default useTotalStudentPoints
 export { default as useTotalStudentPoints } from './useTotalStudentPoints';
 
-// Export hooks directly from their respective files
-export { useAdminCheck } from './hooks/useAdminCheck';
-export { useStudentProfiles } from './hooks/useStudentProfiles';
-export { useStudentProfile } from './hooks/useStudentProfile';
-export { useStudentExtendedProfile } from './hooks/useStudentExtendedProfile';
-export type { StudentExtendedProfile } from './hooks/useStudentExtendedProfile';
-export { useUpdateStudentExtendedProfile } from './hooks/useUpdateStudentExtendedProfile';
-export { useUpdateStudentProfile } from './hooks/useUpdateStudentProfile';
-export { useDeleteStudentProfile } from './hooks/useDeleteStudentProfile';
-export { useDashboardStats } from './hooks/useDashboardStats';
-
-// Export student profile types
-export type { StudentProfile } from './types';
-
-// Export default versions of the hooks for convenience
-export { default as useAdminCheckDefault } from './hooks/useAdminCheck';
-export { default as useStudentProfilesDefault } from './hooks/useStudentProfiles';
-export { default as useStudentProfileDefault } from './hooks/useStudentProfile';
-export { default as useStudentExtendedProfileDefault } from './hooks/useStudentExtendedProfile';
-export { default as useUpdateStudentExtendedProfileDefault } from './hooks/useUpdateStudentExtendedProfile';
-export { default as useUpdateStudentProfileDefault } from './hooks/useUpdateStudentProfile';
-export { default as useDeleteStudentProfileDefault } from './hooks/useDeleteStudentProfile';
-export { default as useDashboardStatsDefault } from './hooks/useDashboardStats';
+// Also export default versions of the hooks
+export { default as useStudentProfilesDefault } from '../api/adminService/hooks/useStudentProfiles';
+export { default as useStudentProfileDefault } from '../api/adminService/hooks/useStudentProfile';
+export { default as useStudentExtendedProfileDefault } from '../api/adminService/hooks/useStudentExtendedProfile';
+export { default as useUpdateStudentExtendedProfileDefault } from '../api/adminService/hooks/useUpdateStudentExtendedProfile';
+export { default as useUpdateStudentProfileDefault } from '../api/adminService/hooks/useUpdateStudentProfile';
+export { default as useDeleteStudentProfileDefault } from '../api/adminService/hooks/useDeleteStudentProfile';
