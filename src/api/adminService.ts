@@ -16,23 +16,23 @@ import {
 } from './adminService/pointsService';
 import { 
   useStudentProfiles 
-} from './api/adminService/hooks/useStudentProfiles';
+} from './adminService/hooks/useStudentProfiles';
 import { 
   useStudentProfile 
-} from './api/adminService/hooks/useStudentProfile';
+} from './adminService/hooks/useStudentProfile';
 import { 
   useUpdateStudentProfile 
-} from './api/adminService/hooks/useUpdateStudentProfile';
+} from './adminService/hooks/useUpdateStudentProfile';
 import { 
   useDeleteStudentProfile 
-} from './api/adminService/hooks/useDeleteStudentProfile';
+} from './adminService/hooks/useDeleteStudentProfile';
 import { 
   useStudentExtendedProfile,
   type StudentExtendedProfile 
-} from './api/adminService/hooks/useStudentExtendedProfile';
+} from './adminService/hooks/useStudentExtendedProfile';
 import {
   useUpdateStudentExtendedProfile
-} from './api/adminService/hooks/useUpdateStudentExtendedProfile';
+} from './adminService/hooks/useUpdateStudentExtendedProfile';
 import useTotalStudentPoints from './adminService/useTotalStudentPoints';
 
 // Export all the hooks and types
