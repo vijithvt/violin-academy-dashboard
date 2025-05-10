@@ -46,13 +46,14 @@ const NavigationBar = () => {
               Blog
             </Link>
             
-            {/* Login/Dashboard Buttons - Only showing Admin and Student options */}
+            {/* Login Buttons - Only showing Admin and Student options */}
             <div className="flex gap-2 items-center">
               {currentUser ? (
                 <Button 
-                  onClick={() => navigate("/dashboard")}
+                  variant="outline" 
+                  onClick={() => navigate("/")}
                 >
-                  Dashboard
+                  Home
                 </Button>
               ) : (
                 <>
@@ -102,12 +103,13 @@ const NavigationBar = () => {
               
               {currentUser ? (
                 <Button 
+                  variant="outline" 
                   onClick={() => {
-                    navigate("/dashboard");
+                    navigate("/");
                     setIsMenuOpen(false);
                   }}
                 >
-                  Dashboard
+                  Home
                 </Button>
               ) : (
                 <>
