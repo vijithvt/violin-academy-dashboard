@@ -2,81 +2,56 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-// Type for dashboard statistics
-export interface DashboardStats {
-  totalStudents: number;
-  totalTrialRequests: number;
-  newTrials: number;
-  completedTrials: number;
-  students: number;
-  teachers: number;
-  newRegistrations: number;
+interface RoleCount {
+  role: string;
+  count: number;
+}
+
+interface DashboardStats {
+  studentCount: number;
+  teacherCount: number;
+  adminCount: number;
+  totalUsers: number;
+  trialRequestsCount: number;
+  roles: RoleCount[];
 }
 
 // Hook to fetch dashboard statistics
 export const useDashboardStats = () => {
   return useQuery({
     queryKey: ["dashboardStats"],
-    queryFn: async (): Promise<DashboardStats> => {
-      // Count total students (profiles with role 'student')
-      const { data: students, error: studentsError } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("role", "student");
-      
-      if (studentsError) {
-        throw new Error(studentsError.message);
+    queryFn: async () => {
+      // Get profile counts by role using the database function
+      const { data: roleCounts, error: roleError } = await supabase
+        .rpc('count_profiles_by_role');
+        
+      if (roleError) {
+        throw new Error(roleError.message);
       }
       
-      // Count total teachers (profiles with role 'teacher')
-      const { data: teachers, error: teachersError } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("role", "teacher");
-      
-      if (teachersError) {
-        throw new Error(teachersError.message);
+      // Get trial requests count
+      const { count: trialCount, error: trialError } = await supabase
+        .from('free_trial_requests')
+        .select('*', { count: 'exact', head: true });
+        
+      if (trialError) {
+        throw new Error(trialError.message);
       }
       
-      // Count total trial requests
-      const { data: trials, error: trialsError } = await supabase
-        .from("free_trial_requests")
-        .select("id, status");
-      
-      if (trialsError) {
-        throw new Error(trialsError.message);
-      }
-      
-      // Count new trials (status = 'new')
-      const newTrials = trials.filter(trial => trial.status === 'new').length;
-      
-      // Count completed trials (status = 'completed')
-      const completedTrials = trials.filter(trial => trial.status === 'completed').length;
-      
-      // Get new registrations this month
-      const currentDate = new Date();
-      const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString();
-      
-      const { data: newRegistrations, error: newRegistrationsError } = await supabase
-        .from("profiles")
-        .select("id")
-        .gte("created_at", firstDayOfMonth);
-      
-      if (newRegistrationsError) {
-        throw new Error(newRegistrationsError.message);
-      }
+      // Process and return the data
+      const studentCount = roleCounts.find(r => r.role === 'student')?.count || 0;
+      const teacherCount = roleCounts.find(r => r.role === 'teacher')?.count || 0;
+      const adminCount = roleCounts.find(r => r.role === 'admin')?.count || 0;
       
       return {
-        totalStudents: students.length,
-        totalTrialRequests: trials.length,
-        newTrials,
-        completedTrials,
-        students: students.length,
-        teachers: teachers.length,
-        newRegistrations: newRegistrations.length,
-      };
-    },
-    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+        studentCount,
+        teacherCount,
+        adminCount,
+        totalUsers: studentCount + teacherCount + adminCount,
+        trialRequestsCount: trialCount || 0,
+        roles: roleCounts
+      } as DashboardStats;
+    }
   });
 };
 

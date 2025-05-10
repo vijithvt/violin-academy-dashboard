@@ -2,6 +2,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { StudentExtendedProfile } from "./useStudentExtendedProfile";
+import { Json } from "@/integrations/supabase/types";
 
 // Hook to update a student's extended profile
 export const useUpdateStudentExtendedProfile = () => {
@@ -39,7 +40,8 @@ export const useUpdateStudentExtendedProfile = () => {
       }
       
       // Prepare extended profile data that matches the schema
-      const extendedUpdates: any = {
+      // Only include fields that are actually in the student_profiles table
+      const extendedUpdates: Record<string, any> = {
         parent_name: updates.parent_name,
         mobile_number: updates.mobile_number,
         address: updates.address,
@@ -61,18 +63,48 @@ export const useUpdateStudentExtendedProfile = () => {
       
       // Only proceed with upsert if there are extended updates
       if (Object.keys(filteredExtendedUpdates).length > 0) {
-        // Update or insert the extended profile
-        const { error: extendedError } = await supabase
-          .from("student_profiles")
-          .upsert({
-            user_id: id,
-            ...filteredExtendedUpdates
-          }, {
-            onConflict: 'user_id'
-          });
-          
-        if (extendedError) {
-          throw new Error(extendedError.message);
+        // For existing profiles, we need to check if the record exists first
+        const { data: existingProfile } = await supabase
+          .from('student_profiles')
+          .select('id')
+          .eq('user_id', id)
+          .maybeSingle();
+
+        if (existingProfile) {
+          // Update existing profile
+          const { error: updateError } = await supabase
+            .from("student_profiles")
+            .update(filteredExtendedUpdates)
+            .eq("user_id", id);
+            
+          if (updateError) {
+            throw new Error(updateError.message);
+          }
+        } else {
+          // Insert new profile with all required fields
+          // We need to ensure all required fields are present for new inserts
+          const requiredFields = {
+            address: "",
+            date_of_birth: new Date().toISOString().split('T')[0],
+            gender: "Other",
+            heard_from: "Unknown",
+            learning_level: "Beginner",
+            mobile_number: "",
+            parent_name: "",
+            preferred_course: "",
+            preferred_timings: [],
+            profession: "",
+            ...filteredExtendedUpdates,
+            user_id: id
+          };
+
+          const { error: insertError } = await supabase
+            .from("student_profiles")
+            .insert(requiredFields);
+            
+          if (insertError) {
+            throw new Error(insertError.message);
+          }
         }
       }
       

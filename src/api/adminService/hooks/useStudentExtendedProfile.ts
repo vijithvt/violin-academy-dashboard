@@ -1,6 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Json } from "@/integrations/supabase/types";
 
 // Interface for extended student profile data
 export interface StudentExtendedProfile {
@@ -15,13 +16,13 @@ export interface StudentExtendedProfile {
   address?: string;
   preferred_course?: string;
   learning_level?: string;
-  photo_url?: string;
+  photo_url?: string | null;
   gender?: string;
   date_of_birth?: string;
   profession?: string;
   preferred_timings?: string[];
   heard_from?: string;
-  day_specific_timings?: any;
+  day_specific_timings?: Json | null;
 }
 
 // Hook to fetch a student's extended profile by ID
@@ -51,8 +52,9 @@ export const useStudentExtendedProfile = (id: string) => {
         throw new Error(extendedError.message);
       }
       
-      // Combine the data without trying to access the auth table
-      // We'll use the email from the profile if available, or leave it undefined
+      // Get email from auth - commented out as we need an admin key for this
+      // No need to query auth.users here since we're not looking for email
+      // Combining the data
       return {
         ...profile,
         ...(extendedData || {}),
