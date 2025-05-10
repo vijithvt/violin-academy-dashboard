@@ -17,3 +17,4 @@ export { useDashboardStats } from './hooks/useDashboardStats';
 
 // Export student profile types
 export type { StudentProfile } from './types';
+export type { StudentExtendedProfile } from './hooks/useStudentExtendedProfile';

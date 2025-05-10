@@ -8,7 +8,9 @@ export interface DashboardStats {
   totalTrialRequests: number;
   newTrials: number;
   completedTrials: number;
-  // Add more statistics as needed
+  students: number;
+  teachers: number;
+  newRegistrations: number;
 }
 
 // Hook to fetch dashboard statistics
@@ -26,6 +28,16 @@ export const useDashboardStats = () => {
         throw new Error(studentsError.message);
       }
       
+      // Count total teachers (profiles with role 'teacher')
+      const { data: teachers, error: teachersError } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("role", "teacher");
+      
+      if (teachersError) {
+        throw new Error(teachersError.message);
+      }
+      
       // Count total trial requests
       const { data: trials, error: trialsError } = await supabase
         .from("free_trial_requests")
@@ -41,11 +53,27 @@ export const useDashboardStats = () => {
       // Count completed trials (status = 'completed')
       const completedTrials = trials.filter(trial => trial.status === 'completed').length;
       
+      // Get new registrations this month
+      const currentDate = new Date();
+      const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString();
+      
+      const { data: newRegistrations, error: newRegistrationsError } = await supabase
+        .from("profiles")
+        .select("id")
+        .gte("created_at", firstDayOfMonth);
+      
+      if (newRegistrationsError) {
+        throw new Error(newRegistrationsError.message);
+      }
+      
       return {
         totalStudents: students.length,
         totalTrialRequests: trials.length,
         newTrials,
         completedTrials,
+        students: students.length,
+        teachers: teachers.length,
+        newRegistrations: newRegistrations.length,
       };
     },
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes

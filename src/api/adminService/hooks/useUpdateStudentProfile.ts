@@ -27,9 +27,9 @@ export const useUpdateStudentProfile = () => {
       
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["studentProfiles"] });
-      queryClient.invalidateQueries({ queryKey: ["studentProfile"] });
+      queryClient.invalidateQueries({ queryKey: ["studentProfile", variables.id] });
     }
   });
 };

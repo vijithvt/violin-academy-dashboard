@@ -16,6 +16,12 @@ export interface StudentExtendedProfile {
   preferred_course?: string;
   learning_level?: string;
   photo_url?: string;
+  gender?: string;
+  date_of_birth?: string;
+  profession?: string;
+  preferred_timings?: string[];
+  heard_from?: string;
+  day_specific_timings?: any;
 }
 
 // Hook to fetch a student's extended profile by ID
@@ -45,22 +51,11 @@ export const useStudentExtendedProfile = (id: string) => {
         throw new Error(extendedError.message);
       }
       
-      // Get the user email from auth
-      const { data: userData, error: userError } = await supabase
-        .from("auth")
-        .select("email")
-        .eq("id", id)
-        .maybeSingle();
-        
-      if (userError && userError.code !== 'PGRST116') { // Ignore not found errors
-        throw new Error(userError.message);
-      }
-      
-      // Combine the data
+      // Combine the data without trying to access the auth table
+      // We'll use the email from the profile if available, or leave it undefined
       return {
         ...profile,
         ...(extendedData || {}),
-        email: userData?.email
       } as StudentExtendedProfile;
     },
     enabled: !!id
