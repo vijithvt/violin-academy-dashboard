@@ -29,23 +29,20 @@ export const useStudentPoints = (userId?: string) => {
   });
 };
 
-// Hook to fetch total points for a student
-export const useTotalStudentPoints = (userId?: string) => {
+// Hook to fetch top students
+export const useTopStudents = (limit: number = 5) => {
   return useQuery({
-    queryKey: ["totalPoints", userId],
+    queryKey: ["topStudents", limit],
     queryFn: async () => {
-      if (!userId) return 0;
-
       const { data, error } = await supabase
-        .rpc("get_total_points", { user_id_param: userId });
+        .rpc("get_top_students", { limit_param: limit });
 
       if (error) {
         throw new Error(error.message);
       }
 
-      return data as number;
-    },
-    enabled: !!userId
+      return data as TopStudent[];
+    }
   });
 };
 
@@ -75,19 +72,22 @@ export const addPointsToStudent = async (
   }
 };
 
-// Hook to fetch top students
-export const useTopStudents = (limit: number = 5) => {
+// Utility function to get students (basic profiles with student role)
+export const useStudents = () => {
   return useQuery({
-    queryKey: ["topStudents", limit],
+    queryKey: ["students"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .rpc("get_top_students", { limit_param: limit });
-
+        .from("profiles")
+        .select("*")
+        .eq("role", "student")
+        .order("name", { ascending: true });
+        
       if (error) {
         throw new Error(error.message);
       }
-
-      return data as TopStudent[];
+      
+      return data;
     }
   });
 };

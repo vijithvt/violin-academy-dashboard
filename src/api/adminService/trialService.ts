@@ -5,23 +5,31 @@ import { TrialRequest } from "./types";
 
 // Hook to fetch all trial requests
 export const useTrialRequests = (
-  filterStatus: string = "all",
-  searchQuery: string = ""
+  searchQuery: string = "",
+  filters: {
+    status?: string;
+    course?: string;
+  } = {},
+  sortOrder: "asc" | "desc" = "desc"
 ) => {
   return useQuery({
-    queryKey: ["trialRequests", filterStatus, searchQuery],
+    queryKey: ["trialRequests", searchQuery, filters, sortOrder],
     queryFn: async () => {
       let query = supabase
         .from("free_trial_requests")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: sortOrder === "asc" });
 
-      if (filterStatus !== "all") {
-        query = query.eq("status", filterStatus);
+      if (filters.status && filters.status !== "all") {
+        query = query.eq("status", filters.status);
+      }
+
+      if (filters.course && filters.course !== "all") {
+        query = query.eq("course", filters.course);
       }
 
       if (searchQuery) {
-        query = query.or(`name.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%`);
+        query = query.or(`name.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%,student_name.ilike.%${searchQuery}%`);
       }
 
       const { data, error } = await query;
