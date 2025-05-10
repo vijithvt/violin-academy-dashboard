@@ -1,20 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-
-interface RoleCount {
-  role: string;
-  count: number;
-}
-
-interface DashboardStats {
-  studentCount: number;
-  teacherCount: number;
-  adminCount: number;
-  totalUsers: number;
-  trialRequestsCount: number;
-  roles: RoleCount[];
-}
+import type { DashboardStats } from "../types";
 
 // Hook to fetch dashboard statistics
 export const useDashboardStats = () => {

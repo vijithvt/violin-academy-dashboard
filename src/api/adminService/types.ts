@@ -1,4 +1,13 @@
 
+// Student Profile Types
+export interface StudentProfile {
+  id: string;
+  name: string;
+  email?: string;
+  role: string;
+  created_at: string;
+}
+
 // Student Points Types
 export interface StudentPoints {
   id: string;
@@ -36,11 +45,12 @@ export interface TrialRequest {
   created_at: string;
 }
 
-// Student Profile Types
-export interface StudentProfile {
-  id: string;
-  name: string;
-  email?: string;
-  role: string;
-  created_at: string;
+// Dashboard Stats Types
+export interface DashboardStats {
+  studentCount: number;
+  teacherCount: number;
+  adminCount: number;
+  totalUsers: number;
+  trialRequestsCount: number;
+  roles: { role: string; count: number }[];
 }
