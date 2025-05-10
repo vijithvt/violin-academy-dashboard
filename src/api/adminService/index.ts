@@ -5,11 +5,11 @@ export * from './pointsService';
 export * from './trialService';
 export { default as useTotalStudentPoints } from './useTotalStudentPoints';
 
-// Export hooks directly - making sure we export each hook needed by components
+// Export hooks directly from their respective files
 export { useAdminCheck } from './hooks/useAdminCheck';
 export { useStudentProfiles } from './hooks/useStudentProfiles';
 export { useStudentProfile } from './hooks/useStudentProfile';
-export { useStudentExtendedProfile } from './hooks/useStudentExtendedProfile';
+export { useStudentExtendedProfile, StudentExtendedProfile } from './hooks/useStudentExtendedProfile';
 export { useUpdateStudentExtendedProfile } from './hooks/useUpdateStudentExtendedProfile';
 export { useUpdateStudentProfile } from './hooks/useUpdateStudentProfile';
 export { useDeleteStudentProfile } from './hooks/useDeleteStudentProfile';
@@ -17,7 +17,6 @@ export { useDashboardStats } from './hooks/useDashboardStats';
 
 // Export student profile types
 export type { StudentProfile } from './types';
-export type { StudentExtendedProfile } from './hooks/useStudentExtendedProfile';
 
 // Export default versions of the hooks for convenience
 export { default as useAdminCheckDefault } from './hooks/useAdminCheck';
