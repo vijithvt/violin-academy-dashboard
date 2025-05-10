@@ -5,7 +5,7 @@ export * from './pointsService';
 export * from './trialService';
 export { default as useTotalStudentPoints } from './useTotalStudentPoints';
 
-// Export hooks directly
+// Export hooks directly - making sure we export each hook needed by components
 export { useAdminCheck } from './hooks/useAdminCheck';
 export { useStudentProfiles } from './hooks/useStudentProfiles';
 export { useStudentProfile } from './hooks/useStudentProfile';
