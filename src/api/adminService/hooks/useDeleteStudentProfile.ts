@@ -12,7 +12,7 @@ export const useDeleteStudentProfile = () => {
         .from("profiles")
         .delete()
         .eq("id", id);
-      
+        
       if (error) {
         throw new Error(error.message);
       }

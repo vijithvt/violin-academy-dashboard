@@ -1,32 +1,35 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { StudentProfile } from "../types";
+import type { StudentProfile } from "../types";
 
 // Hook to update a student profile
 export const useUpdateStudentProfile = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (params: { id: string; updates: Partial<StudentProfile> }) => {
-      const { id, updates } = params;
-      
+    mutationFn: async ({ 
+      id, 
+      updates 
+    }: { 
+      id: string; 
+      updates: Partial<StudentProfile> 
+    }) => {
       const { data, error } = await supabase
         .from("profiles")
         .update(updates)
         .eq("id", id)
-        .select()
-        .single();
-      
+        .select();
+        
       if (error) {
         throw new Error(error.message);
       }
       
       return data;
     },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["studentProfile", variables.id] });
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["studentProfiles"] });
+      queryClient.invalidateQueries({ queryKey: ["studentProfile"] });
     }
   });
 };
