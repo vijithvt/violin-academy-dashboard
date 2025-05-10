@@ -1,5 +1,7 @@
+
 import React from 'react';
-import { useUpdateStudentExtendedProfile, StudentExtendedProfile } from '@/api/adminService';
+import { useUpdateStudentExtendedProfile } from '@/api/adminService';
+import type { StudentExtendedProfile } from '@/api/adminService';
 
 // This is an example component showing how to use the useUpdateStudentExtendedProfile hook
 const StudentExtendedProfileExample = () => {
@@ -44,7 +46,7 @@ const StudentExtendedProfileExample = () => {
     const studentId = "new-user-id";
     
     // Complete example with all required fields
-    const completeStudentProfile: StudentExtendedProfile = {
+    const completeStudentProfile: Partial<StudentExtendedProfile> = {
       id: studentId,
       name: "New Student",
       role: "student",
