@@ -52,8 +52,6 @@ export const useStudentExtendedProfile = (id: string) => {
         throw new Error(extendedError.message);
       }
       
-      // Get email from auth - commented out as we need an admin key for this
-      // No need to query auth.users here since we're not looking for email
       // Combining the data
       return {
         ...profile,
