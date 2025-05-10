@@ -1,252 +1,43 @@
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+// Import all hooks and types
+import { useAdminCheck } from './api/adminService/hooks/useAdminCheck';
+import { useStudentProfiles } from './api/adminService/hooks/useStudentProfiles';
+import { useStudentProfile } from './api/adminService/hooks/useStudentProfile';
+import { useStudentExtendedProfile, StudentExtendedProfile } from './api/adminService/hooks/useStudentExtendedProfile';
+import { useUpdateStudentExtendedProfile } from './api/adminService/hooks/useUpdateStudentExtendedProfile';
+import { useUpdateStudentProfile } from './api/adminService/hooks/useUpdateStudentProfile';
+import { useDeleteStudentProfile } from './api/adminService/hooks/useDeleteStudentProfile';
+import { useDashboardStats } from './api/adminService/hooks/useDashboardStats';
+import { StudentProfile, DashboardStats } from './api/adminService/types';
+import { StudentPoints, TopStudent, TrialRequest } from './api/adminService/types';
+import useTotalStudentPoints from './api/adminService/useTotalStudentPoints';
 
-// Student Points Types
-export interface StudentPoints {
-  id: string;
-  user_id: string;
-  points_change: number;
-  activity: string;
-  created_at: string;
-}
+// Re-export all hooks and types
+export { useAdminCheck };
+export { useStudentProfiles };
+export { useStudentProfile };
+export { useStudentExtendedProfile };
+export type { StudentExtendedProfile };
+export { useUpdateStudentExtendedProfile };
+export { useUpdateStudentProfile };
+export { useDeleteStudentProfile };
+export { useDashboardStats };
+export { useTotalStudentPoints };
 
-export interface TopStudent {
-  id: string;
-  name: string;
-  points: number;
-  rank: number;
-}
+// Re-export types
+export type { StudentProfile, DashboardStats };
+export type { StudentPoints, TopStudent, TrialRequest };
 
-// Trial Request Types
-export interface TrialRequest {
-  id: string;
-  name: string;
-  email: string;
-  mobile_number: string;
-  whatsapp_number: string | null;
-  student_name: string;
-  age: string;
-  city: string;
-  state: string;
-  country: string;
-  timezone: string;
-  course: string;
-  level: string;
-  preferred_time: string | null;
-  status: string;
-  notes: string | null;
-  created_at: string;
-}
+// Export default versions of the hooks for convenience
+export { default as useAdminCheckDefault } from './api/adminService/hooks/useAdminCheck';
+export { default as useStudentProfilesDefault } from './api/adminService/hooks/useStudentProfiles';
+export { default as useStudentProfileDefault } from './api/adminService/hooks/useStudentProfile';
+export { default as useStudentExtendedProfileDefault } from './api/adminService/hooks/useStudentExtendedProfile';
+export { default as useUpdateStudentExtendedProfileDefault } from './api/adminService/hooks/useUpdateStudentExtendedProfile';
+export { default as useUpdateStudentProfileDefault } from './api/adminService/hooks/useUpdateStudentProfile';
+export { default as useDeleteStudentProfileDefault } from './api/adminService/hooks/useDeleteStudentProfile';
+export { default as useDashboardStatsDefault } from './api/adminService/hooks/useDashboardStats';
 
-// Student Profile Types
-export interface StudentProfile {
-  id: string;
-  name: string;
-  email?: string;
-  role: string;
-  created_at: string;
-}
-
-// Hook to fetch student points history
-export const useStudentPoints = (userId?: string) => {
-  return useQuery({
-    queryKey: ["studentPoints", userId],
-    queryFn: async () => {
-      // If no user ID is provided, return empty array
-      if (!userId) {
-        return [] as StudentPoints[];
-      }
-
-      const { data, error } = await supabase
-        .from("student_points")
-        .select("*")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      return data as StudentPoints[];
-    },
-    enabled: !!userId
-  });
-};
-
-// Hook to fetch total points for a student
-export const useTotalStudentPoints = (userId?: string) => {
-  return useQuery({
-    queryKey: ["totalPoints", userId],
-    queryFn: async () => {
-      if (!userId) return 0;
-
-      const { data, error } = await supabase
-        .rpc("get_total_points", { user_id_param: userId });
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      return data as number;
-    },
-    enabled: !!userId
-  });
-};
-
-// Function to add points to a student
-export const addPointsToStudent = async (
-  userId: string,
-  points: number,
-  activity: string
-) => {
-  try {
-    const { data, error } = await supabase
-      .from("student_points")
-      .insert({
-        user_id: userId,
-        activity,
-        points_change: points
-      })
-      .select();
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    return data;
-  } catch (error) {
-    console.error("Error adding points:", error);
-    throw error;
-  }
-};
-
-// Hook to fetch top students
-export const useTopStudents = (limit: number = 5) => {
-  return useQuery({
-    queryKey: ["topStudents", limit],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .rpc("get_top_students", { limit_param: limit });
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      return data as TopStudent[];
-    }
-  });
-};
-
-// Hook to fetch all trial requests
-export const useTrialRequests = (
-  searchTerm: string = "",
-  filters: { status?: string; course?: string } = {},
-  sortOrder: "asc" | "desc" = "desc"
-) => {
-  return useQuery({
-    queryKey: ["trialRequests", searchTerm, filters, sortOrder],
-    queryFn: async () => {
-      let query = supabase
-        .from("free_trial_requests")
-        .select("*");
-      
-      // Apply search filter
-      if (searchTerm) {
-        query = query.or(`name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`);
-      }
-      
-      // Apply status filter
-      if (filters.status && filters.status !== "all") {
-        query = query.eq("status", filters.status);
-      }
-      
-      // Apply course filter
-      if (filters.course && filters.course !== "all") {
-        query = query.eq("course", filters.course);
-      }
-      
-      // Apply sorting
-      query = query.order("created_at", { ascending: sortOrder === "asc" });
-      
-      const { data, error } = await query;
-      
-      if (error) {
-        throw new Error(error.message);
-      }
-      
-      return data as TrialRequest[];
-    }
-  });
-};
-
-// Hook to update trial request
-export const useUpdateTrialRequest = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async ({ 
-      id, 
-      updates 
-    }: { 
-      id: string; 
-      updates: Partial<TrialRequest> 
-    }) => {
-      const { data, error } = await supabase
-        .from("free_trial_requests")
-        .update(updates)
-        .eq("id", id)
-        .select();
-        
-      if (error) {
-        throw new Error(error.message);
-      }
-      
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["trialRequests"] });
-    }
-  });
-};
-
-// Hook to delete trial request
-export const useDeleteTrialRequest = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from("free_trial_requests")
-        .delete()
-        .eq("id", id);
-        
-      if (error) {
-        throw new Error(error.message);
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["trialRequests"] });
-    }
-  });
-};
-
-// Hook to fetch all students (for points management)
-export const useStudents = () => {
-  return useQuery({
-    queryKey: ["students"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("role", "student")
-        .order("name");
-        
-      if (error) {
-        throw new Error(error.message);
-      }
-      
-      return data as StudentProfile[];
-    }
-  });
-};
+// Export functions from the adminService module
+export * from './api/adminService/pointsService';
+export * from './api/adminService/trialService';
