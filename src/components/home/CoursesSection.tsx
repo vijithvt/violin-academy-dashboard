@@ -1,9 +1,57 @@
 
-import { Clock, Award, Calendar, Globe, HomeIcon, Users, Calculator } from "lucide-react";
+import { Clock, Award, Calendar, Globe, HomeIcon, Users, Calculator, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CourseAccordion from "./CourseAccordion";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState, useEffect, ChangeEvent } from "react";
+
+// Teacher's location coordinates
+const TEACHER_LOCATION = {
+  lat: 8.519270751001878,
+  lng: 77.05175901534338
+};
+
+// Teaching centers
+const TEACHING_CENTERS = [
+  { 
+    name: "Laya Tarang Academy of Music and Performing Arts",
+    location: "Thiruvananthapuram",
+    coordinates: { lat: 8.5241, lng: 76.9366 }
+  },
+  { 
+    name: "Bharathakala Dance & Music Cultural Society",
+    location: "Peyad, Thiruvananthapuram",
+    coordinates: { lat: 8.5484, lng: 76.9701 }
+  },
+  { 
+    name: "Musicintuit Academy India Pvt Ltd.",
+    location: "Bengaluru",
+    coordinates: { lat: 12.9716, lng: 77.5946 }
+  },
+  { 
+    name: "Jovens Academy",
+    location: "Texas, USA",
+    type: "Online"
+  }
+];
+
+// Function to calculate distance between two points using the Haversine formula
+const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+  const R = 6371; // Radius of the earth in km
+  const dLat = deg2rad(lat2 - lat1);
+  const dLon = deg2rad(lon2 - lon1);
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2); 
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  const d = R * c; // Distance in km
+  return Math.round(d * 10) / 10; // Round to 1 decimal place
+};
+
+const deg2rad = (deg: number): number => {
+  return deg * (Math.PI/180);
+};
 
 type CourseCardProps = {
   title: string;
@@ -19,6 +67,9 @@ const CourseCard = ({ title, description, icon, fee, time, highlights, isHomeTui
   const [distance, setDistance] = useState<number>(5);
   const [travelCost, setTravelCost] = useState<number>(100);
   const [totalFee, setTotalFee] = useState<number>(2100);
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [isCalculatingLocation, setIsCalculatingLocation] = useState(false);
+  const [locationError, setLocationError] = useState("");
   
   useEffect(() => {
     if (isHomeTuition) {
@@ -31,6 +82,43 @@ const CourseCard = ({ title, description, icon, fee, time, highlights, isHomeTui
   const handleDistanceChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newDistance = Math.min(20, Math.max(1, Number(e.target.value)));
     setDistance(newDistance);
+  };
+
+  const getUserLocation = () => {
+    setIsCalculatingLocation(true);
+    setLocationError("");
+    
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLat = position.coords.latitude;
+          const userLng = position.coords.longitude;
+          
+          setUserLocation({ lat: userLat, lng: userLng });
+          
+          // Calculate distance from teacher's location
+          const calculatedDistance = calculateDistance(
+            TEACHER_LOCATION.lat, 
+            TEACHER_LOCATION.lng, 
+            userLat, 
+            userLng
+          );
+          
+          // Limit distance to 20km max for pricing
+          const limitedDistance = Math.min(20, Math.max(1, calculatedDistance));
+          setDistance(limitedDistance);
+          setIsCalculatingLocation(false);
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          setLocationError("Could not get your location. Please enter distance manually.");
+          setIsCalculatingLocation(false);
+        }
+      );
+    } else {
+      setLocationError("Geolocation is not supported by your browser");
+      setIsCalculatingLocation(false);
+    }
   };
 
   return (
@@ -67,6 +155,20 @@ const CourseCard = ({ title, description, icon, fee, time, highlights, isHomeTui
                 className="w-16 h-6 text-xs border border-amber-200 rounded px-1"
               />
             </div>
+            {!isCalculatingLocation && (
+              <button
+                onClick={getUserLocation}
+                className="text-xs px-2 py-1 mt-1 mb-2 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded border border-amber-200 flex items-center justify-center mx-auto"
+              >
+                <MapPin className="h-3 w-3 mr-1" /> Calculate from my location
+              </button>
+            )}
+            {isCalculatingLocation && (
+              <div className="text-xs text-amber-600 mt-1 mb-2">Calculating distance...</div>
+            )}
+            {locationError && (
+              <div className="text-xs text-red-500 mt-1 mb-2">{locationError}</div>
+            )}
             <div className="text-xs text-gray-600 flex flex-col gap-1 mt-2">
               <div className="flex justify-between">
                 <span>Tuition Fee:</span>
@@ -152,7 +254,7 @@ const CoursesSection = () => {
   ];
 
   return (
-    <section id="courses" className="py-16 bg-amber-50" id="courses-section">
+    <section id="courses" className="py-16 bg-amber-50">
       <div className="container mx-auto px-4">
         <div className={cn(
           "text-center max-w-3xl mx-auto mb-10 transition-all duration-1000 transform",
@@ -183,6 +285,38 @@ const CoursesSection = () => {
           ))}
         </div>
         
+        {/* Teaching Centers */}
+        <div className={cn(
+          "transform transition-all duration-1000 mb-12",
+          isVisible ? "translate-y-0 opacity-100 delay-300" : "translate-y-10 opacity-0"
+        )}>
+          <h3 className="text-2xl font-serif font-bold text-maroon-900 mb-6 text-center">
+            Teaching Centers
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {TEACHING_CENTERS.map((center, index) => (
+              <div 
+                key={index} 
+                className="bg-white p-4 rounded-lg shadow-md border border-amber-100 hover:shadow-lg transition-all"
+                style={{ 
+                  transitionDelay: `${(index + 3) * 100}ms`,
+                  animation: isVisible ? `fade-in 0.5s ease-out ${(index + 3) * 0.1}s both` : 'none' 
+                }}
+              >
+                <h4 className="font-medium text-maroon-800 mb-1">{center.name}</h4>
+                <p className="text-sm text-gray-600 mb-1">{center.location}</p>
+                <div className="flex items-center text-xs text-amber-700">
+                  {center.type === "Online" ? (
+                    <><Globe className="h-3 w-3 mr-1" /> Online Classes</>
+                  ) : (
+                    <><MapPin className="h-3 w-3 mr-1" /> In-person Classes</>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
         {/* Course Syllabus with Animation */}
         <div className={cn(
           "transform transition-all duration-1000",
@@ -195,7 +329,7 @@ const CoursesSection = () => {
         </div>
       </div>
       
-      <style jsx>{`
+      <style jsx="true">{`
         @keyframes fade-in-up {
           0% {
             opacity: 0;
@@ -211,6 +345,11 @@ const CoursesSection = () => {
           0% { transform: translateY(0); }
           50% { transform: translateY(-10px); }
           100% { transform: translateY(0); }
+        }
+        
+        @keyframes fade-in {
+          0% { opacity: 0; transform: translateY(10px); }
+          100% { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </section>
