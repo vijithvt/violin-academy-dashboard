@@ -1,15 +1,17 @@
 
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogIn, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
+import { useMediaQuery } from "@/hooks/use-mobile";
 
 const NavigationBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   // Handle scroll event to add shadow when scrolled
   useEffect(() => {
@@ -46,26 +48,32 @@ const NavigationBar = () => {
               Blog
             </Link>
             
-            {/* Login Buttons - Only showing Admin and Student options */}
-            <div className="flex gap-2 items-center">
+            {/* Login Buttons - Desktop View */}
+            <div className="flex gap-3 items-center">
               {currentUser ? (
                 <Button 
                   variant="outline" 
                   onClick={() => navigate("/")}
+                  className="flex items-center gap-2"
                 >
-                  Home
+                  <UserCircle size={18} />
+                  Dashboard
                 </Button>
               ) : (
                 <>
                   <Button 
                     variant="outline" 
                     onClick={() => navigate("/login")}
+                    className="border-amber-300 hover:bg-amber-50 text-maroon-800 flex items-center gap-2"
                   >
+                    <LogIn size={18} />
                     Student Login
                   </Button>
                   <Button 
                     onClick={() => navigate("/admin-login")}
+                    className="bg-maroon-800 hover:bg-maroon-700 flex items-center gap-2"
                   >
+                    <UserCircle size={18} />
                     Admin Login
                   </Button>
                 </>
@@ -74,17 +82,29 @@ const NavigationBar = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            className="md:hidden text-gray-700"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="md:hidden flex items-center">
+            {!isMenuOpen && !currentUser && (
+              <Button 
+                variant="ghost"
+                size="sm" 
+                onClick={() => navigate("/login")}
+                className="mr-2 text-maroon-800"
+              >
+                <LogIn size={18} />
+              </Button>
+            )}
+            <button
+              className="text-gray-700"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </nav>
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t">
+          <div className="md:hidden py-4 border-t animate-fade-in">
             <div className="flex flex-col space-y-4">
               <Link
                 to="/"
@@ -101,37 +121,46 @@ const NavigationBar = () => {
                 Blog
               </Link>
               
-              {currentUser ? (
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    navigate("/");
-                    setIsMenuOpen(false);
-                  }}
-                >
-                  Home
-                </Button>
-              ) : (
-                <>
+              <div className="pt-2 border-t border-gray-100">
+                <h3 className="text-xs uppercase text-gray-500 mb-2">Account Access</h3>
+                {currentUser ? (
                   <Button 
                     variant="outline" 
+                    className="w-full justify-start"
                     onClick={() => {
-                      navigate("/login");
+                      navigate("/");
                       setIsMenuOpen(false);
                     }}
                   >
-                    Student Login
+                    <UserCircle className="mr-2 h-4 w-4" />
+                    Dashboard
                   </Button>
-                  <Button 
-                    onClick={() => {
-                      navigate("/admin-login");
-                      setIsMenuOpen(false);
-                    }}
-                  >
-                    Admin Login
-                  </Button>
-                </>
-              )}
+                ) : (
+                  <>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start mb-2 border-amber-300 hover:bg-amber-50 text-maroon-800"
+                      onClick={() => {
+                        navigate("/login");
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      <LogIn className="mr-2 h-4 w-4" />
+                      Student Login
+                    </Button>
+                    <Button 
+                      className="w-full justify-start bg-maroon-800 hover:bg-maroon-700"
+                      onClick={() => {
+                        navigate("/admin-login");
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      <UserCircle className="mr-2 h-4 w-4" />
+                      Admin Login
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         )}
