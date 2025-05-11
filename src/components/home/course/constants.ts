@@ -1,4 +1,7 @@
 
+import React from 'react';
+import { Globe, HomeIcon, Users } from 'lucide-react';
+
 // Teacher's location coordinates
 export const TEACHER_LOCATION = {
   lat: 8.519270751001878,
@@ -47,7 +50,7 @@ const deg2rad = (deg: number): number => {
   return deg * (Math.PI/180);
 };
 
-export type CourseCardProps = {
+export interface CourseCardProps {
   title: string;
   description: string;
   icon: React.ReactNode;
@@ -55,27 +58,27 @@ export type CourseCardProps = {
   time: string;
   highlights?: string[];
   isHomeTuition?: boolean;
-};
+}
 
-export const courseCards = [
+export const courseCards: CourseCardProps[] = [
   {
     title: "1-to-1 Online Violin Class",
     description: "Personalized instruction tailored to your learning pace",
-    icon: <Globe className="w-12 h-12 text-amber-600" />,
+    icon: React.createElement(Globe, { className: "w-12 h-12 text-amber-600" }),
     fee: "₹2000 per month",
     time: "4 classes per month",
   },
   {
     title: "Online Group Class",
     description: "Learn alongside peers in an interactive setting",
-    icon: <Users className="w-12 h-12 text-amber-600" />,
+    icon: React.createElement(Users, { className: "w-12 h-12 text-amber-600" }),
     fee: "₹700 per month",
     time: "Tue & Thu, 9-10 PM IST"
   },
   {
     title: "Home Tuition",
     description: "In-person classes at your location (Trivandrum only)",
-    icon: <HomeIcon className="w-12 h-12 text-amber-600" />,
+    icon: React.createElement(HomeIcon, { className: "w-12 h-12 text-amber-600" }),
     fee: "₹2000 + travel per month",
     time: "4 classes per month",
     isHomeTuition: true
