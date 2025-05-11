@@ -1,12 +1,14 @@
 
-import { Youtube, Instagram, Facebook, Mail, Phone, MapPin } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { Youtube, Instagram, Facebook, Mail, Phone, MapPin, Calculator } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import CourseTravelCalculator from "./course/CourseTravelCalculator";
 
 const FooterSection = () => {
   const [showTerms, setShowTerms] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
+  const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
 
   return (
     <footer id="contact" className="bg-maroon-900 text-white py-12">
@@ -60,6 +62,23 @@ const FooterSection = () => {
                 </div>
               </li>
             </ul>
+            
+            <div className="mt-5">
+              <button
+                onClick={() => setIsCalculatorOpen(!isCalculatorOpen)}
+                className="flex items-center text-amber-300 hover:text-amber-400 transition-colors"
+              >
+                <Calculator className="h-4 w-4 mr-2" />
+                {isCalculatorOpen ? "Hide Fee Calculator" : "Calculate Home Tuition Fee"}
+              </button>
+              
+              {isCalculatorOpen && (
+                <div className="mt-4 bg-maroon-800 rounded-lg p-4 border border-maroon-700 animate-fade-in-up">
+                  <h3 className="text-sm font-medium text-center text-amber-300 mb-3">Home Tuition Fee Calculator</h3>
+                  <CourseTravelCalculator />
+                </div>
+              )}
+            </div>
           </div>
           
           {/* Quick Links */}
@@ -85,13 +104,13 @@ const FooterSection = () => {
           <div>
             <h3 className="text-lg font-medium mb-4">Start Learning Today</h3>
             <p className="text-maroon-200 mb-4">
-              Experience the rich tradition of Carnatic violin with a free trial class. No obligations, just pure music.
+              Experience the rich tradition of Carnatic violin with our personalized training. Join our academy today.
             </p>
             <Button 
               asChild
               className="bg-amber-500 hover:bg-amber-600 text-white transition-all duration-300 hover:shadow-amber-700/30 hover:shadow-lg"
             >
-              <a href="#free-trial">Book a Free Trial</a>
+              <a href="https://forms.gle/FCuVKb2bqED64QV3A" target="_blank" rel="noopener noreferrer">Enroll Now</a>
             </Button>
           </div>
         </div>

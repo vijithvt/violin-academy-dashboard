@@ -11,7 +11,7 @@ import FloatingButtons from "@/components/home/FloatingButtons";
 import InstrumentSection from "@/components/home/InstrumentSection";
 import AboutSection from "@/components/home/AboutSection";
 import LearningProcessSection from "@/components/home/LearningProcessSection";
-import FloatingTrialButton from "@/components/home/FloatingTrialButton";
+import ContactSection from "@/components/home/ContactSection";
 
 const Home = () => {
   useEffect(() => {
@@ -64,8 +64,8 @@ const Home = () => {
       <RecognitionSection />
       <FAQSection />
       <AboutSection />
+      <ContactSection />
       <FooterSection />
-      <FloatingTrialButton />
       <FloatingButtons />
     </div>
   );

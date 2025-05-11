@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { MapPin } from "lucide-react";
 import CourseTravelCalculator from "./course/CourseTravelCalculator";
 
@@ -36,28 +35,11 @@ const HeroSection = () => {
                 className="bg-maroon-700 hover:bg-maroon-800"
                 asChild
               >
-                <Link to="/register">
+                <a href="https://forms.gle/FCuVKb2bqED64QV3A" target="_blank" rel="noopener noreferrer">
                   Enroll Now
-                </Link>
-              </Button>
-              
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-maroon-600 text-maroon-700 hover:bg-maroon-50"
-                onClick={() => setIsCalculatorOpen(!isCalculatorOpen)}
-              >
-                <MapPin className="mr-2 h-4 w-4" />
-                {isCalculatorOpen ? "Hide Calculator" : "Calculate Home Tuition Fee"}
+                </a>
               </Button>
             </div>
-            
-            {isCalculatorOpen && (
-              <div className="mt-4 bg-white rounded-lg shadow-lg p-4 border border-amber-100 animate-fade-in-up">
-                <h3 className="text-lg font-medium text-center text-maroon-800 mb-3">Home Tuition Fee Calculator</h3>
-                <CourseTravelCalculator />
-              </div>
-            )}
           </div>
           
           {/* Image */}
