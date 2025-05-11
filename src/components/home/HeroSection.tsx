@@ -1,12 +1,8 @@
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
-import CourseTravelCalculator from "./course/CourseTravelCalculator";
 
 const HeroSection = () => {
-  const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
-
   return (
     <section className="relative pt-16 md:pt-0 overflow-hidden">
       {/* Background gradient */}
