@@ -1,4 +1,3 @@
-
 import { Clock, Award, Calendar, Globe, HomeIcon, Users, Calculator, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CourseAccordion from "./CourseAccordion";
@@ -26,7 +25,7 @@ const TEACHING_CENTERS = [
   { 
     name: "Musicintuit Academy India Pvt Ltd.",
     location: "Bengaluru",
-    coordinates: { lat: 12.9716, lng: 77.5946 }
+    type: "Online"
   },
   { 
     name: "Jovens Academy",
@@ -329,7 +328,7 @@ const CoursesSection = () => {
         </div>
       </div>
       
-      <style jsx="true">{`
+      <style>{`
         @keyframes fade-in-up {
           0% {
             opacity: 0;

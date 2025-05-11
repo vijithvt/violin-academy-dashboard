@@ -70,7 +70,7 @@ const RequirementsSection = () => {
   };
 
   return (
-    <section id="requirements" className="py-16 bg-gradient-to-r from-amber-50 to-white" id="requirements-section">
+    <section className="py-16 bg-gradient-to-r from-amber-50 to-white" id="requirements-section">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-serif font-bold text-maroon-900 mb-10 text-center">
           What You Need to Start
@@ -210,7 +210,7 @@ const RequirementsSection = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes float {
           0% { transform: translateY(0); }
           100% { transform: translateY(-10px); }
