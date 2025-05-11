@@ -58,8 +58,6 @@ const Home = () => {
       <NavigationBar />
       <HeroSection />
       <InstrumentSection />
-      {/* VideoSection temporarily hidden */}
-      {/* <VideoSection /> */}
       <CoursesSection />
       <LearningProcessSection />
       <RequirementsSection />

@@ -1,5 +1,5 @@
 
-import { ChevronRight, Play } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -81,12 +81,7 @@ const HeroSection = () => {
                 >
                   Book a Free Trial <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
-                <Button 
-                  variant="ghost" 
-                  className="bg-maroon-700/50 hover:bg-maroon-700/70 text-white rounded-full transform transition-all duration-300 hover:scale-105 hover:shadow-maroon-500/30 hover:shadow-lg"
-                >
-                  <Play className="h-4 w-4 mr-2" /> Watch Demo
-                </Button>
+                {/* Watch Demo button removed as requested */}
               </div>
             </div>
             

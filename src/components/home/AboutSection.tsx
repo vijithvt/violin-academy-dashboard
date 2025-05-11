@@ -88,8 +88,8 @@ const AboutSection = () => {
               About Vijith V T
             </h2>
             
-            <div className="space-y-6 md:space-y-8">
-              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-5 md:p-6 shadow-lg border border-maroon-100 transition-all duration-300 hover:shadow-xl hover:border-maroon-200">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:space-y-0">
+              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-5 md:p-6 shadow-lg border border-maroon-100 transition-all duration-300 hover:shadow-xl hover:border-maroon-200 h-full">
                 <h3 className="text-lg md:text-xl font-serif font-bold text-maroon-800 mb-4 flex items-center">
                   <Music className="w-5 h-5 md:w-6 md:h-6 text-amber-500 mr-3" />
                   Musical Journey
@@ -99,18 +99,16 @@ const AboutSection = () => {
                 </p>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-5 md:p-6 shadow-lg border border-maroon-100 h-full transition-all duration-300 hover:shadow-xl hover:border-maroon-200">
-                  <h3 className="text-lg md:text-xl font-serif font-bold text-maroon-800 mb-3 flex items-center">
-                    <Award className="w-5 h-5 md:w-6 md:h-6 text-amber-500 mr-3" />
-                    Performer & Educator
-                  </h3>
-                  <ul className="list-disc pl-5 space-y-2 text-gray-700 text-sm md:text-base">
-                    <li>Teaching since 2018: Students from India, USA, Thailand & Bangalore</li>
-                    <li>Faculty collaborator at leading music academies worldwide</li>
-                    <li>Best Classical Violin Teacher Award recipient (Presented by Music Intuit Academy, Bangalore, 2022)</li>
-                  </ul>
-                </div>
+              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-5 md:p-6 shadow-lg border border-maroon-100 h-full transition-all duration-300 hover:shadow-xl hover:border-maroon-200">
+                <h3 className="text-lg md:text-xl font-serif font-bold text-maroon-800 mb-3 flex items-center">
+                  <Award className="w-5 h-5 md:w-6 md:h-6 text-amber-500 mr-3" />
+                  Performer & Educator
+                </h3>
+                <ul className="list-disc pl-5 space-y-2 text-gray-700 text-sm md:text-base">
+                  <li>Teaching since 2018: Students from India, USA, Thailand & Bangalore</li>
+                  <li>Faculty collaborator at leading music academies worldwide</li>
+                  <li>Best Classical Violin Teacher Award recipient (Presented by Music Intuit Academy, Bangalore, 2022)</li>
+                </ul>
               </div>
             </div>
           </div>
