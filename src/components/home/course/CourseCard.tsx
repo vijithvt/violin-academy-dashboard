@@ -1,9 +1,7 @@
 
-import { useState, useEffect, ChangeEvent } from "react";
-import { Clock, Calculator, MapPin } from "lucide-react";
+import { Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CourseCardProps } from "./constants";
-import CourseTravelCalculator from "./CourseTravelCalculator";
 
 const CourseCard = ({ title, description, icon, fee, time, highlights, isHomeTuition }: CourseCardProps) => {
   return (
@@ -22,8 +20,6 @@ const CourseCard = ({ title, description, icon, fee, time, highlights, isHomeTui
         <div className="text-gray-500 text-sm mt-1 flex items-center justify-center">
           <Clock className="h-4 w-4 mr-1" /> {time}
         </div>
-        
-        {isHomeTuition && <CourseTravelCalculator />}
         
         {highlights && highlights.length > 0 && (
           <div className="mt-3 border-t pt-3 border-dashed border-amber-200">
