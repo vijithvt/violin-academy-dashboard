@@ -29,7 +29,7 @@ const Blogs = () => {
           </div>
           <p>Includes: Bowing, Varisais, and Simple Songs</p>
           
-          <div class="bg-white p-6 rounded-lg shadow-sm border border-amber-100">
+          <div class="bg-white p-5 md:p-6 rounded-lg shadow-sm border border-amber-100">
             <h3 class="text-xl font-medium text-maroon-800 mb-3">1. Warm-up: Bowing & Posture</h3>
             <p class="font-medium">Time: 5 Minutes</p>
             <p class="mb-3">Open string bowing (Sa–Pa–Sa)</p>
@@ -41,7 +41,7 @@ const Blogs = () => {
             </ul>
           </div>
           
-          <div class="bg-white p-6 rounded-lg shadow-sm border border-amber-100">
+          <div class="bg-white p-5 md:p-6 rounded-lg shadow-sm border border-amber-100">
             <h3 class="text-xl font-medium text-maroon-800 mb-3">2. Varisa Practice</h3>
             <p class="font-medium">Time: 15 Minutes</p>
             <p class="mb-3">Practice each varisai slowly with sruti alignment.</p>
@@ -56,7 +56,7 @@ const Blogs = () => {
             </p>
           </div>
           
-          <div class="bg-white p-6 rounded-lg shadow-sm border border-amber-100">
+          <div class="bg-white p-5 md:p-6 rounded-lg shadow-sm border border-amber-100">
             <h3 class="text-xl font-medium text-maroon-800 mb-3">3. Simple Songs</h3>
             <p class="font-medium">Time: 10 Minutes</p>
             <p class="mb-3">Practice one or two from the list below daily:</p>
@@ -73,20 +73,20 @@ const Blogs = () => {
             </ul>
           </div>
           
-          <div class="bg-amber-50 p-6 rounded-lg shadow-sm border border-amber-200">
+          <div class="bg-amber-50 p-5 md:p-6 rounded-lg shadow-sm border border-amber-200">
             <h3 class="text-xl font-medium text-maroon-800 mb-3 flex items-center">
               <span class="mr-2">Tips for Success</span>
             </h3>
-            <ul class="list-none space-y-3">
-              <li class="flex items-start">
+            <ul class="list-none space-y-4">
+              <li class="flex items-start bg-white p-3 rounded-lg shadow-sm">
                 <CheckCircle class="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
                 <span class="text-gray-800">Record your practice weekly and upload via the student dashboard</span>
               </li>
-              <li class="flex items-start">
+              <li class="flex items-start bg-white p-3 rounded-lg shadow-sm">
                 <CheckCircle class="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
                 <span class="text-gray-800">Stay consistent – even short daily practice builds long-term skill</span>
               </li>
-              <li class="flex items-start">
+              <li class="flex items-start bg-white p-3 rounded-lg shadow-sm">
                 <CheckCircle class="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
                 <span class="text-gray-800">Track your daily goals using your Practice Journal</span>
               </li>
@@ -101,9 +101,9 @@ const Blogs = () => {
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
       <NavigationBar />
       
-      <section className="py-16">
+      <section className="py-16 mt-16">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-serif font-bold text-maroon-900 mb-6 text-center">
+          <h1 className="text-3xl md:text-4xl font-serif font-bold text-maroon-900 mb-6 text-center">
             Learning Resources & Blogs
           </h1>
           <p className="text-center text-gray-600 max-w-3xl mx-auto mb-10">
@@ -123,7 +123,7 @@ const Blogs = () => {
               {blogPosts.map((post) => (
                 <Card key={post.id} className="overflow-hidden shadow-md border-amber-100">
                   <CardHeader className="bg-gradient-to-r from-maroon-800 to-amber-800 text-white">
-                    <CardTitle className="text-2xl font-serif">
+                    <CardTitle className="text-xl md:text-2xl font-serif">
                       {post.title}
                     </CardTitle>
                     <div className="flex flex-wrap items-center text-xs gap-4 mt-2 text-amber-100">
@@ -144,7 +144,7 @@ const Blogs = () => {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 md:p-6">
                     <p className="text-gray-600 mb-6">
                       {post.excerpt}
                     </p>

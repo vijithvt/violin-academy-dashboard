@@ -10,46 +10,58 @@ const FAQSection = () => {
   const faqs = [
     {
       question: "Class Schedule & Attendance",
-      answer: "Classes are scheduled at mutually agreed times between student and instructor. Missed classes are not rescheduled unless valid prior notice is given (minimum 6 hours before the scheduled time). Classes cancelled by the instructor will always be rescheduled at a convenient time for the student. Regular attendance is crucial for steady progress in learning the violin. Students are expected to join classes on time and be prepared with their instruments tuned. In case of technical issues, students are encouraged to check their setup before class begins."
+      answer: "Classes are scheduled at mutually agreed times. Missed classes require 6+ hours notice for rescheduling. Classes cancelled by the instructor will always be rescheduled. Regular attendance and punctuality are expected, with equipment checked before class."
     },
     {
       question: "Fee Structure & Payments",
-      answer: "Monthly fees are due on or before the 1st day of each month. Fees are non-refundable except in serious cases such as prolonged illness or relocation. Payments can be made via UPI, Google Pay, or Bank Transfer. Late payments will receive a single reminder, after which classes may be suspended until payment is received. New students may be required to pay a one-time registration fee. Fee receipts are provided electronically for all transactions. A discount of 5% is available for students who pay for three months in advance. International students have different payment options available including PayPal and wire transfers."
+      answer: "Monthly fees are due by the 1st of each month and are non-refundable except in serious cases. Payments accepted via UPI, Google Pay, or bank transfer. Late payments may result in suspended classes. New students may pay a one-time registration fee. 5% discount for quarterly payments."
     },
     {
       question: "Practice & Progress",
-      answer: "Regular practice is essential for mastering the violin. Students are expected to practice at least 30 minutes daily. Weekly assignments must be completed before the next class. Progress is monitored through monthly assessments, and additional practice materials are provided for areas needing improvement. Parents of younger students are encouraged to supervise practice sessions. Practice journals are recommended to track improvement over time. Video recording your practice sessions can help identify areas needing improvement. The academy provides structured practice guides for students at different levels, with specific exercises designed to build technique progressively. For beginners, even 15 minutes of focused daily practice can yield significant results."
+      answer: "Daily practice (minimum 30 minutes) is essential. Complete weekly assignments before the next class. Progress is monitored through monthly assessments. Parents of younger students should supervise practice. Recording practice sessions helps identify areas for improvement."
     },
     {
       question: "Materials & Recordings",
-      answer: "All learning materials including PDFs, audio recordings, and instructional videos are provided for personal use only. Redistribution or sharing these materials with non-enrolled students is strictly prohibited. Students receive access to a dedicated online portal containing lesson materials, practice tracks, and performance examples. Additional resources are regularly added to support learning. The academy maintains a comprehensive digital library of classical compositions, exercises, and theoretical texts that students can access. Custom learning materials are created for students with specific learning needs or goals. Audio and video recordings of lessons may be made available to students for review purposes. Students are encouraged to create their own library of practice recordings to track their progress over time."
+      answer: "Learning materials are for personal use only. Students receive access to an online portal with lesson materials, practice tracks, and examples. The academy maintains a digital library of classical compositions and educational resources."
     },
     {
       question: "Online Class Policy",
-      answer: "For online classes, students must keep their video ON throughout the session unless specifically instructed otherwise. A stable internet connection with minimum 2 Mbps speed is required. The camera should be positioned to clearly show the student's posture, both hands, and the violin. Background noise should be minimized, and a pair of earphones/headphones is recommended for better sound quality. Students should join the class 5 minutes before the scheduled time to set up and warm up. Virtual background features should be turned off as they can interfere with the teacher's ability to observe technique. In case of connectivity issues, backup plans include phone classes or rescheduling. Students should ensure their learning space is well-lit, especially for evening classes, to ensure proper visibility of finger positions and bowing technique."
+      answer: "Video must remain ON during online classes. Required: stable 2 Mbps internet, proper camera positioning, minimal background noise, and headphones recommended. Join 5 minutes early to set up. In case of connectivity issues, backup options are available."
     },
     {
       question: "Performance & Participation",
-      answer: "Participation in concerts and recitals is based on merit and preparedness. Students who demonstrate consistent progress and dedication will be invited to perform. Some classes may be recorded for quality review and development of teaching materials. Selected student performances may be featured on the academy's social media platforms with prior consent. The academy organizes quarterly student concerts to provide performance experience in a supportive environment. Annual showcases feature advanced students performing complete compositions. Masterclasses with guest artists are organized periodically and students are selected based on their readiness and commitment. Students are encouraged to participate in local music competitions and events to gain exposure and performance experience. Collaborative performances with other instrumental students are organized to develop ensemble skills."
+      answer: "Performance opportunities based on merit and preparedness. Some classes may be recorded for quality review. The academy organizes quarterly student concerts, annual showcases, and masterclasses with guest artists."
     },
     {
       question: "Rewards & Certifications",
-      answer: "Points are awarded for regular attendance, consistent practice, and improvement. Students who accumulate sufficient points receive quarterly rewards such as special masterclass access or performance opportunities. Milestone certificates are awarded upon completion of specific learning modules or grade levels. Annual recognition is given to outstanding students based on their dedication and progress. A 'Student of the Month' is selected based on exceptional commitment and improvement. Digital badges are awarded for mastering specific techniques or compositions. The academy's achievement program includes Bronze, Silver, Gold, and Platinum tiers based on comprehensive assessments. Students who complete the full curriculum receive a graduation certificate recognized by affiliated music institutions. Exceptional students may receive letters of recommendation for music college applications or scholarship opportunities."
+      answer: "Points awarded for attendance, practice, and improvement. Quarterly rewards include special masterclass access or performance opportunities. Milestone certificates awarded for completing learning modules. 'Student of the Month' recognition for exceptional commitment."
     },
     {
       question: "Referral Policy",
-      answer: "Current students who refer a new student will receive a ₹500 reward after the referred student completes one month of lessons. Multiple referrals are encouraged and rewarded individually. Referred students also receive a 5% discount on their first month's fees. This policy aims to build a community of dedicated violin learners. Referral bonuses increase to ₹750 for students who have been with the academy for more than a year. Family referrals (siblings, cousins) qualify for a special 10% discount for both parties. The academy's Ambassador Program allows students to earn additional benefits by consistently bringing in new referrals. Referral credits can be accumulated and applied toward future lessons or special workshops. The referral system helps create a supportive community of learners with shared interests and goals."
+      answer: "Current students receive ₹500 for each successful referral. Referred students get 5% first-month discount. ₹750 bonus for students who've been with the academy over a year. Family referrals qualify for 10% discount for both parties."
     },
     {
       question: "Discontinuation Policy",
-      answer: "Students wishing to discontinue classes must provide at least one week's advance notice. This allows for proper closure of the learning process and completion of pending modules. The academy reserves the right to terminate enrollment in cases of excessive absenteeism, misconduct, or consistent lack of practice. In such cases, a counseling session will be conducted before final termination. Exit interviews are conducted to gather feedback for improvement of teaching methodologies. Students who discontinue may rejoin within three months without paying a new registration fee. Long-term students (more than one year) who need to take a break due to examinations or other commitments can pause their enrollment for up to two months without losing their spot or progress tracking. Digital certificates of completion are provided to students who have completed specific curriculum modules before discontinuing."
+      answer: "One-week advance notice required for discontinuing classes. The academy may terminate enrollment for excessive absences or misconduct. Exit interviews gather feedback for improvement. Students may rejoin within three months without a new registration fee."
+    },
+    {
+      question: "How many classes per month?",
+      answer: "Students receive 4 classes per month, typically once per week. Additional classes may be scheduled for performance preparation or exam readiness at no extra cost. During festival seasons or academy events, classes may be rescheduled with advance notice."
+    },
+    {
+      question: "What age groups do you teach?",
+      answer: "We welcome students of all ages, from 6 years old to seniors. We customize teaching approaches based on age groups: 6-12 years (playful learning), 13-18 years (structured technique development), and adults (flexible programs accommodating busy schedules)."
+    },
+    {
+      question: "How long does it take to learn violin?",
+      answer: "Progress varies by individual commitment and natural aptitude. Most beginners can play simple melodies within 3-6 months of regular practice. Intermediate proficiency typically requires 1-2 years, while advanced mastery may take 3+ years of dedicated study."
     }
   ];
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-12 md:py-16 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-serif font-bold text-maroon-900 mb-10 text-center">
+        <h2 className="text-2xl md:text-3xl font-serif font-bold text-maroon-900 mb-6 md:mb-10 text-center">
           Frequently Asked Questions
         </h2>
         
@@ -57,10 +69,10 @@ const FAQSection = () => {
           <Accordion type="single" collapsible className="bg-amber-50 rounded-xl shadow-md">
             {faqs.map((faq, index) => (
               <AccordionItem key={index} value={`item-${index}`} className="border-b border-amber-200 last:border-0">
-                <AccordionTrigger className="px-6 py-4 hover:bg-amber-100/50 text-left font-medium text-maroon-800">
+                <AccordionTrigger className="px-4 md:px-6 py-3 md:py-4 hover:bg-amber-100/50 text-left font-medium text-maroon-800 text-sm md:text-base">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="px-6 pb-4 text-gray-700">
+                <AccordionContent className="px-4 md:px-6 pb-4 text-gray-700 text-sm md:text-base">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>
