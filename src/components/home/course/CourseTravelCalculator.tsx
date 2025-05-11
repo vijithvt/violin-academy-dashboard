@@ -5,14 +5,15 @@ import { TEACHER_LOCATION, calculateDistance } from "./constants";
 
 const CourseTravelCalculator = () => {
   const [distance, setDistance] = useState<number>(5);
-  const [travelCost, setTravelCost] = useState<number>(100);
-  const [totalFee, setTotalFee] = useState<number>(2100);
+  const [travelCost, setTravelCost] = useState<number>(400);
+  const [totalFee, setTotalFee] = useState<number>(2400);
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
   const [isCalculatingLocation, setIsCalculatingLocation] = useState(false);
   const [locationError, setLocationError] = useState("");
   
   useEffect(() => {
-    const calculatedTravelCost = distance * 10 * 2; // Rs 10 per km, round trip
+    // Rs 10 per km, round trip for each class, 4 classes per month
+    const calculatedTravelCost = distance * 10 * 2 * 4; 
     setTravelCost(calculatedTravelCost);
     setTotalFee(2000 + calculatedTravelCost);
   }, [distance]);
@@ -96,7 +97,7 @@ const CourseTravelCalculator = () => {
           <span>₹2000</span>
         </div>
         <div className="flex justify-between">
-          <span>Travel Cost ({distance}km x ₹10 x 2):</span>
+          <span>Travel Cost ({distance}km × ₹10 × 2 × 4):</span>
           <span>₹{travelCost}</span>
         </div>
         <div className="flex justify-between font-medium text-maroon-800 border-t border-amber-100 pt-1 mt-1">
