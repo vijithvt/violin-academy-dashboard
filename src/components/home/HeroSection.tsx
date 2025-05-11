@@ -23,7 +23,7 @@ const HeroSection = () => {
 
   return (
     <>
-      <section id="home" className="relative min-h-[90vh] flex items-center bg-gradient-to-r from-maroon-900 via-maroon-800 to-amber-900 text-white overflow-hidden">
+      <section id="home" className="relative min-h-[90vh] flex items-center bg-gradient-to-r from-maroon-900 via-maroon-800 to-amber-900 text-white overflow-hidden pt-16 md:pt-0">
         {/* Background overlay with animated pattern */}
         <div className="absolute inset-0 opacity-20 bg-[url('/placeholder.svg')] bg-cover bg-center"></div>
         <div className="absolute inset-0 bg-black/30"></div>
@@ -63,7 +63,7 @@ const HeroSection = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className={`transition-all duration-1000 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold mb-6 leading-tight">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold mb-6 leading-tight mt-16 md:mt-0">
                 Master the Art of <span className="text-amber-400 relative">
                   Carnatic Violin
                   <span className="absolute bottom-0 left-0 w-full h-1 bg-amber-500 transform scale-x-0 origin-left transition-transform duration-1000 ease-out" 
