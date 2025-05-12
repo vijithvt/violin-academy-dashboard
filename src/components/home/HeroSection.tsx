@@ -13,15 +13,14 @@ const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   
-  const studentImages = [
-    "/lovable-uploads/64ab8fd2-ed27-4e9b-b0db-65a08587711f.png",
-    "/lovable-uploads/add05238-49bf-41fe-83ea-e15bb94c47f3.png",
-    "/lovable-uploads/906762ba-e107-4464-ab59-bea05f89e50f.png",
-    "/lovable-uploads/dfaa7752-b5f2-419f-bc41-71d3ffeed5fc.png",
-    "/lovable-uploads/297c58a8-7554-41c1-859f-411333f2b6cc.png",
-    "/lovable-uploads/887ef074-d0d0-4beb-af40-6cf0e5701738.png",
-    "/lovable-uploads/0825a141-e012-4cef-93e7-676a745756da.png",
-    "/lovable-uploads/659879b6-81cf-4269-80f1-20ec7d2d5cd3.png"
+  const musicianImages = [
+    "/lovable-uploads/659879b6-81cf-4269-80f1-20ec7d2d5cd3.png", // Keeping one student image for consistency
+    "/lovable-uploads/0fe0e6d5-2dae-427c-a526-bdfa0ebd1cf1.png", // L. Subramaniam
+    "/lovable-uploads/d360aa7e-fe19-4f1d-9835-3b7e14e7b9ff.png", // Kunnakudi Vaidyanathan
+    "/lovable-uploads/65a367ac-e8fa-48a2-80fa-7cbc03541542.png", // M.S. Gopalakrishnan
+    "/lovable-uploads/cc04dd6a-b479-4eae-a679-718755823964.png", // A. Kanyakumari
+    "/lovable-uploads/344318eb-d2db-4042-bc9a-5dfaa5558c2e.png", // Lalgudi Jayaraman
+    "/lovable-uploads/6f4fc66e-f728-44f8-a1da-6721b9682495.png"  // T.N. Krishnan
   ];
   
   // Auto-play functionality
@@ -30,12 +29,12 @@ const HeroSection = () => {
     
     if (isAutoPlaying) {
       interval = setInterval(() => {
-        setCurrentSlide((prev) => (prev + 1) % studentImages.length);
+        setCurrentSlide((prev) => (prev + 1) % musicianImages.length);
       }, 3000); // Change slide every 3 seconds
     }
     
     return () => clearInterval(interval);
-  }, [isAutoPlaying, studentImages.length]);
+  }, [isAutoPlaying, musicianImages.length]);
 
   return (
     <section className="relative pt-16 md:pt-0 overflow-hidden">
@@ -90,13 +89,13 @@ const HeroSection = () => {
                     onMouseEnter={() => setIsAutoPlaying(false)}
                     onMouseLeave={() => setIsAutoPlaying(true)}>
               <CarouselContent>
-                {studentImages.map((src, index) => (
+                {musicianImages.map((src, index) => (
                   <CarouselItem key={index}>
                     <div className="relative h-80 md:h-96">
                       <div className="absolute -top-4 -right-4 w-full h-full bg-amber-200 rounded-lg transform rotate-3"></div>
                       <img
                         src={src}
-                        alt={`Violin student ${index + 1}`}
+                        alt={`Famous Carnatic ${index === 0 ? 'musician' : 'violinist'} ${index + 1}`}
                         className="relative z-10 w-full h-full object-cover rounded-lg shadow-lg transform -rotate-3 hover:rotate-0 transition-transform duration-500"
                       />
                     </div>
@@ -109,7 +108,7 @@ const HeroSection = () => {
               </div>
               {/* Carousel indicators */}
               <div className="flex justify-center mt-4 gap-2">
-                {studentImages.map((_, index) => (
+                {musicianImages.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentSlide(index)}
