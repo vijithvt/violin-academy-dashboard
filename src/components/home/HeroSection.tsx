@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -71,7 +70,9 @@ const HeroSection = () => {
             </div>
           </div>
           
-          {/* Image Carousel */}
+          {/* Image Carousel - Hidden temporarily */}
+          {/* Commenting out the carousel but keeping the code for future reference */}
+          {/*
           <div className="relative">
             <Carousel className="w-full max-w-md mx-auto" 
                     setApi={(api) => {
@@ -106,7 +107,6 @@ const HeroSection = () => {
                 <CarouselPrevious className="-left-8 bg-white/70 hover:bg-white" />
                 <CarouselNext className="-right-8 bg-white/70 hover:bg-white" />
               </div>
-              {/* Carousel indicators */}
               <div className="flex justify-center mt-4 gap-2">
                 {musicianImages.map((_, index) => (
                   <button
@@ -121,6 +121,7 @@ const HeroSection = () => {
               </div>
             </Carousel>
           </div>
+          */}
         </div>
       </div>
     </section>
