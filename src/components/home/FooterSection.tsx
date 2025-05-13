@@ -1,14 +1,12 @@
 
 import { useState } from "react";
-import { Youtube, Instagram, Facebook, Mail, Phone, MapPin, Calculator } from "lucide-react";
+import { Youtube, Instagram, Facebook, Mail, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import CourseTravelCalculator from "./course/CourseTravelCalculator";
 
 const FooterSection = () => {
   const [showTerms, setShowTerms] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
-  const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
 
   return (
     <footer id="contact" className="bg-maroon-900 text-white py-12">
@@ -62,23 +60,6 @@ const FooterSection = () => {
                 </div>
               </li>
             </ul>
-            
-            <div className="mt-5">
-              <button
-                onClick={() => setIsCalculatorOpen(!isCalculatorOpen)}
-                className="flex items-center text-amber-300 hover:text-amber-400 transition-colors"
-              >
-                <Calculator className="h-4 w-4 mr-2" />
-                {isCalculatorOpen ? "Hide Fee Calculator" : "Calculate Home Tuition Fee"}
-              </button>
-              
-              {isCalculatorOpen && (
-                <div className="mt-4 bg-maroon-800 rounded-lg p-4 border border-maroon-700 animate-fade-in-up">
-                  <h3 className="text-sm font-medium text-center text-amber-300 mb-3">Home Tuition Fee Calculator</h3>
-                  <CourseTravelCalculator />
-                </div>
-              )}
-            </div>
           </div>
           
           {/* Quick Links */}
