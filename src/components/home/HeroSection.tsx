@@ -287,8 +287,9 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* Add keyframe animation for expanding width */}
-      <style jsx global>{`
+      {/* Add keyframe animations for ripple and expandWidth */}
+      <style>
+        {`
         @keyframes ripple {
           0% {
             transform: scale(0);
@@ -307,7 +308,8 @@ const HeroSection = () => {
             transform: scaleX(1);
           }
         }
-      `}</style>
+        `}
+      </style>
     </section>
   );
 };
