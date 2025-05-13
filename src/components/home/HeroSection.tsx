@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,44 +16,53 @@ const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   
-  // New student images (with the previously available musicians at the end)
+  // New student images from the latest upload
   const studentImages = [
-    "/lovable-uploads/b9c5bb6b-7f42-45c6-9e29-c3092129540a.png",
-    "/lovable-uploads/2098a534-61c2-4aac-a0f5-89b3fb1c3a21.png",
-    "/lovable-uploads/964099a6-72ea-4a23-a374-ac4baa79ea05.png",
-    "/lovable-uploads/c1a60095-c2d8-4299-b970-63a203bda504.png",
-    "/lovable-uploads/5aff10ea-3cd6-4b90-a074-bae496d7cc28.png",
-    "/lovable-uploads/e58c9bd4-20fc-42cb-8eb5-40f1d3483f4b.png",
-    "/lovable-uploads/e72b5498-1166-4da8-8d90-c7efba21bc8d.png",
-    "/lovable-uploads/e3fbcddd-8adb-4994-9ffd-6fe4d4057e98.png",
-    "/lovable-uploads/10dcede2-b081-4c3f-b30b-d339fb2b5c71.png",
-    "/lovable-uploads/1d50b7f6-87d8-4f1b-a5cc-55e15198d453.png",
-    "/lovable-uploads/32bc6224-5c73-4ed4-94a7-8f9a29393f62.png",
-    "/lovable-uploads/2c620329-ace6-4026-8537-4129f1087ebe.png",
-    "/lovable-uploads/1ccaf7f8-272d-42a9-a24b-c8a7bc9564a5.png",
-    "/lovable-uploads/4b546ba2-9ba6-44a8-bf40-c05efd6868d3.png",
-    // Keep previous musician images at the end
-    "/lovable-uploads/659879b6-81cf-4269-80f1-20ec7d2d5cd3.png",
-    "/lovable-uploads/0fe0e6d5-2dae-427c-a526-bdfa0ebd1cf1.png",
-    "/lovable-uploads/d360aa7e-fe19-4f1d-9835-3b7e14e7b9ff.png",
-    "/lovable-uploads/65a367ac-e8fa-48a2-80fa-7cbc03541542.png",
-    "/lovable-uploads/cc04dd6a-b479-4eae-a679-718755823964.png",
-    "/lovable-uploads/344318eb-d2db-4042-bc9a-5dfaa5558c2e.png",
-    "/lovable-uploads/6f4fc66e-f728-44f8-a1da-6721b9682495.png"  
+    "/lovable-uploads/43b0be91-de0d-429d-b8e4-30aa2aa3d3b9.png",
+    "/lovable-uploads/b5ee778e-38c9-4433-b6b9-895a2ac7cc12.png",
+    "/lovable-uploads/8d02d87e-4d71-4e2e-9c9b-9c04f60bb9e5.png",
+    "/lovable-uploads/70e4828b-0632-4f7e-997b-1ca7cb9de633.png",
+    "/lovable-uploads/e583e518-a8b9-49e9-a0e5-bfb8b841f1d2.png",
+    "/lovable-uploads/f02d4c17-6866-41de-944a-9ff258463736.png",
+    "/lovable-uploads/9584e417-a142-479c-b43c-eabc571274d1.png",
+    "/lovable-uploads/9381823b-5052-4ce7-9090-2c8e785fd687.png",
+    "/lovable-uploads/d4f1f66c-dc34-4fb7-b262-ba92608d81be.png",
+    "/lovable-uploads/48886e28-b10e-423e-9cc6-71652248cd11.png",
+    "/lovable-uploads/9b3972e3-5502-488a-9eee-64d3ca531667.png",
+    "/lovable-uploads/8307b89a-d2bc-4222-9dbf-b60833ff038e.png",
+    "/lovable-uploads/06569ac2-a95b-47bc-a95e-b43a241cf6c3.png",
+    "/lovable-uploads/d665f59f-cc1c-4742-b8a3-4a5530917fe9.png"
   ];
+  
+  // Randomize the student images on initial load
+  const [randomizedImages, setRandomizedImages] = useState<string[]>([]);
+  
+  useEffect(() => {
+    // Fisher-Yates shuffle algorithm for proper randomization
+    const shuffleArray = (array: string[]) => {
+      const newArray = [...array];
+      for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+      }
+      return newArray;
+    };
+    
+    setRandomizedImages(shuffleArray(studentImages));
+  }, []);
   
   // Auto-play functionality
   useEffect(() => {
     let interval: NodeJS.Timeout;
     
-    if (isAutoPlaying) {
+    if (isAutoPlaying && randomizedImages.length > 0) {
       interval = setInterval(() => {
-        setCurrentSlide((prev) => (prev + 1) % studentImages.length);
+        setCurrentSlide((prev) => (prev + 1) % randomizedImages.length);
       }, 3000); // Change slide every 3 seconds
     }
     
     return () => clearInterval(interval);
-  }, [isAutoPlaying, studentImages.length]);
+  }, [isAutoPlaying, randomizedImages.length]);
 
   // Add water ripple effect on interactions
   const heroRef = useRef<HTMLDivElement>(null);
@@ -224,7 +234,8 @@ const HeroSection = () => {
           
           {/* Image Carousel */}
           <div className="relative">
-            <Carousel className={cn(
+            {randomizedImages.length > 0 && (
+              <Carousel className={cn(
                 "w-full max-w-md mx-auto",
                 "before:absolute before:inset-0 before:z-10 before:pointer-events-none",
                 "before:bg-gradient-to-r before:from-transparent before:via-transparent",
@@ -246,7 +257,7 @@ const HeroSection = () => {
               onMouseLeave={() => setIsAutoPlaying(true)}
             >
               <CarouselContent>
-                {studentImages.map((src, index) => (
+                {randomizedImages.map((src, index) => (
                   <CarouselItem key={index} className="p-1">
                     <div className="overflow-hidden group">
                       <div className="relative h-80 md:h-96 transition-all duration-500 group-hover:scale-[1.02]">
@@ -271,7 +282,7 @@ const HeroSection = () => {
                 <CarouselNext className="-right-8 bg-white/70 hover:bg-white" />
               </div>
               <div className="flex justify-center mt-4 gap-2">
-                {studentImages.map((_, index) => (
+                {randomizedImages.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentSlide(index)}
@@ -283,6 +294,7 @@ const HeroSection = () => {
                 ))}
               </div>
             </Carousel>
+            )}
           </div>
         </div>
       </div>
