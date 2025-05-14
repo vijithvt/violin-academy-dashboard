@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import NavigationBar from "@/components/home/NavigationBar";
 import HeroSection from "@/components/home/HeroSection";
 import CoursesSection from "@/components/home/CoursesSection";
@@ -12,6 +12,7 @@ import InstrumentSection from "@/components/home/InstrumentSection";
 import AboutSection from "@/components/home/AboutSection";
 import LearningProcessSection from "@/components/home/LearningProcessSection";
 import FloatingTrialButton from "@/components/home/FloatingTrialButton";
+import TipsForSuccessSection from "@/components/home/TipsForSuccessSection";
 
 const Home = () => {
   useEffect(() => {
@@ -57,6 +58,7 @@ const Home = () => {
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white overflow-hidden">
       <NavigationBar />
       <HeroSection />
+      <TipsForSuccessSection />
       <InstrumentSection />
       <CoursesSection />
       <LearningProcessSection />

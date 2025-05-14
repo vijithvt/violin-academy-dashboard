@@ -81,9 +81,9 @@ const FooterSection = () => {
             </ul>
           </div>
           
-          {/* Free Trial */}
+          {/* Enroll Now Section (renamed from Free Trial) */}
           <div>
-            <h3 className="text-lg font-medium mb-4">Start Learning Today</h3>
+            <h3 className="text-lg font-medium mb-4">Join Our Academy</h3>
             <p className="text-maroon-200 mb-4">
               Experience the rich tradition of Carnatic violin with our personalized training. Join our academy today.
             </p>

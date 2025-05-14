@@ -2,6 +2,8 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { LogIn } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const HeroText = () => {
   // Text animation variants
@@ -56,9 +58,8 @@ const HeroText = () => {
         variants={headingVariants}
       >
         <h1 className="text-3xl md:text-5xl font-serif font-bold text-maroon-950 mb-2">
-          Master the Art of <br />
+          Learn Carnatic Classical Violin
           <span className="text-maroon-800 relative inline-block">
-            Carnatic Violin
             <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-amber-500 scale-x-100 origin-left animate-[expandWidth_1.2s_ease-out]"></span>
           </span>
         </h1>
@@ -90,6 +91,18 @@ const HeroText = () => {
           <a href="https://forms.gle/FCuVKb2bqED64QV3A" target="_blank" rel="noopener noreferrer">
             Enroll Now
           </a>
+        </Button>
+
+        <Button
+          size="lg"
+          variant="outline"
+          className="border-amber-300 hover:bg-amber-50 text-maroon-800 transition-all duration-300"
+          asChild
+        >
+          <Link to="/login" className="flex items-center gap-2">
+            <LogIn size={18} />
+            Student Login
+          </Link>
         </Button>
       </motion.div>
     </div>
