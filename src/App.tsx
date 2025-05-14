@@ -13,6 +13,9 @@ import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
 import Blogs from "./pages/Blogs";
 import Login from "./pages/Login";
+import StudentDashboard from "./pages/StudentDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import PublicStudentRegistration from "./pages/PublicStudentRegistration";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +35,11 @@ const App = () => (
               <Route path="/admin-login" element={<AdminLogin />} />
               <Route path="/blogs" element={<Blogs />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/register/:trialId" element={<PublicStudentRegistration />} />
+              
+              {/* Protected routes */}
+              <Route path="/student-dashboard" element={<StudentDashboard />} />
+              <Route path="/dashboard" element={<AdminDashboard />} />
               
               {/* 404 route */}
               <Route path="*" element={<NotFound />} />

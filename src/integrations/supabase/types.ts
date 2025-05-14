@@ -168,6 +168,33 @@ export type Database = {
           },
         ]
       }
+      practice_sessions: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          minutes: number
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          id?: string
+          minutes: number
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          minutes?: number
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
