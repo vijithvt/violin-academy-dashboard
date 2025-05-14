@@ -28,7 +28,6 @@ const Login = () => {
         description: "Redirecting you to dashboard...",
       });
       
-      // Updated path to match the router configuration
       navigate('/dashboard/student');
     } catch (error: any) {
       toast({
@@ -46,7 +45,7 @@ const Login = () => {
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
         <div className="text-center mb-6">
           <h1 className="text-2xl font-serif font-bold text-maroon-900">Student Login</h1>
-          <p className="text-gray-600">Access your Vijith Violinist student account</p>
+          <p className="text-gray-600">Access your Violin Academy student account</p>
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -91,8 +90,8 @@ const Login = () => {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Need help? Contact your instructor or email{" "}
-            <a href="mailto:support@vijithviolinist.com" className="text-maroon-700 hover:text-maroon-900 font-medium">
-              support@vijithviolinist.com
+            <a href="mailto:support@violinacademy.com" className="text-maroon-700 hover:text-maroon-900 font-medium">
+              support@violinacademy.com
             </a>
           </p>
         </div>

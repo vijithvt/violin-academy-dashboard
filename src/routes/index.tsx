@@ -1,3 +1,4 @@
+
 import { Routes, Route, Navigate } from "react-router-dom";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
@@ -16,6 +17,8 @@ import { useSupabase } from "@/context/SupabaseContext";
 import { useState, useEffect } from "react";
 import NotAuthorized from "@/components/admin/NotAuthorized";
 import { supabase } from "@/integrations/supabase/client";
+import Login from "@/pages/Login";
+import Blogs from "@/pages/Blogs";
 
 const Router = () => {
   const { user, loading: supabaseLoading } = useSupabase();
@@ -79,6 +82,8 @@ const Router = () => {
       {/* Public routes */}
       <Route path="/" element={<Home />} />
       <Route path="/home" element={<Home />} />
+      <Route path="/blogs" element={<Blogs />} />
+      <Route path="/login" element={<Login />} />
 
       {/* Auth routes - redirects if not logged in */}
       <Route
@@ -88,6 +93,16 @@ const Router = () => {
             <Dashboard />
           ) : (
             <Navigate to="/" replace state={{ message: "Please login to access the dashboard." }} />
+          )
+        }
+      />
+      <Route
+        path="/dashboard/student"
+        element={
+          currentUser ? (
+            <StudentDashboard />
+          ) : (
+            <Navigate to="/login" replace state={{ message: "Please login to access the dashboard." }} />
           )
         }
       />
@@ -129,7 +144,7 @@ const Router = () => {
           currentUser ? (
             <StudentDashboard />
           ) : (
-            <Navigate to="/" replace state={{ message: "Please login as a student." }} />
+            <Navigate to="/login" replace state={{ message: "Please login as a student." }} />
           )
         }
       />

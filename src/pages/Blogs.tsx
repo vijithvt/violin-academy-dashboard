@@ -18,7 +18,7 @@ const Blogs = () => {
       title: "Beginner's Daily Practice Routine (30 Minutes)",
       excerpt: "Build strong foundations in Carnatic violin with this structured, easy-to-follow practice plan.",
       category: "practice-tips",
-      date: "May 3, 2025",
+      date: "May 14, 2025",
       readTime: "5 min read",
       tags: ["Beginners", "Practice", "Routine"],
       content: `
