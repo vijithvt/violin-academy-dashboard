@@ -13,25 +13,65 @@ import StudentRegistrationSimple from "@/pages/StudentRegistrationSimple";
 import TrialRequests from "@/pages/TrialRequests";
 import StudentProgress from "@/pages/StudentProgress";
 import AdminSimpleStudentRegistration from "@/pages/AdminSimpleStudentRegistration";
+import { useSupabase } from "@/context/SupabaseContext";
+import { useState, useEffect } from "react";
+import NotAuthorized from "@/components/admin/NotAuthorized";
 
 const Router = () => {
-  const { currentUser, loading } = useAuth();
-
-  // Function to check if the user is an admin
-  const isAdminRoute = (element: JSX.Element) => {
-    if (loading) {
-      return <div>Loading...</div>; // Or a more appropriate loading indicator
+  const { user, loading: supabaseLoading } = useSupabase();
+  const { currentUser, loading: authLoading } = useAuth();
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [isCheckingAdmin, setIsCheckingAdmin] = useState(true);
+  
+  // Check if current user is admin
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user) {
+        setIsAdmin(false);
+        setIsCheckingAdmin(false);
+        return;
+      }
+      
+      try {
+        const { data, error } = await supabase.rpc('is_admin_secure');
+        
+        if (error) {
+          console.error("Error checking admin status:", error);
+          setIsAdmin(false);
+        } else {
+          setIsAdmin(!!data);
+        }
+      } catch (err) {
+        console.error("Admin check failed:", err);
+        setIsAdmin(false);
+      } finally {
+        setIsCheckingAdmin(false);
+      }
+    };
+    
+    if (!supabaseLoading) {
+      checkAdminStatus();
     }
+  }, [user, supabase, supabaseLoading]);
 
-    if (!currentUser) {
+  // Combined loading state
+  const isLoading = supabaseLoading || authLoading || isCheckingAdmin;
+  
+  // Admin route protection component
+  const AdminProtectedRoute = ({ children }: { children: JSX.Element }) => {
+    if (isLoading) {
+      return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    }
+    
+    if (!user) {
       return <Navigate to="/admin-login" />;
     }
-
-    // Here you would typically check if the user has the 'admin' role
-    // For now, let's assume you have a function to check the role
-    const isAdmin = currentUser.email === 'admin@example.com'; // Replace with your actual admin check
-
-    return isAdmin ? element : <Navigate to="/" />;
+    
+    if (isAdmin === false) {
+      return <NotAuthorized />;
+    }
+    
+    return children;
   };
 
   return (
@@ -108,11 +148,57 @@ const Router = () => {
 
       {/* Admin routes */}
       <Route path="/admin-login" element={<AdminLogin />} />
-      <Route path="/admin-dashboard" element={<AdminDashboard />} />
-      <Route path="/admin/student-practice/:id" element={<StudentPracticeDetails />} />
-      <Route path="/dashboard/admin/register-student" element={<StudentRegistration />} />
-      <Route path="/dashboard/admin/register-student-simple" element={<AdminSimpleStudentRegistration />} />
-      <Route path="/trial-requests" element={<TrialRequests />} />
+      
+      {/* Fixed admin dashboard routes */}
+      <Route 
+        path="/admin-dashboard" 
+        element={
+          <AdminProtectedRoute>
+            <AdminDashboard />
+          </AdminProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/dashboard/admin" 
+        element={
+          <AdminProtectedRoute>
+            <AdminDashboard />
+          </AdminProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/admin/student-practice/:id" 
+        element={
+          <AdminProtectedRoute>
+            <StudentPracticeDetails />
+          </AdminProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/dashboard/admin/register-student" 
+        element={
+          <AdminProtectedRoute>
+            <StudentRegistration />
+          </AdminProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/dashboard/admin/register-student-simple" 
+        element={
+          <AdminProtectedRoute>
+            <AdminSimpleStudentRegistration />
+          </AdminProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/trial-requests" 
+        element={
+          <AdminProtectedRoute>
+            <TrialRequests />
+          </AdminProtectedRoute>
+        } 
+      />
     </Routes>
   );
 };
