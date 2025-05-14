@@ -158,13 +158,20 @@ const AdminDashboard = () => {
               <h1 className="text-2xl font-bold">Admin Dashboard</h1>
               <p className="text-indigo-200">Violin Academy Management</p>
             </div>
-            <div className="mt-4 md:mt-0 flex space-x-4">
+            <div className="mt-4 md:mt-0 flex flex-wrap gap-3">
               <Button 
-                onClick={() => navigate("/dashboard/admin/register-student")}
+                onClick={() => navigate("/dashboard/admin/register-student-simple")}
                 className="bg-green-600 hover:bg-green-700 flex items-center gap-2"
               >
                 <UserPlus size={18} />
-                Register New Student
+                Add New Student
+              </Button>
+              <Button 
+                onClick={() => navigate("/dashboard/admin/register-student")}
+                className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
+                variant="outline"
+              >
+                Advanced Registration
               </Button>
               <Button 
                 onClick={() => navigate("/home")}

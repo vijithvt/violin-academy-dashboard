@@ -1,18 +1,24 @@
 
-import { createBrowserRouter } from 'react-router-dom';
-import Home from '@/pages/Home';
-import Login from '@/pages/Login';
-import AdminLogin from '@/pages/AdminLogin';
-import NotFound from '@/pages/NotFound';
-import Index from '@/pages/Index';
-import StudentDashboard from '@/pages/StudentDashboard';
-import AdminDashboard from '@/pages/AdminDashboard';
-import PublicStudentRegistration from '@/pages/PublicStudentRegistration';
+import { createBrowserRouter } from "react-router-dom";
+import Index from "@/pages/Index";
+import Home from "@/pages/Home";
+import NotFound from "@/pages/NotFound";
+import Login from "@/pages/Login";
+import StudentDashboard from "@/pages/StudentDashboard";
+import AdminDashboard from "@/pages/AdminDashboard";
+import AdminLogin from "@/pages/AdminLogin";
+import PublicStudentRegistration from "@/pages/PublicStudentRegistration";
+import AdmissionForm from "@/pages/AdmissionForm";
+import Blogs from "@/pages/Blogs";
+import StudentDashboardLayout from "@/components/student/StudentDashboardLayout";
+import BeginnerGuide from "@/pages/BeginnerGuide";
+import AdminSimpleStudentRegistration from "@/pages/AdminSimpleStudentRegistration";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <Index />,
+    errorElement: <NotFound />,
   },
   {
     path: "/home",
@@ -28,11 +34,23 @@ export const router = createBrowserRouter([
   },
   {
     path: "/dashboard/student",
-    element: <StudentDashboard />,
+    element: (
+      <StudentDashboardLayout>
+        <StudentDashboard />
+      </StudentDashboardLayout>
+    ),
   },
   {
     path: "/dashboard/admin",
     element: <AdminDashboard />,
+  },
+  {
+    path: "/admission",
+    element: <AdmissionForm />,
+  },
+  {
+    path: "/blogs",
+    element: <Blogs />,
   },
   {
     path: "/register/:trialId",
@@ -43,7 +61,13 @@ export const router = createBrowserRouter([
     element: <PublicStudentRegistration />,
   },
   {
-    path: "*",
-    element: <NotFound />,
+    path: "/dashboard/admin/register-student-simple",
+    element: <AdminSimpleStudentRegistration />,
+  },
+  {
+    path: "/beginner-guide",
+    element: <BeginnerGuide />,
   },
 ]);
+
+export default router;
