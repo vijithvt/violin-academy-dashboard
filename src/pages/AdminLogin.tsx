@@ -111,7 +111,8 @@ const AdminLogin = () => {
               title: "Login successful",
               description: "Welcome to admin dashboard!",
             });
-            navigate("/dashboard");
+            // Updated to use the correct path
+            navigate("/dashboard/admin");
           } else {
             // User is authenticated but not an admin
             await supabase.auth.signOut();
