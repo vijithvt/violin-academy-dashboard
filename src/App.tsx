@@ -1,53 +1,36 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "@/context/AuthContext";
-import { SupabaseProvider } from "@/context/SupabaseContext";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import NotFound from './pages/NotFound';
+import Index from './pages/Index';
+import StudentDashboard from './pages/StudentDashboard';
+import AdminDashboard from './pages/AdminDashboard';
+import PublicStudentRegistration from './pages/PublicStudentRegistration';
+import { SupabaseProvider } from './context/SupabaseContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-// Pages
-import AdminLogin from "./pages/AdminLogin";
-import NotFound from "./pages/NotFound";
-import Home from "./pages/Home";
-import Blogs from "./pages/Blogs";
-import Login from "./pages/Login";
-import StudentDashboard from "./pages/StudentDashboard";
-import AdminDashboard from "./pages/AdminDashboard";
-
+// Create a client for React Query
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
       <SupabaseProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              {/* Home page is the root route */}
-              <Route path="/" element={<Home />} />
-              
-              {/* Public routes */}
-              <Route path="/admin-login" element={<AdminLogin />} />
-              <Route path="/blogs" element={<Blogs />} />
-              <Route path="/login" element={<Login />} />
-              
-              {/* Protected routes */}
-              <Route path="/student-dashboard" element={<StudentDashboard />} />
-              <Route path="/admin-dashboard" element={<AdminDashboard />} />
-              <Route path="/dashboard" element={<AdminDashboard />} />
-              
-              {/* 404 route */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/dashboard/student" element={<StudentDashboard />} />
+            <Route path="/dashboard/admin" element={<AdminDashboard />} />
+            <Route path="/register/:trialId" element={<PublicStudentRegistration />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Router>
       </SupabaseProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
+    </QueryClientProvider>
+  );
+}
 
 export default App;
