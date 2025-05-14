@@ -1,9 +1,11 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSupabase } from "@/context/SupabaseContext";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Loader2, BarChart, Clock } from "lucide-react";
+import { Loader2, BarChart, Clock, UserPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 
 interface PracticeSummary {
   id: string;
@@ -156,13 +158,20 @@ const AdminDashboard = () => {
               <h1 className="text-2xl font-bold">Admin Dashboard</h1>
               <p className="text-indigo-200">Violin Academy Management</p>
             </div>
-            <div className="mt-4 md:mt-0">
-              <button 
+            <div className="mt-4 md:mt-0 flex space-x-4">
+              <Button 
+                onClick={() => navigate("/dashboard/admin/register-student")}
+                className="bg-green-600 hover:bg-green-700 flex items-center gap-2"
+              >
+                <UserPlus size={18} />
+                Register New Student
+              </Button>
+              <Button 
                 onClick={() => navigate("/home")}
                 className="px-4 py-2 bg-white text-indigo-700 rounded-md hover:bg-indigo-50 transition-colors"
               >
                 Return to Home
-              </button>
+              </Button>
             </div>
           </div>
         </div>
