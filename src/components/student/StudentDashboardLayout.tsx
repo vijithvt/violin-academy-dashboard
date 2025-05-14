@@ -62,7 +62,7 @@ const StudentDashboardLayout = ({ children }: StudentDashboardLayoutProps) => {
                   </button>
                 </div>
                 <nav className="space-y-2">
-                  <Link to="/student-dashboard" className="block px-4 py-2 text-amber-100 hover:text-white hover:bg-maroon-700 rounded">
+                  <Link to="/dashboard/student" className="block px-4 py-2 text-amber-100 hover:text-white hover:bg-maroon-700 rounded">
                     Dashboard
                   </Link>
                 </nav>
@@ -79,7 +79,7 @@ const StudentDashboardLayout = ({ children }: StudentDashboardLayoutProps) => {
         <div className="hidden lg:block w-64 bg-maroon-800 rounded-lg shadow-lg p-4 flex-shrink-0">
           <h3 className="text-lg font-medium text-white mb-6">Student Dashboard</h3>
           <nav className="space-y-2">
-            <Link to="/student-dashboard" className="block px-4 py-2 text-amber-100 hover:text-white hover:bg-maroon-700 rounded">
+            <Link to="/dashboard/student" className="block px-4 py-2 text-amber-100 hover:text-white hover:bg-maroon-700 rounded">
               Dashboard
             </Link>
           </nav>

@@ -28,8 +28,8 @@ const Login = () => {
         description: "Redirecting you to dashboard...",
       });
       
-      // Redirect to student dashboard
-      navigate('/student-dashboard');
+      // Updated path to match the router configuration
+      navigate('/dashboard/student');
     } catch (error: any) {
       toast({
         title: "Login failed",
