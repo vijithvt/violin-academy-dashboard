@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSupabase } from "@/context/SupabaseContext";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Loader2, Clock, BarChart } from "lucide-react";
+import { Loader2, BarChart, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface PracticeSummary {
@@ -29,8 +29,13 @@ const AdminDashboard = () => {
       }
       
       try {
-        const { data, error } = await supabase.rpc('is_admin');
-        if (error) throw error;
+        // Using the secure function we just created
+        const { data, error } = await supabase.rpc('is_admin_secure');
+        
+        if (error) {
+          console.error("Error checking admin status:", error);
+          throw error;
+        }
         
         setIsAdmin(!!data);
         if (!data) {
@@ -43,9 +48,10 @@ const AdminDashboard = () => {
           navigate("/");
         }
       } catch (error: any) {
+        console.error("Admin check exception:", error);
         toast({
           title: "Authentication Error",
-          description: error.message,
+          description: error.message || "Failed to verify admin status",
           variant: "destructive"
         });
         navigate("/admin-login");
@@ -55,7 +61,7 @@ const AdminDashboard = () => {
     };
     
     checkAdmin();
-  }, [user, navigate]);
+  }, [user, navigate, supabase, toast]);
   
   // Fetch practice data for all students
   useEffect(() => {
@@ -69,30 +75,45 @@ const AdminDashboard = () => {
           .select('id, name')
           .eq('role', 'student');
           
-        if (profilesError) throw profilesError;
+        if (profilesError) {
+          console.error("Error fetching profiles:", profilesError);
+          throw profilesError;
+        }
+        
+        if (!profiles || profiles.length === 0) {
+          setPracticeSummaries([]);
+          return;
+        }
         
         // For each student, get their practice data
         const summaries: PracticeSummary[] = [];
         
         for (const profile of profiles) {
-          // Get total minutes
-          const { data: practiceData, error: practiceError } = await supabase
-            .from('practice_sessions')
-            .select('minutes, date')
-            .eq('user_id', profile.id)
-            .order('date', { ascending: false });
+          try {
+            // Get total minutes
+            const { data: practiceData, error: practiceError } = await supabase
+              .from('practice_sessions')
+              .select('minutes, date')
+              .eq('user_id', profile.id)
+              .order('date', { ascending: false });
+              
+            if (practiceError) {
+              console.error(`Error fetching practice data for ${profile.name}:`, practiceError);
+              continue; // Skip this user but continue with others
+            }
             
-          if (practiceError) throw practiceError;
-          
-          const totalMinutes = practiceData?.reduce((sum, session) => sum + session.minutes, 0) || 0;
-          const lastPractice = practiceData && practiceData.length > 0 ? practiceData[0].date : null;
-          
-          summaries.push({
-            id: profile.id,
-            name: profile.name,
-            total_minutes: totalMinutes,
-            last_practice: lastPractice
-          });
+            const totalMinutes = practiceData?.reduce((sum, session) => sum + session.minutes, 0) || 0;
+            const lastPractice = practiceData && practiceData.length > 0 ? practiceData[0].date : null;
+            
+            summaries.push({
+              id: profile.id,
+              name: profile.name,
+              total_minutes: totalMinutes,
+              last_practice: lastPractice
+            });
+          } catch (err) {
+            console.error(`Error processing practice data for ${profile.name}:`, err);
+          }
         }
         
         // Sort by most practice time
@@ -100,9 +121,10 @@ const AdminDashboard = () => {
         setPracticeSummaries(summaries);
         
       } catch (error: any) {
+        console.error("Error in fetchPracticeSummaries:", error);
         toast({
           title: "Error loading data",
-          description: error.message,
+          description: error.message || "Failed to load practice data",
           variant: "destructive"
         });
       }
@@ -111,7 +133,7 @@ const AdminDashboard = () => {
     if (isAdmin && !isLoading) {
       fetchPracticeSummaries();
     }
-  }, [isAdmin, isLoading]);
+  }, [isAdmin, isLoading, supabase, toast]);
   
   if (isLoading) {
     return (
