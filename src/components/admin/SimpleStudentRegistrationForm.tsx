@@ -44,11 +44,15 @@ const SimpleStudentRegistrationForm = () => {
     setIsSubmitting(true);
     
     try {
-      // 1. Create the user account in Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+      // 1. Create the user account using standard signup method
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
-        email_confirm: true // Skip email confirmation
+        options: {
+          data: {
+            name: values.studentName,
+          },
+        }
       });
       
       if (authError) {
@@ -59,14 +63,15 @@ const SimpleStudentRegistrationForm = () => {
         throw new Error("Failed to create user account");
       }
       
-      // 2. Update the profile name
+      // 2. Update the profile name (optional since we included it in metadata above)
       const { error: profileUpdateError } = await supabase
         .from("profiles")
         .update({ name: values.studentName })
         .eq("id", authData.user.id);
       
       if (profileUpdateError) {
-        throw new Error(`Failed to update profile: ${profileUpdateError.message}`);
+        console.warn(`Profile update warning: ${profileUpdateError.message}`);
+        // We don't throw here since the user was created successfully
       }
       
       // 3. Success message and redirect
