@@ -13,6 +13,7 @@ import AboutSection from "@/components/home/AboutSection";
 import LearningProcessSection from "@/components/home/LearningProcessSection";
 import FloatingTrialButton from "@/components/home/FloatingTrialButton";
 import TipsForSuccessSection from "@/components/home/TipsForSuccessSection";
+import ContactSection from "@/components/home/ContactSection";
 
 const Home = () => {
   useEffect(() => {
@@ -66,6 +67,7 @@ const Home = () => {
       <RecognitionSection />
       <FAQSection />
       <AboutSection />
+      <ContactSection />
       <FooterSection />
       <FloatingButtons />
       <FloatingTrialButton />
