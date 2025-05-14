@@ -1,6 +1,7 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SupabaseProvider } from './context/SupabaseContext';
+import { AuthProvider } from './context/AuthContext';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './routes';
 
@@ -11,7 +12,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <SupabaseProvider>
-        <RouterProvider router={router} />
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
       </SupabaseProvider>
     </QueryClientProvider>
   );
