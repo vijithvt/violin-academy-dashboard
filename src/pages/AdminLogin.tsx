@@ -26,7 +26,6 @@ import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import BrochureDownloads from "@/components/admin/BrochureDownloads";
 
 // Form schema
 const loginSchema = z.object({
@@ -145,111 +144,79 @@ const AdminLogin = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-indigo-50 to-white p-4">
-      <div className="w-full max-w-5xl">
+      <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-indigo-900 mb-2">Violin Academy</h1>
           <p className="text-gray-600">Admin Portal</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Card className="shadow-lg border-indigo-100">
-            <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl font-bold text-center">Admin Login</CardTitle>
-              <CardDescription className="text-center">
-                Enter your email and password to access the dashboard
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="admin@example.com" 
-                            {...field}
-                            disabled={isLoading}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="password" 
-                            placeholder="••••••••" 
-                            {...field}
-                            disabled={isLoading}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {error && (
-                    <div className="p-3 text-sm text-red-500 bg-red-50 rounded-md">
-                      {error}
-                    </div>
+        <Card className="shadow-lg border-indigo-100">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold text-center">Admin Login</CardTitle>
+            <CardDescription className="text-center">
+              Enter your email and password to access the dashboard
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="admin@example.com" 
+                          {...field}
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="password" 
+                          placeholder="••••••••" 
+                          {...field}
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  <Button
-                    type="submit"
-                    className="w-full bg-indigo-700 hover:bg-indigo-800"
-                    disabled={isLoading}
-                  >
-                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {isLoading ? "Logging in..." : "Login"}
-                  </Button>
-                </form>
-              </Form>
-            </CardContent>
-            <CardFooter className="flex justify-center text-sm text-muted-foreground">
-              <p>Secure access for authorized personnel only</p>
-            </CardFooter>
-          </Card>
+                {error && (
+                  <div className="p-3 text-sm text-red-500 bg-red-50 rounded-md">
+                    {error}
+                  </div>
+                )}
 
-          <div className="flex flex-col space-y-6">
-            <Card className="shadow-lg border-indigo-100 h-auto">
-              <CardHeader className="space-y-1">
-                <CardTitle className="text-xl font-bold">Program Materials</CardTitle>
-                <CardDescription>
-                  Download and share brochures with prospective students
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600 mb-4">
-                  Share these brochures with potential students to introduce them to our violin programs. 
-                  These materials highlight the benefits and structure of our different learning formats.
-                </p>
-                <Button 
-                  onClick={() => {
-                    const section = document.getElementById('brochures-section');
-                    section?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="w-full"
+                <Button
+                  type="submit"
+                  className="w-full bg-indigo-700 hover:bg-indigo-800"
+                  disabled={isLoading}
                 >
-                  View Brochures
+                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {isLoading ? "Logging in..." : "Login"}
                 </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        <div id="brochures-section" className="mt-16">
-          <BrochureDownloads />
-        </div>
+              </form>
+            </Form>
+          </CardContent>
+          <CardFooter className="flex justify-center text-sm text-muted-foreground">
+            <p>Secure access for authorized personnel only</p>
+          </CardFooter>
+        </Card>
       </div>
     </div>
   );
