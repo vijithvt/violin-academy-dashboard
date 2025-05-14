@@ -31,8 +31,8 @@ const TipsForSuccessSection = () => {
   return (
     <section className="py-12 md:py-16 bg-gradient-to-r from-amber-50 to-amber-100/30">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-maroon-900 mb-3">Tips For Success</h2>
+        <div className="text-center mb-8">
+          <h2 className="text-2xl md:text-3xl font-serif font-bold text-maroon-900 mb-2">Tips For Success</h2>
           <div className="h-1 w-20 bg-amber-500 mx-auto"></div>
         </div>
         
@@ -55,7 +55,7 @@ const TipsForSuccessSection = () => {
             </CardContent>
           </Card>
           
-          <div className="flex justify-center mt-4 gap-1.5">
+          <div className="flex justify-center mt-3 gap-1.5">
             {tips.map((_, index) => (
               <button
                 key={index}

@@ -58,10 +58,10 @@ const Home = () => {
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white overflow-hidden">
       <NavigationBar />
       <HeroSection />
-      <TipsForSuccessSection />
       <InstrumentSection />
       <CoursesSection />
       <LearningProcessSection />
+      <TipsForSuccessSection />
       <RequirementsSection />
       <RecognitionSection />
       <FAQSection />
