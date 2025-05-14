@@ -1,3 +1,4 @@
+
 import { Routes, Route, Navigate } from "react-router-dom";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
@@ -11,6 +12,7 @@ import StudentRegistration from "@/pages/StudentRegistration";
 import StudentRegistrationSimple from "@/pages/StudentRegistrationSimple";
 import TrialRequests from "@/pages/TrialRequests";
 import StudentProgress from "@/pages/StudentProgress";
+import AdminSimpleStudentRegistration from "@/pages/AdminSimpleStudentRegistration";
 
 const Router = () => {
   const { currentUser, loading } = useAuth();
@@ -109,7 +111,7 @@ const Router = () => {
       <Route path="/admin-dashboard" element={<AdminDashboard />} />
       <Route path="/admin/student-practice/:id" element={<StudentPracticeDetails />} />
       <Route path="/dashboard/admin/register-student" element={<StudentRegistration />} />
-      <Route path="/dashboard/admin/register-student-simple" element={<StudentRegistrationSimple />} />
+      <Route path="/dashboard/admin/register-student-simple" element={<AdminSimpleStudentRegistration />} />
       <Route path="/trial-requests" element={<TrialRequests />} />
     </Routes>
   );

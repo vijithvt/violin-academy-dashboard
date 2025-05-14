@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSupabase } from "@/context/SupabaseContext";
 import { 
@@ -51,7 +50,7 @@ const StudentPracticeDetails = () => {
   const [monthlyStats, setMonthlyStats] = useState<MonthlyStats[]>([]);
   
   // Fetch student practice data
-  useState(() => {
+  useEffect(() => {
     const fetchStudentData = async () => {
       if (!id) return;
       
