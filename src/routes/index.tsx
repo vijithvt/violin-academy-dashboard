@@ -35,11 +35,11 @@ export const router = createBrowserRouter([
     element: <AdminDashboard />,
   },
   {
-    path: "/dashboard/admin/register-student",
+    path: "/register/:trialId",
     element: <PublicStudentRegistration />,
   },
   {
-    path: "/register/:trialId",
+    path: "/dashboard/admin/register-student",
     element: <PublicStudentRegistration />,
   },
   {

@@ -10,19 +10,15 @@ const PublicStudentRegistration = () => {
   const { trialId } = useParams();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [isVerifying, setIsVerifying] = useState(true);
+  const [isVerifying, setIsVerifying] = useState(trialId ? true : false);
   const [trialData, setTrialData] = useState<any>(null);
   
-  // Verify the trial ID and fetch the trial data
+  // Verify the trial ID and fetch the trial data if it exists
   useEffect(() => {
     const verifyTrialId = async () => {
       if (!trialId) {
-        toast({
-          title: "Invalid registration link",
-          description: "This registration link is invalid or has expired",
-          variant: "destructive"
-        });
-        navigate("/");
+        // No trial ID means this is direct registration from admin dashboard
+        setIsVerifying(false);
         return;
       }
       
@@ -52,7 +48,9 @@ const PublicStudentRegistration = () => {
       }
     };
     
-    verifyTrialId();
+    if (trialId) {
+      verifyTrialId();
+    }
   }, [trialId, toast, navigate]);
 
   if (isVerifying) {
@@ -64,13 +62,23 @@ const PublicStudentRegistration = () => {
     );
   }
 
+  const isAdminDirectRegistration = !trialId;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white p-4">
       <div className="max-w-7xl mx-auto py-8">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-indigo-900">Complete Your Registration</h1>
+          <h1 className="text-3xl font-bold text-indigo-900">
+            {isAdminDirectRegistration 
+              ? "Register New Student" 
+              : "Complete Your Registration"
+            }
+          </h1>
           <p className="text-gray-600 mt-2">
-            Thank you for attending your trial class! Please complete your registration below.
+            {isAdminDirectRegistration 
+              ? "Fill out the form below to register a new student" 
+              : "Thank you for attending your trial class! Please complete your registration below."
+            }
           </p>
         </div>
         
@@ -94,7 +102,7 @@ const PublicStudentRegistration = () => {
             learningLevel: trialData.level || "novice",
             trialRequestId: trialId
           }} 
-          isPublic={true} 
+          isPublic={!isAdminDirectRegistration} 
         />
       </div>
     </div>

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -98,11 +99,25 @@ const TrialRequestDetails = ({
     }
 
     setIsGeneratingLink(true);
-    // Generate the registration link
-    const link = `${window.location.origin}/register/${trial.id}`;
-    setRegistrationLink(link);
-    setShowLinkDialog(true);
-    setIsGeneratingLink(false);
+    
+    try {
+      // Generate the registration link with the correct path format
+      // Use window.location.origin to get the current base URL dynamically
+      const baseUrl = window.location.origin;
+      const link = `${baseUrl}/register/${trial.id}`;
+      
+      setRegistrationLink(link);
+      setShowLinkDialog(true);
+    } catch (error) {
+      toast({
+        title: "Error generating link",
+        description: "Failed to generate a registration link",
+        variant: "destructive"
+      });
+      console.error("Error generating registration link:", error);
+    } finally {
+      setIsGeneratingLink(false);
+    }
   };
 
   const copyToClipboard = () => {
