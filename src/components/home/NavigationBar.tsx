@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, X, LogIn, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
@@ -11,7 +11,12 @@ const NavigationBar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const isMobile = useMediaQuery("(max-width: 768px)");
+
+  useEffect(() => {
+    console.log("Current location:", location.pathname);
+  }, [location]);
 
   // Handle scroll event to add shadow when scrolled
   useEffect(() => {
@@ -35,13 +40,13 @@ const NavigationBar = () => {
     >
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between py-4">
-          <Link to="/" className="flex items-center gap-2">
+          <Link to="/home" className="flex items-center gap-2">
             <span className="text-xl font-bold text-primary">Violin Academy</span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="font-medium hover:text-primary transition-colors">
+            <Link to="/home" className="font-medium hover:text-primary transition-colors">
               Home
             </Link>
             <Link to="/blogs" className="font-medium hover:text-primary transition-colors">
@@ -119,7 +124,7 @@ const NavigationBar = () => {
           <div className="md:hidden py-4 border-t animate-fade-in">
             <div className="flex flex-col space-y-4">
               <Link
-                to="/"
+                to="/home"
                 className="px-2 py-1 hover:text-primary transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
