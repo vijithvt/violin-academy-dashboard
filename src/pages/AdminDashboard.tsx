@@ -3,9 +3,25 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSupabase } from "@/context/SupabaseContext";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Loader2, BarChart, Clock, UserPlus } from "lucide-react";
+import { Loader2, BarChart, Clock, UserPlus, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { 
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface PracticeSummary {
   id: string;
@@ -21,6 +37,8 @@ const AdminDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [practiceSummaries, setPracticeSummaries] = useState<PracticeSummary[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
   
   // Check if user is admin
   useEffect(() => {
@@ -148,6 +166,19 @@ const AdminDashboard = () => {
   if (!isAdmin) {
     return null; // Will redirect in useEffect
   }
+
+  // Calculate pagination
+  const totalPages = Math.ceil(practiceSummaries.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedSummaries = practiceSummaries.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
+
+  // Navigate to student details
+  const viewStudentDetails = (studentId: string) => {
+    navigate(`/admin/student-practice/${studentId}`);
+  };
   
   return (
     <div className="min-h-screen bg-gray-50">
@@ -198,44 +229,99 @@ const AdminDashboard = () => {
           
           <CardContent className="pt-6">
             {practiceSummaries.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead>
-                    <tr>
-                      <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Student
-                      </th>
-                      <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Total Practice
-                      </th>
-                      <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Last Practice
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {practiceSummaries.map((student) => (
-                      <tr key={student.id}>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">{student.name}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+              <div className="space-y-4">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Student</TableHead>
+                      <TableHead>Total Practice</TableHead>
+                      <TableHead>Last Practice</TableHead>
+                      <TableHead className="text-right">Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedSummaries.map((student) => (
+                      <TableRow key={student.id} className="hover:bg-gray-50 cursor-pointer">
+                        <TableCell className="font-medium">{student.name}</TableCell>
+                        <TableCell>
                           <div className="flex items-center">
                             <Clock className="h-4 w-4 text-indigo-500 mr-2" />
-                            <div className="text-sm text-gray-900">
-                              {(student.total_minutes / 60).toFixed(1)} hours ({student.total_minutes} mins)
+                            <div className="space-x-1">
+                              <span className="font-medium text-gray-900">
+                                {(student.total_minutes / 60).toFixed(1)} hours
+                              </span>
+                              <span className="text-gray-500 text-sm">
+                                ({student.total_minutes} mins)
+                              </span>
                             </div>
                           </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-500">
-                            {student.last_practice ? new Date(student.last_practice).toLocaleDateString() : 'Never'}
+                          {/* Progress bar showing relative amount compared to top student */}
+                          <div className="w-full bg-gray-200 h-1.5 mt-2 rounded-full overflow-hidden">
+                            <div 
+                              className="bg-indigo-500 h-full rounded-full"
+                              style={{ 
+                                width: `${Math.max(
+                                  5,
+                                  (student.total_minutes / (practiceSummaries[0]?.total_minutes || 1)) * 100
+                                )}%` 
+                              }}
+                            />
                           </div>
-                        </td>
-                      </tr>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-sm text-gray-500">
+                            {student.last_practice 
+                              ? new Date(student.last_practice).toLocaleDateString() 
+                              : 'Never'}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex items-center gap-1"
+                            onClick={() => viewStudentDetails(student.id)}
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                            Details
+                          </Button>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
+                  </TableBody>
+                </Table>
+                
+                {/* Pagination controls */}
+                {totalPages > 1 && (
+                  <Pagination className="mt-4">
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious 
+                          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                          className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                        />
+                      </PaginationItem>
+                      
+                      {Array.from({ length: totalPages }).map((_, index) => (
+                        <PaginationItem key={index}>
+                          <PaginationLink
+                            onClick={() => setCurrentPage(index + 1)}
+                            isActive={currentPage === index + 1}
+                          >
+                            {index + 1}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+                      
+                      <PaginationItem>
+                        <PaginationNext 
+                          onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                          className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                )}
               </div>
             ) : (
               <div className="text-center py-10">
