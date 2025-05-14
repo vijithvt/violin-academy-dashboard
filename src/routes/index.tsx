@@ -1,4 +1,3 @@
-
 import { Routes, Route, Navigate } from "react-router-dom";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
@@ -16,6 +15,7 @@ import AdminSimpleStudentRegistration from "@/pages/AdminSimpleStudentRegistrati
 import { useSupabase } from "@/context/SupabaseContext";
 import { useState, useEffect } from "react";
 import NotAuthorized from "@/components/admin/NotAuthorized";
+import { supabase } from "@/integrations/supabase/client";
 
 const Router = () => {
   const { user, loading: supabaseLoading } = useSupabase();
@@ -52,7 +52,7 @@ const Router = () => {
     if (!supabaseLoading) {
       checkAdminStatus();
     }
-  }, [user, supabase, supabaseLoading]);
+  }, [user, supabaseLoading]);
 
   // Combined loading state
   const isLoading = supabaseLoading || authLoading || isCheckingAdmin;
