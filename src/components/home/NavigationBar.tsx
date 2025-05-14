@@ -53,7 +53,7 @@ const NavigationBar = () => {
               {currentUser ? (
                 <Button 
                   variant="outline" 
-                  onClick={() => navigate("/")}
+                  onClick={() => navigate("/dashboard/student")}
                   className="flex items-center gap-2"
                 >
                   <UserCircle size={18} />
@@ -83,15 +83,27 @@ const NavigationBar = () => {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center">
-            {!isMenuOpen && !currentUser && (
-              <Button 
-                variant="ghost"
-                size="sm" 
-                onClick={() => navigate("/login")}
-                className="mr-2 text-maroon-800"
-              >
-                <LogIn size={18} />
-              </Button>
+            {!isMenuOpen && (
+              <>
+                {!currentUser && (
+                  <Button 
+                    variant="ghost"
+                    size="sm" 
+                    onClick={() => navigate("/login")}
+                    className="mr-2 text-maroon-800"
+                  >
+                    <LogIn size={18} />
+                  </Button>
+                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate("/admin-login")}
+                  className="mr-2 bg-maroon-800 text-white hover:bg-maroon-700"
+                >
+                  <UserCircle size={18} />
+                </Button>
+              </>
             )}
             <button
               className="text-gray-700"
@@ -128,7 +140,7 @@ const NavigationBar = () => {
                     variant="outline" 
                     className="w-full justify-start"
                     onClick={() => {
-                      navigate("/");
+                      navigate("/dashboard/student");
                       setIsMenuOpen(false);
                     }}
                   >
