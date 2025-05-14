@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -91,5 +92,39 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Mobile-specific styles */
+.platform-android {
+  /* Android material design-like adjustments */
+  --android-safe-top: env(safe-area-inset-top, 0px);
+  --android-safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Handle native mobile safe areas */
+.mobile-safe-area {
+  padding-top: var(--android-safe-top, 0px);
+  padding-bottom: var(--android-safe-bottom, 0px);
+}
+
+/* Touch-friendly adjustments */
+@media (max-width: 768px) {
+  button, 
+  .btn, 
+  [role="button"],
+  input[type="button"],
+  input[type="submit"] {
+    min-height: 44px;
+  }
+  
+  /* Increase touch target sizes */
+  a, button, input, select, textarea {
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+  
+  /* Remove hover effects that don't make sense on touch devices */
+  .touch-device .hover-only {
+    display: none;
   }
 }
