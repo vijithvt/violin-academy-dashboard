@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSupabase } from "@/context/SupabaseContext";
@@ -137,7 +136,7 @@ const AdminDashboard = () => {
             </div>
             <div className="mt-4 md:mt-0">
               <button 
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/home")}
                 className="px-4 py-2 bg-white text-indigo-700 rounded-md hover:bg-indigo-50 transition-colors"
               >
                 Return to Home
