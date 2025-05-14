@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSupabase } from "@/context/SupabaseContext";
@@ -19,8 +20,9 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ChevronLeft, Calendar, Clock, Bookmark } from "lucide-react";
-import { format, parseISO, startOfMonth, endOfMonth, differenceInDays } from "date-fns";
+import { Loader2, ChevronLeft, Calendar, Clock, Bookmark, LineChart, Timer } from "lucide-react";
+import { format, parseISO, startOfMonth, endOfMonth, differenceInDays, addDays } from "date-fns";
+import { formatTime, calculateConsistency } from "@/lib/practice-utils";
 
 interface PracticeSession {
   id: string;
@@ -29,6 +31,8 @@ interface PracticeSession {
   minutes: number;
   notes: string | null;
   created_at: string;
+  start_time: string | null;
+  end_time: string | null;
 }
 
 interface MonthlyStats {
@@ -37,6 +41,7 @@ interface MonthlyStats {
   sessionCount: number;
   averageMinutes: number;
   monthIndex: number;
+  daysLogged: number;
 }
 
 const StudentPracticeDetails = () => {
@@ -76,7 +81,8 @@ const StudentPracticeDetails = () => {
           .from('practice_sessions')
           .select('*')
           .eq('user_id', id)
-          .order('date', { ascending: false });
+          .order('date', { ascending: false })
+          .order('start_time', { ascending: false });
           
         if (sessionsError) {
           throw sessionsError;
@@ -108,7 +114,8 @@ const StudentPracticeDetails = () => {
     const monthMap = new Map<string, { 
       totalMinutes: number, 
       sessionCount: number, 
-      monthIndex: number 
+      monthIndex: number,
+      practicesByDay: Set<string>,
     }>();
     
     sessions.forEach(session => {
@@ -116,18 +123,21 @@ const StudentPracticeDetails = () => {
       const monthKey = format(date, 'yyyy-MM');
       const monthDisplay = format(date, 'MMMM yyyy');
       const monthIndex = date.getMonth() + (date.getFullYear() * 12);
+      const dayKey = session.date;
       
       if (!monthMap.has(monthKey)) {
         monthMap.set(monthKey, { 
           totalMinutes: 0, 
           sessionCount: 0, 
-          monthIndex 
+          monthIndex,
+          practicesByDay: new Set(),
         });
       }
       
       const monthData = monthMap.get(monthKey)!;
       monthData.totalMinutes += session.minutes;
       monthData.sessionCount += 1;
+      monthData.practicesByDay.add(dayKey);
     });
     
     // Convert map to array and sort by month (most recent first)
@@ -137,13 +147,14 @@ const StudentPracticeDetails = () => {
         totalMinutes: data.totalMinutes,
         sessionCount: data.sessionCount,
         averageMinutes: Math.round(data.totalMinutes / data.sessionCount),
-        monthIndex: data.monthIndex
+        monthIndex: data.monthIndex,
+        daysLogged: data.practicesByDay.size,
       }))
       .sort((a, b) => b.monthIndex - a.monthIndex);
   };
   
   // Calculate consistency score (percentage of days practiced in a month)
-  const calculateConsistency = (sessions: PracticeSession[]): number => {
+  const calculateConsistencyScore = (sessions: PracticeSession[]): number => {
     if (sessions.length === 0) return 0;
     
     // Use the most recent month for consistency calculation
@@ -151,6 +162,9 @@ const StudentPracticeDetails = () => {
     const monthStart = startOfMonth(recentDate);
     const monthEnd = endOfMonth(recentDate);
     const daysInMonth = differenceInDays(monthEnd, monthStart) + 1;
+    
+    // Get the current day of month (to calculate based on days that have passed)
+    const currentDay = Math.min(new Date().getDate(), daysInMonth);
     
     // Count unique days practiced in this month
     const daysThisMonth = new Set(
@@ -162,13 +176,52 @@ const StudentPracticeDetails = () => {
         .map(session => session.date)
     ).size;
     
-    return Math.round((daysThisMonth / daysInMonth) * 100);
+    return Math.round((daysThisMonth / currentDay) * 100);
+  };
+  
+  // Group sessions by date for display
+  const groupedSessions = practiceSessions.reduce<Record<string, PracticeSession[]>>((acc, session) => {
+    if (!acc[session.date]) {
+      acc[session.date] = [];
+    }
+    acc[session.date].push(session);
+    return acc;
+  }, {});
+  
+  // Calculate streak
+  const calculateStreak = (sessions: PracticeSession[]): number => {
+    if (sessions.length === 0) return 0;
+    
+    // Group by date for easier access
+    const dateSet = new Set(sessions.map(s => s.date));
+    const sortedDates = Array.from(dateSet).sort().reverse(); // most recent first
+    
+    if (sortedDates.length === 0) return 0;
+    
+    let streak = 1; // Start with the most recent day
+    let currentDate = parseISO(sortedDates[0]);
+    
+    for (let i = 1; i < 100; i++) { // Limit to 100 days to avoid infinite loop
+      const prevDate = addDays(currentDate, -1);
+      const prevDateStr = format(prevDate, 'yyyy-MM-dd');
+      
+      if (dateSet.has(prevDateStr)) {
+        streak++;
+        currentDate = prevDate;
+      } else {
+        break;
+      }
+    }
+    
+    return streak;
   };
   
   const totalHours = practiceSessions.reduce((sum, session) => 
     sum + session.minutes, 0) / 60;
   
-  const consistencyScore = calculateConsistency(practiceSessions);
+  const consistencyScore = calculateConsistencyScore(practiceSessions);
+  const currentStreak = calculateStreak(practiceSessions);
+  const uniquePracticeDays = new Set(practiceSessions.map(s => s.date)).size;
   
   if (isLoading) {
     return (
@@ -193,7 +246,7 @@ const StudentPracticeDetails = () => {
       </div>
       
       {/* Practice Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
@@ -209,15 +262,20 @@ const StudentPracticeDetails = () => {
           <CardContent className="pt-6">
             <div className="text-center">
               <Calendar className="h-10 w-10 text-indigo-500 mx-auto mb-2" />
-              <h3 className="text-lg font-medium text-gray-500">Recent Practice</h3>
-              {practiceSessions.length > 0 ? (
-                <>
-                  <p className="text-3xl font-bold">{format(parseISO(practiceSessions[0].date), 'MMM dd')}</p>
-                  <p className="text-sm text-gray-500">{practiceSessions[0].minutes} minutes</p>
-                </>
-              ) : (
-                <p className="text-xl font-medium text-gray-400">No sessions</p>
-              )}
+              <h3 className="text-lg font-medium text-gray-500">Practice Days</h3>
+              <p className="text-3xl font-bold">{uniquePracticeDays}</p>
+              <p className="text-sm text-gray-500">Logged since joining</p>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <Timer className="h-10 w-10 text-green-500 mx-auto mb-2" />
+              <h3 className="text-lg font-medium text-gray-500">Current Streak</h3>
+              <p className="text-3xl font-bold">{currentStreak} days</p>
+              <p className="text-sm text-gray-500">Consecutive practice</p>
             </div>
           </CardContent>
         </Card>
@@ -238,7 +296,10 @@ const StudentPracticeDetails = () => {
       {monthlyStats.length > 0 && (
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Monthly Practice Statistics</CardTitle>
+            <CardTitle className="flex items-center">
+              <LineChart className="h-5 w-5 mr-2 text-primary" />
+              Monthly Practice Statistics
+            </CardTitle>
             <CardDescription>
               Summary of practice hours by month
             </CardDescription>
@@ -250,7 +311,8 @@ const StudentPracticeDetails = () => {
                   <TableHead>Month</TableHead>
                   <TableHead>Total Time</TableHead>
                   <TableHead>Sessions</TableHead>
-                  <TableHead>Average</TableHead>
+                  <TableHead>Days Practiced</TableHead>
+                  <TableHead>Avg. Session</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -262,6 +324,7 @@ const StudentPracticeDetails = () => {
                       <span className="text-gray-500 text-sm ml-1">({monthData.totalMinutes} mins)</span>
                     </TableCell>
                     <TableCell>{monthData.sessionCount} sessions</TableCell>
+                    <TableCell>{monthData.daysLogged} days</TableCell>
                     <TableCell>{monthData.averageMinutes} mins/session</TableCell>
                   </TableRow>
                 ))}
@@ -274,31 +337,56 @@ const StudentPracticeDetails = () => {
       {/* Practice Session History */}
       <Card>
         <CardHeader>
-          <CardTitle>Practice Session History</CardTitle>
+          <CardTitle className="flex items-center">
+            <Calendar className="h-5 w-5 mr-2 text-primary" />
+            Practice Session History
+          </CardTitle>
           <CardDescription>
             Detailed log of all recorded practice sessions
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          {practiceSessions.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Duration</TableHead>
-                  <TableHead>Notes</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {practiceSessions.map(session => (
-                  <TableRow key={session.id}>
-                    <TableCell>{format(parseISO(session.date), 'MMM dd, yyyy')}</TableCell>
-                    <TableCell>{session.minutes} minutes</TableCell>
-                    <TableCell>{session.notes || '—'}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+        <CardContent className="max-h-[600px] overflow-y-auto">
+          {Object.entries(groupedSessions).length > 0 ? (
+            <div className="space-y-4">
+              {Object.entries(groupedSessions).map(([date, sessions]) => (
+                <div key={date} className="border rounded-md overflow-hidden">
+                  <div className="bg-gray-50 p-3">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        <span className="font-medium">
+                          {format(parseISO(date), 'MMMM dd, yyyy')}
+                        </span>
+                      </div>
+                      <span className="text-sm">
+                        {sessions.reduce((sum, s) => sum + s.minutes, 0)} mins total
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Time</TableHead>
+                        <TableHead>Duration</TableHead>
+                        <TableHead>Notes</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {sessions.map(session => (
+                        <TableRow key={session.id}>
+                          <TableCell>
+                            {formatTime(session.start_time)} - {formatTime(session.end_time)}
+                          </TableCell>
+                          <TableCell>{session.minutes} minutes</TableCell>
+                          <TableCell>{session.notes || '—'}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ))}
+            </div>
           ) : (
             <div className="text-center py-6 text-gray-500">
               No practice sessions recorded yet

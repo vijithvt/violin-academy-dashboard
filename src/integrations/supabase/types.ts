@@ -172,25 +172,31 @@ export type Database = {
         Row: {
           created_at: string
           date: string
+          end_time: string | null
           id: string
           minutes: number
           notes: string | null
+          start_time: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
           date?: string
+          end_time?: string | null
           id?: string
           minutes: number
           notes?: string | null
+          start_time?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
           date?: string
+          end_time?: string | null
           id?: string
           minutes?: number
           notes?: string | null
+          start_time?: string | null
           user_id?: string
         }
         Relationships: []
