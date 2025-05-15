@@ -1,8 +1,8 @@
+
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -11,108 +11,151 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Clock, Calendar, Search, Filter, ArrowDownUp } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import {
-  BarChart,
-  ResponsiveContainer,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-} from "recharts";
-import { AlertCircle, Calendar, Clock, ArrowLeft, FilterX, Filter, ArrowDownUp } from "lucide-react";
-import { format, parseISO, startOfWeek, endOfWeek, addDays, subDays, isWithinInterval } from "date-fns";
-import { useToast } from "@/hooks/use-toast";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "@/hooks/use-toast";
 
-type PracticeSession = {
-  id: string;
-  date: string;
-  minutes: number;
-  start_time: string | null;
-  end_time: string | null;
-  notes: string | null;
-  created_at: string;
-};
-
-type StudentDetails = {
+// Define types for better type safety
+interface Student {
   id: string;
   name: string;
   email: string;
   level?: string;
-};
+}
 
+interface PracticeSession {
+  id: string;
+  user_id: string;
+  date: string;
+  minutes: number;
+  notes: string;
+  created_at: string;
+}
+
+// This is the component to display student practice details
 const StudentPracticeDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { toast } = useToast();
-  
+  const [student, setStudent] = useState<Student | null>(null);
   const [sessions, setSessions] = useState<PracticeSession[]>([]);
   const [filteredSessions, setFilteredSessions] = useState<PracticeSession[]>([]);
-  const [student, setStudent] = useState<StudentDetails | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [weeklyData, setWeeklyData] = useState<any[]>([]);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
-  const [sortField, setSortField] = useState<'date' | 'minutes'>('date');
-  
-  // Filter states
-  const [dateFrom, setDateFrom] = useState<string>("");
-  const [dateTo, setDateTo] = useState<string>("");
-  const [minDuration, setMinDuration] = useState<string>("");
-  const [maxDuration, setMaxDuration] = useState<string>("");
-  const [filterActive, setFilterActive] = useState(false);
-  const [filterOpen, setFilterOpen] = useState(false);
-  
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!id) {
-        setError("No student ID provided");
-        setLoading(false);
-        return;
-      }
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterPeriod, setFilterPeriod] = useState<string>("all");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
+  // Filter options
+  const filterOptions = [
+    { value: "all", label: "All Time" },
+    { value: "week", label: "This Week" },
+    { value: "month", label: "This Month" },
+    { value: "3months", label: "Last 3 Months" },
+    { value: "year", label: "This Year" },
+  ];
+
+  // Helper function to format dates
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+  };
+
+  // Helper function to get date ranges for filtering
+  const getDateRange = (period: string) => {
+    const now = new Date();
+    const start = new Date();
+    
+    switch(period) {
+      case "week":
+        start.setDate(now.getDate() - 7);
+        break;
+      case "month":
+        start.setMonth(now.getMonth() - 1);
+        break;
+      case "3months":
+        start.setMonth(now.getMonth() - 3);
+        break;
+      case "year":
+        start.setFullYear(now.getFullYear() - 1);
+        break;
+      default:
+        start.setFullYear(1970); // All time
+    }
+    
+    return { start, end: now };
+  };
+
+  // Apply filters to sessions
+  const applyFilters = () => {
+    let result = [...sessions];
+    
+    // Apply date filter
+    if (filterPeriod !== "all") {
+      const { start, end } = getDateRange(filterPeriod);
+      result = result.filter(session => {
+        const sessionDate = new Date(session.date);
+        return sessionDate >= start && sessionDate <= end;
+      });
+    }
+    
+    // Apply search term
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      result = result.filter(session => 
+        session.notes.toLowerCase().includes(term)
+      );
+    }
+    
+    // Apply sorting
+    result.sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+      return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+    });
+    
+    setFilteredSessions(result);
+  };
+
+  // Fetch student data and practice sessions
+  useEffect(() => {
+    const fetchStudentData = async () => {
+      if (!id) return;
+      
       try {
-        // First, get student profile information
+        setIsLoading(true);
+        
+        // Fetch basic student data
         const { data: studentData, error: studentError } = await supabase
           .from("profiles")
-          .select("id, name, email")
+          .select("id, name")
           .eq("id", id)
           .single();
-
+          
         if (studentError) {
           throw new Error(studentError.message);
         }
         
-        // Then get any additional student profile info like level
+        // Fetch extended profile data to get learning level
         const { data: extendedProfile, error: extendedError } = await supabase
           .from("student_profiles")
           .select("learning_level")
           .eq("user_id", id)
           .maybeSingle();
           
-        let studentLevel = "Unknown";
+        // Map learning level to display format
+        let studentLevel = "AARAMBHA (Beginner)";
         
         if (!extendedError && extendedProfile?.learning_level) {
-          // Map learning level to display format
           switch(extendedProfile.learning_level) {
-            case "beginner":
-              studentLevel = "AARAMBHA (Beginner)";
-              break;
             case "intermediate":
               studentLevel = "MADHYAMA (Intermediate)";
               break;
@@ -123,494 +166,277 @@ const StudentPracticeDetails = () => {
               studentLevel = "VIDHWATH (Professional)";
               break;
             default:
-              studentLevel = extendedProfile.learning_level;
+              studentLevel = "AARAMBHA (Beginner)";
           }
         }
-
-        // Get practice sessions
+        
+        // Fetch practice sessions
         const { data: sessions, error: sessionsError } = await supabase
           .from("practice_sessions")
           .select("*")
           .eq("user_id", id)
           .order("date", { ascending: false });
-
+          
         if (sessionsError) {
           throw new Error(sessionsError.message);
         }
 
-        setStudent({ 
-          id: studentData.id, 
-          name: studentData.name, 
-          email: studentData.email || '', 
-          level: studentLevel 
-        });
+        // Fix here: only access properties if studentData is valid
+        if (studentData) {
+          setStudent({ 
+            id: studentData.id, 
+            name: studentData.name, 
+            email: '', // We don't have email in this query
+            level: studentLevel 
+          });
+        }
+        
         setSessions(sessions || []);
         setFilteredSessions(sessions || []);
-
-        // Generate weekly summary data
-        generateWeeklyData(sessions || []);
-      } catch (err) {
-        console.error("Error fetching student data:", err);
-        setError("Failed to load student data");
+        
+      } catch (error) {
+        console.error("Error fetching student data:", error);
         toast({
           title: "Error",
           description: "Failed to load student data",
           variant: "destructive",
         });
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
-
-    fetchData();
-  }, [id, toast]);
-  
-  // Generate weekly practice data for the chart
-  const generateWeeklyData = (practiceData: PracticeSession[]) => {
-    const today = new Date();
-    const startOfCurrentWeek = startOfWeek(today, { weekStartsOn: 1 });
-    const endOfCurrentWeek = endOfWeek(today, { weekStartsOn: 1 });
     
-    // Get data for last 4 weeks
-    const currentWeekData = getWeekData(practiceData, startOfCurrentWeek, endOfCurrentWeek, "This Week");
-    const lastWeekData = getWeekData(
-      practiceData,
-      subDays(startOfCurrentWeek, 7),
-      subDays(endOfCurrentWeek, 7),
-      "Last Week"
-    );
-    const twoWeeksAgoData = getWeekData(
-      practiceData,
-      subDays(startOfCurrentWeek, 14),
-      subDays(endOfCurrentWeek, 14),
-      "2 Weeks Ago"
-    );
-    const threeWeeksAgoData = getWeekData(
-      practiceData,
-      subDays(startOfCurrentWeek, 21),
-      subDays(endOfCurrentWeek, 21),
-      "3 Weeks Ago"
-    );
+    fetchStudentData();
+  }, [id]);
+  
+  // Apply filters when filter states change
+  useEffect(() => {
+    applyFilters();
+  }, [searchTerm, filterPeriod, sortOrder, sessions]);
 
-    setWeeklyData([threeWeeksAgoData, twoWeeksAgoData, lastWeekData, currentWeekData]);
+  // Toggle sort order
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === "desc" ? "asc" : "desc");
   };
   
-  // Calculate weekly summary
-  const getWeekData = (
-    practiceData: PracticeSession[],
-    start: Date,
-    end: Date,
-    label: string
-  ) => {
-    const filteredSessions = practiceData.filter((session) => {
+  // Handle search input
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+  
+  // Navigate back to student list
+  const handleBack = () => {
+    navigate("/dashboard/admin/students");
+  };
+  
+  // Calculate total practice hours for a period
+  const calculatePeriodStats = (period: string) => {
+    const { start, end } = getDateRange(period);
+    
+    const periodSessions = sessions.filter(session => {
       const sessionDate = new Date(session.date);
-      return isWithinInterval(sessionDate, { start, end });
+      return sessionDate >= start && sessionDate <= end;
     });
     
-    const totalMinutes = filteredSessions.reduce((sum, session) => sum + session.minutes, 0);
-    const sessionsCount = filteredSessions.length;
+    const totalMinutes = periodSessions.reduce((sum, session) => sum + session.minutes, 0);
+    const sessionCount = periodSessions.length;
     
     return {
-      week: label,
-      minutes: totalMinutes,
-      sessions: sessionsCount,
+      hours: Math.floor(totalMinutes / 60),
+      minutes: totalMinutes % 60,
+      sessionCount
     };
   };
-
   
   // Calculate total practice time
   const calculateTotalHours = (sessions: PracticeSession[]) => {
     const totalMinutes = sessions.reduce((sum, session) => sum + session.minutes, 0);
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    return `${hours}h ${minutes}m`;
-  };
-  
-  // Sort sessions based on current sort state
-  const sortSessions = (data: PracticeSession[]) => {
-    return [...data].sort((a, b) => {
-      if (sortField === 'date') {
-        const dateA = new Date(a.date).getTime();
-        const dateB = new Date(b.date).getTime();
-        return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
-      } else {
-        return sortDirection === 'asc' ? a.minutes - b.minutes : b.minutes - a.minutes;
-      }
-    });
-  };
-  
-  // Handle sort change
-  const handleSort = (field: 'date' | 'minutes') => {
-    if (field === sortField) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('desc'); // Default to descending when changing sort field
-    }
-    
-    const sorted = sortSessions(filteredSessions);
-    setFilteredSessions(sorted);
-  };
-  
-  // Apply filters
-  const applyFilters = () => {
-    let filtered = [...sessions];
-    
-    if (dateFrom) {
-      filtered = filtered.filter(session => {
-        return session.date >= dateFrom;
-      });
-    }
-    
-    if (dateTo) {
-      filtered = filtered.filter(session => {
-        return session.date <= dateTo;
-      });
-    }
-    
-    if (minDuration) {
-      const min = parseInt(minDuration);
-      if (!isNaN(min)) {
-        filtered = filtered.filter(session => session.minutes >= min);
-      }
-    }
-    
-    if (maxDuration) {
-      const max = parseInt(maxDuration);
-      if (!isNaN(max)) {
-        filtered = filtered.filter(session => session.minutes <= max);
-      }
-    }
-    
-    setFilterActive(dateFrom !== "" || dateTo !== "" || minDuration !== "" || maxDuration !== "");
-    const sortedAndFiltered = sortSessions(filtered);
-    setFilteredSessions(sortedAndFiltered);
-    setFilterOpen(false);
-  };
-  
-  // Reset filters
-  const resetFilters = () => {
-    setDateFrom("");
-    setDateTo("");
-    setMinDuration("");
-    setMaxDuration("");
-    setFilterActive(false);
-    
-    const sorted = sortSessions(sessions);
-    setFilteredSessions(sorted);
+    return {
+      hours: Math.floor(totalMinutes / 60),
+      minutes: totalMinutes % 60
+    };
   };
 
-  if (loading) {
+  // Loading state
+  if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-maroon-700"></div>
       </div>
     );
   }
 
-  if (error || !student) {
+  // Student not found state
+  if (!student) {
     return (
-      <div className="p-6 max-w-4xl mx-auto">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start">
-          <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 mr-2" />
-          <div>
-            <h3 className="font-medium text-red-800">Error</h3>
-            <p className="text-red-700">{error || "Failed to load student data"}</p>
-            <Button 
-              variant="outline" 
-              className="mt-2"
-              onClick={() => navigate(-1)}
-            >
-              Go Back
-            </Button>
-          </div>
+      <div className="p-6">
+        <div className="text-center py-10">
+          <h2 className="text-2xl font-bold text-gray-800">Student Not Found</h2>
+          <p className="text-gray-600 mt-2">The student you're looking for doesn't exist or you don't have permission to view their details.</p>
+          <Button onClick={handleBack} className="mt-6">
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Students
+          </Button>
         </div>
       </div>
     );
   }
 
+  // Stats for different time periods
+  const weekStats = calculatePeriodStats("week");
+  const monthStats = calculatePeriodStats("month");
+  const yearStats = calculatePeriodStats("year");
   
+  // Calculate total practice time for filtered sessions
+  const { hours: totalHours, minutes: totalMinutes } = calculateTotalHours(filteredSessions);
+
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <div className="flex items-center mb-6 space-x-2">
         <Button 
           variant="outline" 
           size="sm" 
-          onClick={() => navigate(-1)}
+          onClick={handleBack}
+          className="border-maroon-600 text-maroon-700 hover:bg-maroon-50"
         >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
+          <ArrowLeft className="mr-1 h-4 w-4" /> Back
         </Button>
-        <h1 className="text-2xl font-bold">{student.name}'s Practice History</h1>
+        <h1 className="text-2xl font-serif font-bold text-maroon-900">{student.name}'s Practice Log</h1>
+        <Badge className="bg-amber-500 hover:bg-amber-600 text-white ml-2">
+          {student.level || "AARAMBHA (Beginner)"}
+        </Badge>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <Card>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <Card className="bg-gradient-to-br from-amber-50 to-white border-amber-100">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Total Practice Time</CardTitle>
-            <CardDescription>All time</CardDescription>
+            <CardTitle className="text-sm font-medium text-amber-900">Total Practice</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{calculateTotalHours(sessions)}</div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Practice Sessions</CardTitle>
-            <CardDescription>Total count</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{sessions.length}</div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Level</CardTitle>
-            <CardDescription>Current student level</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg font-bold text-amber-700">{student.level}</div>
-          </CardContent>
-        </Card>
-      </div>
-      
-      {sessions.length > 0 && (
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Weekly Practice Summary</CardTitle>
-            <CardDescription>Minutes practiced over the last 4 weeks</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={weeklyData}
-                  margin={{
-                    top: 20,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="week" />
-                  <YAxis label={{ value: "Minutes", angle: -90, position: "insideLeft" }} />
-                  <Tooltip />
-                  <Legend />
-                  <Bar
-                    dataKey="minutes"
-                    name="Minutes Practiced"
-                    fill="#8884d8"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
+            <div className="flex items-center">
+              <Clock className="mr-2 h-5 w-5 text-amber-700" />
+              <span className="text-2xl font-bold text-amber-900">{totalHours}h {totalMinutes}m</span>
             </div>
+            <p className="text-xs text-amber-700 mt-1">{filteredSessions.length} sessions recorded</p>
           </CardContent>
         </Card>
-      )}
+        
+        <Card className="bg-gradient-to-br from-amber-50 to-white border-amber-100">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-amber-900">This Week</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center">
+              <Calendar className="mr-2 h-5 w-5 text-amber-700" />
+              <span className="text-2xl font-bold text-amber-900">{weekStats.hours}h {weekStats.minutes}m</span>
+            </div>
+            <p className="text-xs text-amber-700 mt-1">{weekStats.sessionCount} sessions recorded</p>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-amber-50 to-white border-amber-100">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-amber-900">This Month</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center">
+              <Calendar className="mr-2 h-5 w-5 text-amber-700" />
+              <span className="text-2xl font-bold text-amber-900">{monthStats.hours}h {monthStats.minutes}m</span>
+            </div>
+            <p className="text-xs text-amber-700 mt-1">{monthStats.sessionCount} sessions recorded</p>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-amber-50 to-white border-amber-100">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-amber-900">This Year</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center">
+              <Calendar className="mr-2 h-5 w-5 text-amber-700" />
+              <span className="text-2xl font-bold text-amber-900">{yearStats.hours}h {yearStats.minutes}m</span>
+            </div>
+            <p className="text-xs text-amber-700 mt-1">{yearStats.sessionCount} sessions recorded</p>
+          </CardContent>
+        </Card>
+      </div>
       
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-4 border-b flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Practice Sessions</h2>
-          <div className="flex space-x-2">
-            {/* Filter Button */}
-            <Popover open={filterOpen} onOpenChange={setFilterOpen}>
-              <PopoverTrigger asChild>
-                <Button 
-                  variant={filterActive ? "default" : "outline"} 
-                  size="sm" 
-                  className={filterActive ? "bg-amber-600 hover:bg-amber-700" : ""}
-                >
-                  {filterActive ? <FilterX className="h-4 w-4 mr-2" /> : <Filter className="h-4 w-4 mr-2" />}
-                  {filterActive ? "Filters Applied" : "Filter"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80" align="end">
-                <div className="space-y-4 p-2">
-                  <h3 className="font-medium">Filter Practice Sessions</h3>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="dateFrom">Date From</Label>
-                      <Input
-                        id="dateFrom"
-                        type="date"
-                        value={dateFrom}
-                        onChange={(e) => setDateFrom(e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="dateTo">Date To</Label>
-                      <Input
-                        id="dateTo"
-                        type="date"
-                        value={dateTo}
-                        onChange={(e) => setDateTo(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="minDuration">Min Duration (min)</Label>
-                      <Input
-                        id="minDuration"
-                        type="number"
-                        placeholder="0"
-                        value={minDuration}
-                        onChange={(e) => setMinDuration(e.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="maxDuration">Max Duration (min)</Label>
-                      <Input
-                        id="maxDuration"
-                        type="number"
-                        placeholder="180"
-                        value={maxDuration}
-                        onChange={(e) => setMaxDuration(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-between pt-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={resetFilters}
-                    >
-                      Reset
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      onClick={applyFilters}
-                    >
-                      Apply Filters
-                    </Button>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
+      {/* Practice Log Table with Filters */}
+      <div className="bg-white rounded-lg shadow-sm border border-amber-100 p-5">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+          <h2 className="text-xl font-serif font-bold text-maroon-900">Practice Sessions</h2>
+          
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative w-full md:w-auto">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+              <Input 
+                placeholder="Search notes..." 
+                className="pl-10 pr-4 w-full md:w-64" 
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
+            </div>
             
-            {/* Sort Fields */}
-            <Select
-              value={`${sortField}-${sortDirection}`}
-              onValueChange={(value) => {
-                const [field, direction] = value.split('-') as ['date' | 'minutes', 'asc' | 'desc'];
-                setSortField(field);
-                setSortDirection(direction);
-                
-                const sorted = [...filteredSessions].sort((a, b) => {
-                  if (field === 'date') {
-                    const dateA = new Date(a.date).getTime();
-                    const dateB = new Date(b.date).getTime();
-                    return direction === 'asc' ? dateA - dateB : dateB - dateA;
-                  } else {
-                    return direction === 'asc' ? a.minutes - b.minutes : b.minutes - a.minutes;
-                  }
-                });
-                
-                setFilteredSessions(sorted);
-              }}
-            >
-              <SelectTrigger className="w-[180px]">
-                <span className="flex items-center">
-                  <ArrowDownUp className="h-4 w-4 mr-2" />
-                  <span>Sort by</span>
-                </span>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="date-desc">Date (Newest First)</SelectItem>
-                <SelectItem value="date-asc">Date (Oldest First)</SelectItem>
-                <SelectItem value="minutes-desc">Duration (Highest First)</SelectItem>
-                <SelectItem value="minutes-asc">Duration (Lowest First)</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-gray-500" />
+              <Select value={filterPeriod} onValueChange={setFilterPeriod}>
+                <SelectTrigger className="w-32 md:w-40">
+                  <SelectValue placeholder="Time Period" />
+                </SelectTrigger>
+                <SelectContent>
+                  {filterOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              <Button 
+                variant="outline" 
+                size="icon"
+                onClick={toggleSortOrder}
+                className="h-10 w-10"
+              >
+                <ArrowDownUp className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
         
-        {filteredSessions.length > 0 ? (
+        {filteredSessions.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500">No practice sessions found for this period.</p>
+          </div>
+        ) : (
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead 
-                    className="cursor-pointer"
-                    onClick={() => handleSort('date')}
-                  >
-                    <div className="flex items-center">
-                      Date
-                      {sortField === 'date' && (
-                        <span className="ml-1">
-                          {sortDirection === 'asc' ? '↑' : '↓'}
-                        </span>
-                      )}
-                    </div>
-                  </TableHead>
-                  <TableHead>Time</TableHead>
-                  <TableHead 
-                    className="text-right cursor-pointer"
-                    onClick={() => handleSort('minutes')}
-                  >
-                    <div className="flex items-center justify-end">
-                      Duration
-                      {sortField === 'minutes' && (
-                        <span className="ml-1">
-                          {sortDirection === 'asc' ? '↑' : '↓'}
-                        </span>
-                      )}
-                    </div>
-                  </TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Duration</TableHead>
                   <TableHead>Notes</TableHead>
+                  <TableHead>Recorded</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredSessions.map((session) => (
                   <TableRow key={session.id}>
-                    <TableCell className="font-medium">
-                      <span className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                        {format(parseISO(session.date), "MMM d, yyyy")}
-                      </span>
-                    </TableCell>
+                    <TableCell className="font-medium">{new Date(session.date).toLocaleDateString()}</TableCell>
                     <TableCell>
-                      {session.start_time && session.end_time 
-                        ? `${session.start_time} - ${session.end_time}` 
-                        : "—"}
+                      <div className="flex items-center">
+                        <Clock className="mr-2 h-4 w-4 text-amber-700" />
+                        {Math.floor(session.minutes / 60)}h {session.minutes % 60}m
+                      </div>
                     </TableCell>
-                    <TableCell className="text-right font-medium">
-                      <span className="flex items-center justify-end">
-                        <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                        {session.minutes} min
-                      </span>
-                    </TableCell>
-                    <TableCell className="max-w-xs truncate">
-                      {session.notes || "—"}
+                    <TableCell className="max-w-sm truncate">{session.notes}</TableCell>
+                    <TableCell className="text-gray-500 text-sm">
+                      {formatDistanceToNow(new Date(session.created_at), { addSuffix: true })}
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
-          </div>
-        ) : (
-          <div className="p-8 text-center">
-            <p className="text-muted-foreground">
-              {sessions.length > 0 
-                ? "No sessions match the current filters." 
-                : "No practice sessions have been recorded yet."}
-            </p>
-            {sessions.length > 0 && filterActive && (
-              <Button 
-                variant="outline" 
-                className="mt-4" 
-                onClick={resetFilters}
-              >
-                Clear Filters
-              </Button>
-            )}
           </div>
         )}
       </div>
