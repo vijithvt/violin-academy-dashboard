@@ -56,10 +56,11 @@ const Login = () => {
       
       <div className="absolute top-0 left-0 right-0 bg-maroon-900 text-white py-4 px-6">
         <div className="container mx-auto flex justify-between items-center">
-          <Link to="/" className="font-serif text-xl font-bold text-amber-100">Vijith's Violin Academy</Link>
+          <Link to="/" className="font-serif text-xl font-bold text-amber-100">Violin Academy</Link>
           <div className="flex gap-4">
             <Link to="/" className="text-white hover:text-amber-200 transition-colors">Home</Link>
             <Link to="/blogs" className="text-white hover:text-amber-200 transition-colors">Blog</Link>
+            <Link to="/admin-login" className="text-white hover:text-amber-200 transition-colors">Admin Login</Link>
           </div>
         </div>
       </div>

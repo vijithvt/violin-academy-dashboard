@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -144,7 +144,19 @@ const AdminLogin = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-indigo-50 to-white p-4">
-      <div className="w-full max-w-md">
+      {/* Navigation menu */}
+      <div className="absolute top-0 left-0 right-0 bg-indigo-900 text-white py-4 px-6">
+        <div className="container mx-auto flex justify-between items-center">
+          <Link to="/" className="font-serif text-xl font-bold text-indigo-100">Violin Academy</Link>
+          <div className="flex gap-4">
+            <Link to="/" className="text-white hover:text-indigo-200 transition-colors">Home</Link>
+            <Link to="/blogs" className="text-white hover:text-indigo-200 transition-colors">Blog</Link>
+            <Link to="/login" className="text-white hover:text-indigo-200 transition-colors">Student Login</Link>
+          </div>
+        </div>
+      </div>
+
+      <div className="w-full max-w-md mt-16">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-indigo-900 mb-2">Violin Academy</h1>
           <p className="text-gray-600">Admin Portal</p>
