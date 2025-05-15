@@ -1,4 +1,3 @@
-
 import { Routes, Route, Navigate } from "react-router-dom";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
@@ -77,6 +76,16 @@ const Router = () => {
     return children;
   };
 
+  // This effect logs the auth status for debugging
+  useEffect(() => {
+    console.log("Auth status:", { 
+      user, 
+      isAdmin, 
+      isLoading, 
+      currentUser 
+    });
+  }, [user, isAdmin, isLoading, currentUser]);
+
   return (
     <Routes>
       {/* Public routes */}
@@ -89,13 +98,14 @@ const Router = () => {
       <Route
         path="/dashboard"
         element={
-          currentUser ? (
-            <Dashboard />
+          user ? (
+            isAdmin ? <Navigate to="/dashboard/admin" /> : <Dashboard />
           ) : (
-            <Navigate to="/" replace state={{ message: "Please login to access the dashboard." }} />
+            <Navigate to="/login" replace state={{ message: "Please login to access the dashboard." }} />
           )
         }
       />
+      
       <Route
         path="/dashboard/student"
         element={
@@ -106,6 +116,7 @@ const Router = () => {
           )
         }
       />
+      
       <Route
         path="/student-registration"
         element={

@@ -102,16 +102,39 @@ const StudentImageCarousel = () => {
                           alt={`Carnatic violin student ${index + 1}`}
                           className="w-full h-full object-cover"
                         />
-                        {/* Diagonal watermark without background */}
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                        
+                        {/* Watermarks in all four corners */}
+                        <div className="absolute inset-0 pointer-events-none z-20">
+                          {/* Top left watermark */}
                           <div 
-                            className="font-serif text-white text-opacity-70 text-xl md:text-2xl transform rotate-[-35deg] select-none"
-                            style={{ 
-                              textShadow: "1px 1px 3px rgba(0,0,0,0.7)", 
-                              letterSpacing: "1px"
-                            }}
+                            className="absolute top-2 left-2 text-white text-opacity-60 text-xs font-serif transform -rotate-45"
+                            style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.7)" }}
                           >
-                            Violin Academy
+                            © Vijith Violinist
+                          </div>
+                          
+                          {/* Top right watermark */}
+                          <div 
+                            className="absolute top-2 right-2 text-white text-opacity-60 text-xs font-serif transform rotate-45"
+                            style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.7)" }}
+                          >
+                            © Vijith Violinist
+                          </div>
+                          
+                          {/* Bottom left watermark */}
+                          <div 
+                            className="absolute bottom-2 left-2 text-white text-opacity-60 text-xs font-serif transform rotate-45"
+                            style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.7)" }}
+                          >
+                            © Vijith Violinist
+                          </div>
+                          
+                          {/* Bottom right watermark */}
+                          <div 
+                            className="absolute bottom-2 right-2 text-white text-opacity-60 text-xs font-serif transform -rotate-45"
+                            style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.7)" }}
+                          >
+                            © Vijith Violinist
                           </div>
                         </div>
                       </div>
