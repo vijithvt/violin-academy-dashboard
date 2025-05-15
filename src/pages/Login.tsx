@@ -85,6 +85,7 @@ const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="student@example.com"
+              className="w-full"
               required
             />
           </div>
@@ -95,6 +96,7 @@ const Login = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="w-full"
               required
             />
           </div>

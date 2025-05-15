@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSupabase } from "@/context/SupabaseContext";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Loader2, BarChart, Clock, UserPlus, Eye } from "lucide-react";
+import { Loader2, BarChart, Clock, UserPlus, Eye, LogOut, Search, Filter, SortAsc, SortDesc } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { 
@@ -22,6 +22,15 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 interface PracticeSummary {
   id: string;
@@ -31,14 +40,40 @@ interface PracticeSummary {
 }
 
 const AdminDashboard = () => {
-  const { supabase, user } = useSupabase();
+  const { supabase, user, logout } = useSupabase();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [practiceSummaries, setPracticeSummaries] = useState<PracticeSummary[]>([]);
+  const [filteredSummaries, setFilteredSummaries] = useState<PracticeSummary[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortField, setSortField] = useState<"name" | "total_minutes" | "last_practice">("total_minutes");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [showFilters, setShowFilters] = useState(false);
+  const [minMinutes, setMinMinutes] = useState("");
+  const [maxMinutes, setMaxMinutes] = useState("");
   const itemsPerPage = 5;
+  
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/admin-login");
+      toast({
+        title: "Logged out successfully",
+        description: "You have been logged out of your account.",
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast({
+        title: "Logout failed",
+        description: "An error occurred during logout. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
   
   // Check if user is admin
   useEffect(() => {
@@ -102,6 +137,7 @@ const AdminDashboard = () => {
         
         if (!profiles || profiles.length === 0) {
           setPracticeSummaries([]);
+          setFilteredSummaries([]);
           return;
         }
         
@@ -136,9 +172,10 @@ const AdminDashboard = () => {
           }
         }
         
-        // Sort by most practice time
-        summaries.sort((a, b) => b.total_minutes - a.total_minutes);
-        setPracticeSummaries(summaries);
+        // Sort by most practice time by default
+        const sortedSummaries = sortPracticeSummaries(summaries, sortField, sortDirection);
+        setPracticeSummaries(sortedSummaries);
+        setFilteredSummaries(sortedSummaries);
         
       } catch (error: any) {
         console.error("Error in fetchPracticeSummaries:", error);
@@ -153,7 +190,86 @@ const AdminDashboard = () => {
     if (isAdmin && !isLoading) {
       fetchPracticeSummaries();
     }
-  }, [isAdmin, isLoading, supabase, toast]);
+  }, [isAdmin, isLoading, supabase, toast, sortField, sortDirection]);
+  
+  // Sort practice summaries
+  const sortPracticeSummaries = (
+    summaries: PracticeSummary[], 
+    field: "name" | "total_minutes" | "last_practice", 
+    direction: "asc" | "desc"
+  ) => {
+    return [...summaries].sort((a, b) => {
+      // Handle different field types
+      let comparison = 0;
+      
+      if (field === "name") {
+        comparison = a.name.localeCompare(b.name);
+      } else if (field === "total_minutes") {
+        comparison = a.total_minutes - b.total_minutes;
+      } else if (field === "last_practice") {
+        // Handle null values for last_practice
+        if (!a.last_practice && !b.last_practice) comparison = 0;
+        else if (!a.last_practice) comparison = 1; // null values come last
+        else if (!b.last_practice) comparison = -1;
+        else comparison = new Date(a.last_practice).getTime() - new Date(b.last_practice).getTime();
+      }
+      
+      // Apply sort direction
+      return direction === "asc" ? comparison : -comparison;
+    });
+  };
+  
+  // Toggle sort direction
+  const toggleSort = (field: "name" | "total_minutes" | "last_practice") => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("desc");
+    }
+  };
+  
+  // Handle search and filter
+  useEffect(() => {
+    let results = [...practiceSummaries];
+    
+    // Apply search
+    if (searchTerm.trim()) {
+      results = results.filter(student => 
+        student.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Apply minute filters
+    if (minMinutes.trim()) {
+      const min = parseInt(minMinutes);
+      if (!isNaN(min)) {
+        results = results.filter(student => student.total_minutes >= min);
+      }
+    }
+    
+    if (maxMinutes.trim()) {
+      const max = parseInt(maxMinutes);
+      if (!isNaN(max)) {
+        results = results.filter(student => student.total_minutes <= max);
+      }
+    }
+    
+    // Apply sorting
+    results = sortPracticeSummaries(results, sortField, sortDirection);
+    
+    setFilteredSummaries(results);
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [searchTerm, minMinutes, maxMinutes, practiceSummaries, sortField, sortDirection]);
+  
+  // Reset filters
+  const resetFilters = () => {
+    setSearchTerm("");
+    setMinMinutes("");
+    setMaxMinutes("");
+    setFilteredSummaries([...practiceSummaries]);
+    setShowFilters(false);
+  };
   
   if (isLoading) {
     return (
@@ -168,9 +284,9 @@ const AdminDashboard = () => {
   }
 
   // Calculate pagination
-  const totalPages = Math.ceil(practiceSummaries.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredSummaries.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedSummaries = practiceSummaries.slice(
+  const paginatedSummaries = filteredSummaries.slice(
     startIndex,
     startIndex + itemsPerPage
   );
@@ -210,6 +326,14 @@ const AdminDashboard = () => {
               >
                 Return to Home
               </Button>
+              <Button
+                onClick={handleLogout}
+                variant="destructive"
+                className="flex items-center gap-2"
+              >
+                <LogOut size={18} />
+                Logout
+              </Button>
             </div>
           </div>
         </div>
@@ -218,24 +342,105 @@ const AdminDashboard = () => {
       <div className="container mx-auto px-4 py-8">
         <Card className="mb-8">
           <CardHeader className="bg-indigo-50">
-            <CardTitle className="flex items-center text-indigo-800">
-              <BarChart className="mr-2 h-5 w-5" />
-              Student Practice Hours
-            </CardTitle>
-            <CardDescription>
-              Overview of practice time logged by all students
-            </CardDescription>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+              <div>
+                <CardTitle className="flex items-center text-indigo-800">
+                  <BarChart className="mr-2 h-5 w-5" />
+                  Student Practice Hours
+                </CardTitle>
+                <CardDescription>
+                  Overview of practice time logged by all students
+                </CardDescription>
+              </div>
+              <div className="flex flex-col md:flex-row gap-2 mt-4 md:mt-0 w-full md:w-auto">
+                <div className="relative flex-1 md:flex-none">
+                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search students..."
+                    className="pl-8 pr-4 w-full"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="flex items-center gap-1">
+                      <Filter className="h-4 w-4" />
+                      Filter
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>Filter Practice Hours</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <div className="p-2">
+                      <div className="flex flex-col space-y-2">
+                        <label className="text-sm font-medium">Min Minutes</label>
+                        <Input 
+                          type="number" 
+                          placeholder="Min"
+                          value={minMinutes}
+                          onChange={(e) => setMinMinutes(e.target.value)}
+                        />
+                      </div>
+                      <div className="flex flex-col space-y-2 mt-2">
+                        <label className="text-sm font-medium">Max Minutes</label>
+                        <Input 
+                          type="number" 
+                          placeholder="Max"
+                          value={maxMinutes}
+                          onChange={(e) => setMaxMinutes(e.target.value)}
+                        />
+                      </div>
+                      <Button 
+                        className="w-full mt-4" 
+                        variant="secondary"
+                        onClick={resetFilters}
+                      >
+                        Reset Filters
+                      </Button>
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
           </CardHeader>
           
           <CardContent className="pt-6">
-            {practiceSummaries.length > 0 ? (
+            {filteredSummaries.length > 0 ? (
               <div className="space-y-4">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Student</TableHead>
-                      <TableHead>Total Practice</TableHead>
-                      <TableHead>Last Practice</TableHead>
+                      <TableHead onClick={() => toggleSort("name")} className="cursor-pointer hover:bg-gray-50">
+                        <div className="flex items-center space-x-1">
+                          <span>Student</span>
+                          {sortField === "name" && (
+                            sortDirection === "asc" ? 
+                              <SortAsc className="h-4 w-4" /> : 
+                              <SortDesc className="h-4 w-4" />
+                          )}
+                        </div>
+                      </TableHead>
+                      <TableHead onClick={() => toggleSort("total_minutes")} className="cursor-pointer hover:bg-gray-50">
+                        <div className="flex items-center space-x-1">
+                          <span>Total Practice</span>
+                          {sortField === "total_minutes" && (
+                            sortDirection === "asc" ? 
+                              <SortAsc className="h-4 w-4" /> : 
+                              <SortDesc className="h-4 w-4" />
+                          )}
+                        </div>
+                      </TableHead>
+                      <TableHead onClick={() => toggleSort("last_practice")} className="cursor-pointer hover:bg-gray-50">
+                        <div className="flex items-center space-x-1">
+                          <span>Last Practice</span>
+                          {sortField === "last_practice" && (
+                            sortDirection === "asc" ? 
+                              <SortAsc className="h-4 w-4" /> : 
+                              <SortDesc className="h-4 w-4" />
+                          )}
+                        </div>
+                      </TableHead>
                       <TableHead className="text-right">Action</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -290,6 +495,16 @@ const AdminDashboard = () => {
                     ))}
                   </TableBody>
                 </Table>
+                
+                {/* No results message */}
+                {paginatedSummaries.length === 0 && (
+                  <div className="text-center py-10">
+                    <p className="text-gray-500">No students match your search criteria.</p>
+                    <Button variant="link" onClick={resetFilters}>
+                      Reset filters
+                    </Button>
+                  </div>
+                )}
                 
                 {/* Pagination controls */}
                 {totalPages > 1 && (
