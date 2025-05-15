@@ -20,13 +20,16 @@ export function getPlatformClass(): string {
     return 'platform-android';
   }
   
-  return ''; // Default
+  return 'platform-default'; // Return a default class instead of empty string
 }
 
 // Apply platform-specific adjustments
 export function applyPlatformAdjustments(): void {
   // Add platform class to body
   if (typeof document !== 'undefined') {
-    document.body.classList.add(getPlatformClass());
+    const platformClass = getPlatformClass();
+    if (platformClass) {
+      document.body.classList.add(platformClass);
+    }
   }
 }
