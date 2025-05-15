@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSupabase } from "@/context/SupabaseContext";
@@ -31,6 +30,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import StudentStatsOverview from "@/components/admin/StudentStatsOverview";
+import TopPracticingStudents from "@/components/admin/TopPracticingStudents";
 
 interface PracticeSummary {
   id: string;
@@ -49,8 +50,8 @@ const AdminDashboard = () => {
   const [filteredSummaries, setFilteredSummaries] = useState<PracticeSummary[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortField, setSortField] = useState<"name" | "total_minutes" | "last_practice">("total_minutes");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [sortField, setSortField<"name" | "total_minutes" | "last_practice">("total_minutes");
+  const [sortDirection, setSortDirection<"asc" | "desc">("desc");
   const [showFilters, setShowFilters] = useState(false);
   const [minMinutes, setMinMinutes] = useState("");
   const [maxMinutes, setMaxMinutes] = useState("");
@@ -340,6 +341,13 @@ const AdminDashboard = () => {
       </header>
       
       <div className="container mx-auto px-4 py-8">
+        {/* Stats and Top Students Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <StudentStatsOverview />
+          <TopPracticingStudents />
+        </div>
+        
+        {/* Practice Hours Table */}
         <Card className="mb-8">
           <CardHeader className="bg-indigo-50">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
