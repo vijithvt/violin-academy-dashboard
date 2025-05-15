@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 import StudentDashboardLayout from "@/components/student/StudentDashboardLayout";
 import PracticeHoursTracker from "@/components/student/PracticeHoursTracker";
 import ComingSoonCard from "@/components/student/ComingSoonCard";
+import { motion } from "framer-motion";
 
 const StudentDashboard = () => {
   const { user, loading } = useSupabase();
@@ -30,15 +31,53 @@ const StudentDashboard = () => {
     return null;
   }
 
+  // Animation variants for staggered animations
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100
+      }
+    }
+  };
+
   return (
     <StudentDashboardLayout>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <PracticeHoursTracker />
-        <ComingSoonCard title="Lesson Progress" icon="book" />
-        <ComingSoonCard title="Attendance" icon="calendar-check" />
-        <ComingSoonCard title="Practice Tips" icon="bulb" />
-        <ComingSoonCard title="Student Points" icon="award" />
-      </div>
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div variants={itemVariants}>
+          <PracticeHoursTracker />
+        </motion.div>
+        <motion.div variants={itemVariants}>
+          <ComingSoonCard title="Lesson Progress" icon="book" />
+        </motion.div>
+        <motion.div variants={itemVariants}>
+          <ComingSoonCard title="Attendance" icon="calendar-check" />
+        </motion.div>
+        <motion.div variants={itemVariants}>
+          <ComingSoonCard title="Practice Tips" icon="bulb" />
+        </motion.div>
+        <motion.div variants={itemVariants} className="md:col-span-2">
+          <ComingSoonCard title="Music Theory Resources" icon="music" />
+        </motion.div>
+      </motion.div>
     </StudentDashboardLayout>
   );
 };

@@ -96,11 +96,17 @@ const StudentImageCarousel = () => {
                       style={{ transformOrigin: "center" }}
                     ></div>
                     <div className="relative z-10 w-full h-full object-cover rounded-lg overflow-hidden shadow-lg transform -rotate-3 transition-transform duration-500 group-hover:rotate-0">
-                      <ImageProtection
-                        src={src}
-                        alt={`Carnatic violin student ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
+                      <div className="relative w-full h-full">
+                        <ImageProtection
+                          src={src}
+                          alt={`Carnatic violin student ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                        {/* Watermark */}
+                        <div className="absolute bottom-0 right-0 left-0 bg-maroon-800 bg-opacity-60 text-white text-xs md:text-sm p-2 text-center font-serif z-20 transform -rotate-3">
+                          Vijith's Violin Academy
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

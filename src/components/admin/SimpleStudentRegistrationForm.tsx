@@ -11,6 +11,13 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { Loader2, UserPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
   studentName: z.string().min(2, {
@@ -22,6 +29,7 @@ const formSchema = z.object({
   password: z.string().min(6, {
     message: "Password must be at least 6 characters.",
   }),
+  level: z.enum(["novice", "beginner", "intermediate", "advanced", "professional"]),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -37,8 +45,18 @@ const SimpleStudentRegistrationForm = () => {
       studentName: "",
       email: "",
       password: "",
+      level: "beginner",
     },
   });
+
+  // Map level to display names
+  const levelDisplayMap = {
+    novice: "Novice",
+    beginner: "AARAMBHA (Beginner)",
+    intermediate: "MADHYAMA (Intermediate)",
+    advanced: "UTTHAMA (Advanced)",
+    professional: "VIDHWATH (Professional)",
+  };
 
   const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
@@ -63,7 +81,7 @@ const SimpleStudentRegistrationForm = () => {
         throw new Error("Failed to create user account");
       }
       
-      // 2. Update the profile name (optional since we included it in metadata above)
+      // 2. Update the profile name and student profile with level
       const { error: profileUpdateError } = await supabase
         .from("profiles")
         .update({ name: values.studentName })
@@ -71,13 +89,34 @@ const SimpleStudentRegistrationForm = () => {
       
       if (profileUpdateError) {
         console.warn(`Profile update warning: ${profileUpdateError.message}`);
-        // We don't throw here since the user was created successfully
       }
       
-      // 3. Success message and redirect
+      // 3. Create student profile with level
+      const { error: studentProfileError } = await supabase
+        .from("student_profiles")
+        .insert({
+          user_id: authData.user.id,
+          learning_level: values.level,
+          // Adding minimal required fields to satisfy not-null constraints
+          parent_name: values.studentName,
+          mobile_number: "Not provided",
+          address: "Not provided",
+          preferred_course: "onlineOneToOne",
+          preferred_timings: ["evening"],
+          date_of_birth: new Date().toISOString().split('T')[0],
+          gender: "not_specified",
+          profession: "Student",
+          heard_from: "admin"
+        });
+        
+      if (studentProfileError) {
+        console.warn(`Student profile update warning: ${studentProfileError.message}`);
+      }
+      
+      // 4. Success message and redirect
       toast({
         title: "Student registered successfully",
-        description: `${values.studentName} has been registered with email ${values.email}`,
+        description: `${values.studentName} has been registered with level ${levelDisplayMap[values.level]}`,
       });
       
       // Reset form
@@ -149,6 +188,33 @@ const SimpleStudentRegistrationForm = () => {
                   <FormControl>
                     <Input type="password" placeholder="Create a secure password" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="level"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Current Level</FormLabel>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a level" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="beginner">AARAMBHA (Beginner)</SelectItem>
+                      <SelectItem value="intermediate">MADHYAMA (Intermediate)</SelectItem>
+                      <SelectItem value="advanced">UTTHAMA (Advanced)</SelectItem>
+                      <SelectItem value="professional">VIDHWATH (Professional)</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

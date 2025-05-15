@@ -1,11 +1,12 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useSupabase } from "@/context/SupabaseContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { motion } from "framer-motion";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -41,8 +42,34 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-amber-50 px-4">
-      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
+    <div className="min-h-screen flex items-center justify-center bg-amber-50 px-4 relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden opacity-10">
+        <div className="absolute top-0 left-0 w-full h-full">
+          <svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,1000 C150,800 350,600 500,600 C650,600 850,800 1000,1000" fill="none" stroke="#8B4513" strokeWidth="2"/>
+            <path d="M0,900 C150,700 350,500 500,500 C650,500 850,700 1000,900" fill="none" stroke="#8B4513" strokeWidth="2"/>
+            <path d="M0,800 C150,600 350,400 500,400 C650,400 850,600 1000,800" fill="none" stroke="#8B4513" strokeWidth="2"/>
+          </svg>
+        </div>
+      </div>
+      
+      <div className="absolute top-0 left-0 right-0 bg-maroon-900 text-white py-4 px-6">
+        <div className="container mx-auto flex justify-between items-center">
+          <Link to="/" className="font-serif text-xl font-bold text-amber-100">Vijith's Violin Academy</Link>
+          <div className="flex gap-4">
+            <Link to="/" className="text-white hover:text-amber-200 transition-colors">Home</Link>
+            <Link to="/blogs" className="text-white hover:text-amber-200 transition-colors">Blog</Link>
+          </div>
+        </div>
+      </div>
+      
+      <motion.div 
+        className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg mt-16"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <div className="text-center mb-6">
           <h1 className="text-2xl font-serif font-bold text-maroon-900">Student Login</h1>
           <p className="text-gray-600">Access your Violin Academy student account</p>
@@ -90,8 +117,8 @@ const Login = () => {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Need help? Contact your instructor or email{" "}
-            <a href="mailto:support@violinacademy.com" className="text-maroon-700 hover:text-maroon-900 font-medium">
-              support@violinacademy.com
+            <a href="mailto:vijithviolinist@gmail.com" className="text-maroon-700 hover:text-maroon-900 font-medium">
+              vijithviolinist@gmail.com
             </a>
           </p>
         </div>
@@ -100,14 +127,16 @@ const Login = () => {
           <p className="text-sm text-gray-500 text-center">
             Don't have an account?{" "}
             <a 
-              href="/" 
+              href="https://wa.me/919496315903" 
+              target="_blank" 
+              rel="noopener noreferrer"
               className="font-medium text-maroon-700 hover:text-maroon-900"
             >
               Contact us to enroll
             </a>
           </p>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

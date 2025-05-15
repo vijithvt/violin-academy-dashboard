@@ -191,9 +191,10 @@ const StudentDetailsSection = ({
                 </FormControl>
                 <SelectContent>
                   <SelectItem value="novice">Novice</SelectItem>
-                  <SelectItem value="beginner">Beginner (Varisas - Alankara)</SelectItem>
-                  <SelectItem value="intermediate">Intermediate (Geetham - Swarajathy)</SelectItem>
-                  <SelectItem value="advanced">Advanced (Varnams - Krithies)</SelectItem>
+                  <SelectItem value="beginner">AARAMBHA (Beginner)</SelectItem>
+                  <SelectItem value="intermediate">MADHYAMA (Intermediate)</SelectItem>
+                  <SelectItem value="advanced">UTTHAMA (Advanced)</SelectItem>
+                  <SelectItem value="professional">VIDHWATH (Professional)</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
