@@ -1,98 +1,144 @@
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSupabase } from "@/context/SupabaseContext";
-import { Users } from "lucide-react";
-
-interface StudentStats {
-  totalStudents: number;
-  activeStudents: number;
-}
+import { User, Users, Hourglass, UserCheck } from "lucide-react";
 
 const StudentStatsOverview = () => {
   const { supabase } = useSupabase();
-  const [stats, setStats] = useState<StudentStats>({
-    totalStudents: 0,
-    activeStudents: 0
-  });
-  const [loading, setLoading] = useState(true);
-
+  const [totalStudents, setTotalStudents] = useState<number>(0);
+  const [activeStudents, setActiveStudents] = useState<number>(0);
+  const [practicingStudents, setPracticingStudents] = useState<number>(0);
+  const [avgPracticeTime, setAvgPracticeTime] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(true);
+  
   useEffect(() => {
     const fetchStats = async () => {
       try {
         // Get total student count
-        const { data: roleData, error: roleError } = await supabase.rpc('count_profiles_by_role');
+        const { count: studentCount, error: countError } = await supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
+          .eq('role', 'student');
+          
+        if (countError) throw countError;
         
-        if (roleError) {
-          console.error("Error fetching role counts:", roleError);
-          return;
+        if (studentCount !== null) {
+          setTotalStudents(studentCount);
         }
         
-        // Find student count from the result
-        const studentCount = roleData?.find(r => r.role === 'student')?.count || 0;
+        // Get count of students who practiced in the last 7 days
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
         
-        // Get active students (those with practice sessions in the last 30 days)
+        const { data: recentPractices, error: practiceError } = await supabase
+          .from('practice_sessions')
+          .select('user_id')
+          .gte('date', sevenDaysAgo.toISOString())
+          .eq('user_id.profiles.role', 'student');
+          
+        if (!practiceError && recentPractices) {
+          // Get unique student IDs who have practiced
+          const uniqueStudentIds = [...new Set(recentPractices.map(p => p.user_id))];
+          setPracticingStudents(uniqueStudentIds.length);
+        }
+        
+        // Get active students (logged in within last 30 days)
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         
-        const { data: activeData, error: activeError } = await supabase
-          .from('practice_sessions')
-          .select('user_id', { count: 'exact', head: true })
-          .gte('date', thirtyDaysAgo.toISOString().split('T')[0])
-          .limit(1);
-        
-        if (activeError) {
-          console.error("Error fetching active students:", activeError);
+        const { data: activeUsers, error: activeError } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('role', 'student')
+          .gte('last_sign_in', thirtyDaysAgo.toISOString());
+          
+        if (!activeError && activeUsers) {
+          setActiveStudents(activeUsers.length);
         }
         
-        // Count distinct users with practice sessions
-        const { count: activeCount, error: countError } = await supabase
+        // Calculate average practice time per student
+        const { data: allPractices, error: avgError } = await supabase
           .from('practice_sessions')
-          .select('user_id', { count: 'exact', head: true, distinct: true })
-          .gte('date', thirtyDaysAgo.toISOString().split('T')[0]);
+          .select('minutes');
           
-        setStats({
-          totalStudents: studentCount,
-          activeStudents: activeCount || 0
-        });
+        if (!avgError && allPractices && allPractices.length > 0) {
+          const totalMinutes = allPractices.reduce((sum, session) => sum + session.minutes, 0);
+          const avgMinutes = totalMinutes / (studentCount || 1); // Prevent division by zero
+          setAvgPracticeTime(Math.round(avgMinutes));
+        }
         
       } catch (error) {
         console.error("Error fetching student stats:", error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
     
     fetchStats();
   }, [supabase]);
-
+  
   return (
     <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-xl flex items-center">
-          <Users className="mr-2 h-5 w-5 text-indigo-600" />
-          Student Overview
+      <CardHeader className="bg-blue-50">
+        <CardTitle className="text-blue-800 flex items-center">
+          <Users className="mr-2 h-5 w-5" />
+          Student Statistics Overview
         </CardTitle>
-        <CardDescription>Statistics about your students</CardDescription>
+        <CardDescription>Summary of student enrollment and activity</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         <div className="grid grid-cols-2 gap-4">
-          <div className="bg-indigo-50 p-4 rounded-lg">
-            <div className="text-xs text-indigo-600 font-medium uppercase tracking-wider">
-              Total Students
-            </div>
-            <div className="text-3xl font-bold text-indigo-900 mt-1">
-              {loading ? "..." : stats.totalStudents}
+          <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+            <div className="flex items-center">
+              <div className="p-2 bg-blue-100 rounded-full">
+                <User className="h-5 w-5 text-blue-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-500">Total Students</p>
+                <p className="text-2xl font-bold text-gray-900">{isLoading ? "..." : totalStudents}</p>
+              </div>
             </div>
           </div>
-          <div className="bg-green-50 p-4 rounded-lg">
-            <div className="text-xs text-green-600 font-medium uppercase tracking-wider">
-              Active Students
+          
+          <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+            <div className="flex items-center">
+              <div className="p-2 bg-green-100 rounded-full">
+                <UserCheck className="h-5 w-5 text-green-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-500">Active Students</p>
+                <p className="text-2xl font-bold text-gray-900">{isLoading ? "..." : activeStudents}</p>
+              </div>
             </div>
-            <div className="text-3xl font-bold text-green-900 mt-1">
-              {loading ? "..." : stats.activeStudents}
+          </div>
+          
+          <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+            <div className="flex items-center">
+              <div className="p-2 bg-amber-100 rounded-full">
+                <Hourglass className="h-5 w-5 text-amber-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-500">Avg. Practice Time</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {isLoading ? "..." : `${avgPracticeTime} mins`}
+                </p>
+              </div>
             </div>
-            <div className="text-xs text-green-600 mt-1">Past 30 days</div>
+          </div>
+          
+          <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+            <div className="flex items-center">
+              <div className="p-2 bg-purple-100 rounded-full">
+                <Users className="h-5 w-5 text-purple-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-500">Practicing Students</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {isLoading ? "..." : practicingStudents}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </CardContent>

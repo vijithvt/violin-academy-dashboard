@@ -1,4 +1,3 @@
-
 import { Routes, Route, Navigate } from "react-router-dom";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
@@ -19,6 +18,8 @@ import NotAuthorized from "@/components/admin/NotAuthorized";
 import { supabase } from "@/integrations/supabase/client";
 import Login from "@/pages/Login";
 import Blogs from "@/pages/Blogs";
+import BeginnersGuide from "@/pages/admin/BeginnersGuide";
+import BeginnerGuide from "@/pages/BeginnerGuide";
 
 const Router = () => {
   const { user, loading: supabaseLoading } = useSupabase();
@@ -194,6 +195,16 @@ const Router = () => {
         } 
       />
       
+      {/* NEW: Beginners Guide Admin Route */}
+      <Route 
+        path="/dashboard/admin/beginners-guide" 
+        element={
+          <AdminProtectedRoute>
+            <BeginnersGuide />
+          </AdminProtectedRoute>
+        } 
+      />
+      
       <Route 
         path="/admin/student-practice/:id" 
         element={
@@ -225,6 +236,12 @@ const Router = () => {
             <TrialRequests />
           </AdminProtectedRoute>
         } 
+      />
+
+      {/* Student-facing beginner guide */}
+      <Route
+        path="/beginners-guide"
+        element={<BeginnerGuide />}
       />
     </Routes>
   );

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSupabase } from "@/context/SupabaseContext";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Loader2, BarChart, Clock, UserPlus, Eye, LogOut, Search, Filter, SortAsc, SortDesc } from "lucide-react";
+import { Loader2, BarChart, Clock, UserPlus, Eye, LogOut, Search, Filter, SortAsc, SortDesc, Book } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { 
@@ -315,6 +315,13 @@ const AdminDashboard = () => {
               >
                 <UserPlus size={18} />
                 Add New Student
+              </Button>
+              <Button 
+                onClick={() => navigate("/dashboard/admin/beginners-guide")}
+                className="bg-amber-600 hover:bg-amber-700 flex items-center gap-2"
+              >
+                <Book size={18} />
+                Beginner's Guide
               </Button>
               <Button 
                 onClick={() => navigate("/dashboard/admin/register-student")}
