@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -139,7 +138,12 @@ const StudentPracticeDetails = () => {
           throw new Error(sessionsError.message);
         }
 
-        setStudent({ ...studentData, level: studentLevel });
+        setStudent({ 
+          id: studentData.id, 
+          name: studentData.name, 
+          email: studentData.email || '', 
+          level: studentLevel 
+        });
         setSessions(sessions || []);
         setFilteredSessions(sessions || []);
 
@@ -213,6 +217,7 @@ const StudentPracticeDetails = () => {
     };
   };
 
+  
   // Calculate total practice time
   const calculateTotalHours = (sessions: PracticeSession[]) => {
     const totalMinutes = sessions.reduce((sum, session) => sum + session.minutes, 0);
@@ -324,6 +329,7 @@ const StudentPracticeDetails = () => {
     );
   }
 
+  
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <div className="flex items-center mb-6 space-x-2">
