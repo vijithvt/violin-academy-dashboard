@@ -101,7 +101,7 @@ const StudentDashboardLayout = ({ children }: StudentDashboardLayoutProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-amber-50 bg-[url('/lovable-uploads/e3fbcddd-8adb-4994-9ffd-6fe4d4057e98.png')] bg-fixed bg-opacity-5 bg-blend-overlay">
+    <div className="min-h-screen bg-amber-50">
       {/* Header */}
       <motion.header 
         className="bg-maroon-900 text-white shadow-md" 

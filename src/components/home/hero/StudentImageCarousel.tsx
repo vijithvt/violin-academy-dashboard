@@ -102,9 +102,17 @@ const StudentImageCarousel = () => {
                           alt={`Carnatic violin student ${index + 1}`}
                           className="w-full h-full object-cover"
                         />
-                        {/* Updated Watermark */}
-                        <div className="absolute bottom-0 right-0 left-0 bg-maroon-800 bg-opacity-60 text-white text-xs md:text-sm p-2 text-center font-serif z-20 transform -rotate-3">
-                          Violin Academy
+                        {/* Diagonal watermark without background */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                          <div 
+                            className="font-serif text-white text-opacity-70 text-xl md:text-2xl transform rotate-[-35deg] select-none"
+                            style={{ 
+                              textShadow: "1px 1px 3px rgba(0,0,0,0.7)", 
+                              letterSpacing: "1px"
+                            }}
+                          >
+                            Violin Academy
+                          </div>
                         </div>
                       </div>
                     </div>
