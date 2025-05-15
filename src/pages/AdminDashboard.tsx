@@ -50,8 +50,10 @@ const AdminDashboard = () => {
   const [filteredSummaries, setFilteredSummaries] = useState<PracticeSummary[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortField, setSortField<"name" | "total_minutes" | "last_practice">("total_minutes");
-  const [sortDirection, setSortDirection<"asc" | "desc">("desc");
+  // Fix: Corrected the type declaration for sortField useState
+  const [sortField, setSortField] = useState<"name" | "total_minutes" | "last_practice">("total_minutes");
+  // Fix: Corrected the type declaration for sortDirection useState
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [showFilters, setShowFilters] = useState(false);
   const [minMinutes, setMinMinutes] = useState("");
   const [maxMinutes, setMaxMinutes] = useState("");
