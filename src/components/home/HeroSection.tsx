@@ -1,9 +1,8 @@
-
 import React from "react";
 import WaterRippleEffect from "./hero/WaterRippleEffect";
 import BackgroundEffects from "./hero/BackgroundEffects";
 import HeroText from "./hero/HeroText";
-import StudentImageCarousel from "./hero/StudentImageCarousel";
+// import StudentImageCarousel from "./hero/StudentImageCarousel"; // Optional: comment this out too
 
 const HeroSection = () => {
   return (
@@ -16,9 +15,11 @@ const HeroSection = () => {
           <div className="md:pr-6">
             <HeroText />
           </div>
-          
-          {/* Image Carousel */}
-          <StudentImageCarousel />
+
+          {/*
+            Image Carousel
+            <StudentImageCarousel />
+          */}
         </div>
       </div>
     </WaterRippleEffect>
