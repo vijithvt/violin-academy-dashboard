@@ -95,12 +95,12 @@ const StudentImageCarousel = () => {
                       className="absolute -top-4 -right-4 w-full h-full bg-amber-200 rounded-lg transform rotate-3 transition-transform duration-500 group-hover:rotate-2"
                       style={{ transformOrigin: "center" }}
                     ></div>
-                    <div className="relative z-10 w-full h-full object-cover rounded-lg overflow-hidden shadow-lg transform -rotate-3 transition-transform duration-500 group-hover:rotate-0">
+                    <div className="relative z-10 w-full h-full rounded-lg overflow-hidden shadow-lg transform -rotate-3 transition-transform duration-500 group-hover:rotate-0">
                       <div className="relative w-full h-full">
                         <img
                           src={src}
                           alt={`Carnatic violin student ${index + 1}`}
-                          className="w-full h-full object-cover select-none"
+                          className="w-full h-full object-contain select-none"
                           style={{
                             pointerEvents: "none",
                             userSelect: "none",
