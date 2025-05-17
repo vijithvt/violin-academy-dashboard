@@ -100,7 +100,7 @@ const StudentImageCarousel = () => {
                         <img
                           src={src}
                           alt={`Carnatic violin student ${index + 1}`}
-                          className="w-full h-full object-contain select-none"
+                          className="w-full h-full object-cover object-top select-none"
                           style={{
                             pointerEvents: "none",
                             userSelect: "none",
