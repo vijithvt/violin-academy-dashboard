@@ -103,10 +103,10 @@ const StudentImageCarousel = () => {
                           className="w-full h-full object-cover"
                         />
                         
-                        {/* Updated watermark: white with light shadow */}
+                        {/* Updated watermark with 30% opacity */}
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
                           <div 
-                            className="font-serif text-white text-opacity-60 text-4xl sm:text-5xl md:text-6xl font-bold transform rotate-[-30deg] select-none"
+                            className="font-serif text-white text-opacity-30 text-4xl sm:text-5xl md:text-6xl font-bold transform rotate-[-30deg] select-none"
                             style={{ 
                               textShadow: "1px 1px 3px rgba(0,0,0,0.4)", 
                               whiteSpace: "nowrap",
