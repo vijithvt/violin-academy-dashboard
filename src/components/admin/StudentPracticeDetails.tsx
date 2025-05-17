@@ -24,6 +24,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
+import { formatTime } from "@/lib/practice-utils";
 
 // Define types for better type safety
 interface Student {
@@ -40,6 +41,8 @@ interface PracticeSession {
   minutes: number;
   notes: string;
   created_at: string;
+  start_time?: string;
+  end_time?: string;
 }
 
 // This is the component to display student practice details
@@ -111,7 +114,7 @@ const StudentPracticeDetails = () => {
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       result = result.filter(session => 
-        session.notes.toLowerCase().includes(term)
+        session.notes?.toLowerCase().includes(term)
       );
     }
     
@@ -414,6 +417,7 @@ const StudentPracticeDetails = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Date</TableHead>
+                  <TableHead>Time</TableHead>
                   <TableHead>Duration</TableHead>
                   <TableHead>Notes</TableHead>
                   <TableHead>Recorded</TableHead>
@@ -423,6 +427,13 @@ const StudentPracticeDetails = () => {
                 {filteredSessions.map((session) => (
                   <TableRow key={session.id}>
                     <TableCell className="font-medium">{new Date(session.date).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      {session.start_time && session.end_time ? (
+                        <span>{formatTime(session.start_time)} - {formatTime(session.end_time)}</span>
+                      ) : (
+                        <span className="text-gray-400">No time recorded</span>
+                      )}
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center">
                         <Clock className="mr-2 h-4 w-4 text-amber-700" />

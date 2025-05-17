@@ -20,8 +20,16 @@ export const formatTime = (timeString: string | null | undefined): string => {
 export const calculateDuration = (startTime: string, endTime: string): number => {
   try {
     const today = new Date().toISOString().split('T')[0];
-    const startDateTime = parseISO(`${today}T${startTime}`);
-    const endDateTime = parseISO(`${today}T${endTime}`);
+    let startDateTime = parseISO(`${today}T${startTime}`);
+    let endDateTime = parseISO(`${today}T${endTime}`);
+    
+    // Handle case where practice goes past midnight
+    if (endDateTime < startDateTime) {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowStr = tomorrow.toISOString().split('T')[0];
+      endDateTime = parseISO(`${tomorrowStr}T${endTime}`);
+    }
     
     const minutes = differenceInMinutes(endDateTime, startDateTime);
     return minutes > 0 ? minutes : 0;
