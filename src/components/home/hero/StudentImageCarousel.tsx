@@ -20,7 +20,6 @@ const StudentImageCarousel = () => {
     "lovable-uploads/3.jpg",
     "lovable-uploads/4.jpg"
   
-
   ];
   
   // Randomize the student images on initial load
