@@ -106,7 +106,7 @@ const AboutSection = () => {
                 </h3>
                 <ul className="list-disc pl-5 space-y-2 text-gray-700 text-sm md:text-base">
                   <li>Teaching since 2018: Students from India, USA, Thailand & Bangalore</li>
-                  <li>Faculty collaborator at leading music academies worldwide</li>
+                  <li>Faculty collaborator at leading music academies</li>
                   <li>Best Classical Violin Teacher Award recipient (Presented by Music Intuit Academy, Bangalore, 2022)</li>
                 </ul>
               </div>
